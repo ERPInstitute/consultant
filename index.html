@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HỌC VIỆN ERP CONSULTING — Giải pháp Dynamics và Hệ sinh thái Microsoft</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="theme-color" content="#1F3864" />
 <style>
   :root {
     --primary: #1F3864;
@@ -22,7 +26,61 @@
     --red-bg: #FEE2E2;
     --yellow-bg: #FEF3C7;
     --blue-bg: #DBEAFE;
+    --sidebar-bg: #FFFFFF;
+    --sidebar-hover: #F3F4F6;
+    --sidebar-active-bg: var(--blue-bg);
+    --shadow: rgba(0,0,0,0.05);
   }
+  body[data-theme="dark"] {
+    --primary: #5B8DEF;
+    --primary-light: #7AA5F0;
+    --accent: #84CC16;
+    --danger: #F87171;
+    --warning: #FBBF24;
+    --bg: #0F172A;
+    --card: #1E293B;
+    --border: #334155;
+    --text: #E2E8F0;
+    --text-muted: #94A3B8;
+    --green: #4ADE80;
+    --green-bg: #14532D;
+    --red: #F87171;
+    --red-bg: #7F1D1D;
+    --yellow-bg: #78350F;
+    --blue-bg: #1E3A8A;
+    --sidebar-bg: #1E293B;
+    --sidebar-hover: #334155;
+    --sidebar-active-bg: #1E3A8A;
+    --shadow: rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+  body[data-theme="dark"] input,
+  body[data-theme="dark"] textarea,
+  body[data-theme="dark"] select {
+    background-color: #0F172A; color: var(--text); border-color: var(--border);
+  }
+  body[data-theme="dark"] .option,
+  body[data-theme="dark"] .question-card,
+  body[data-theme="dark"] .case-card,
+  body[data-theme="dark"] .ws-section,
+  body[data-theme="dark"] .stat-card,
+  body[data-theme="dark"] .lb-item,
+  body[data-theme="dark"] .folder-card,
+  body[data-theme="dark"] .bookmark-question,
+  body[data-theme="dark"] .gotcha-card {
+    background-color: var(--card);
+  }
+  body[data-theme="dark"] .option:hover { background: var(--sidebar-hover); }
+  body[data-theme="dark"] .option.correct { background: var(--green-bg); }
+  body[data-theme="dark"] .option.wrong { background: var(--red-bg); }
+  body[data-theme="dark"] .feedback.success { background: var(--green-bg); }
+  body[data-theme="dark"] .feedback.error { background: var(--red-bg); }
+  body[data-theme="dark"] .notes-textarea { background: #0F172A; }
+  body[data-theme="dark"] .auth-overlay,
+  body[data-theme="dark"] header {
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+  }
+  body[data-theme="dark"] .auth-card { background: var(--card); }
   * { box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -34,19 +92,78 @@
   }
   header h1 { margin: 0 0 4px 0; font-size: 22px; }
   header p { margin: 0; opacity: 0.92; font-size: 14px; }
-  nav.tabs {
-    display: flex; justify-content: center; gap: 4px; background: var(--card);
-    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04); overflow-x: auto; padding: 0 8px;
+  /* Sidebar navigation */
+  .layout {
+    display: flex; min-height: calc(100vh - 88px);
   }
-  nav.tabs button {
-    border: none; background: transparent; padding: 14px 20px; font-size: 14px;
-    cursor: pointer; color: var(--text-muted); font-weight: 600; white-space: nowrap;
-    border-bottom: 3px solid transparent; transition: all 0.15s;
+  aside.sidebar {
+    width: 240px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+    flex-shrink: 0; padding: 14px 8px; overflow-y: auto;
+    position: sticky; top: 0; max-height: 100vh; align-self: flex-start;
+    box-shadow: 1px 0 3px var(--shadow); transition: transform 0.3s;
   }
-  nav.tabs button:hover { color: var(--primary); background: #F3F4F6; }
-  nav.tabs button.active { color: var(--primary); border-bottom-color: var(--primary); }
-  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 80px; }
+  .sidebar-group { margin-bottom: 16px; }
+  .sidebar-group h4 {
+    margin: 0 12px 6px; font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 14px; border: none; background: transparent;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+    color: var(--text); text-align: left; transition: all 0.12s;
+    margin-bottom: 2px; position: relative;
+  }
+  .sidebar-item:hover { background: var(--sidebar-hover); }
+  .sidebar-item.active {
+    background: var(--sidebar-active-bg); color: var(--primary); font-weight: 700;
+  }
+  .sidebar-item.active::before {
+    content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+    width: 3px; background: var(--primary); border-radius: 2px;
+  }
+  .sidebar-item .icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+  .sidebar-item .badge {
+    background: var(--danger); color: white; font-size: 10px; padding: 1px 6px;
+    border-radius: 8px; margin-left: auto; font-weight: 700;
+  }
+  .sidebar-divider {
+    height: 1px; background: var(--border); margin: 8px 12px;
+  }
+  .sidebar-footer {
+    padding: 10px 14px; font-size: 11px; color: var(--text-muted);
+    border-top: 1px solid var(--border); margin-top: 8px;
+  }
+  .sidebar-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 50;
+  }
+  .sidebar-backdrop.show { display: block; }
+  .hamburger-btn {
+    position: absolute; top: 18px; left: 16px; background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3); color: white;
+    width: 38px; height: 38px; border-radius: 8px; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .hamburger-btn:hover { background: rgba(255,255,255,0.28); }
+  main {
+    flex: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px;
+    min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .layout { display: block; }
+    aside.sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; max-height: 100vh;
+      transform: translateX(-100%); z-index: 60; width: 270px;
+      box-shadow: 4px 0 14px rgba(0,0,0,0.2);
+    }
+    aside.sidebar.open { transform: translateX(0); }
+    .hamburger-btn { display: flex; }
+    main { padding: 20px 14px 80px; max-width: 100%; }
+    .search-trigger { left: 64px; }
+  }
   .panel { display: none; }
   .panel.active { display: block; }
 
@@ -1533,6 +1650,7 @@
 </div>
 
 <header style="position:relative;">
+  <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburger-btn" style="display:none;" title="Menu">☰</button>
   <button class="search-trigger" onclick="openSearch()" id="search-trigger-btn" style="display:none;" title="Tìm kiếm (phím tắt: /)">
     🔍 <span class="search-label">Tìm kiếm</span> <span class="kbd">/</span>
   </button>
@@ -1550,47 +1668,84 @@
       <button class="user-menu-item" onclick="showShareModal()">🎨 Khoe thành tích</button>
       <button class="user-menu-item" onclick="showTeamModal()">👥 Chọn team</button>
       <label class="privacy-toggle user-menu-item" onclick="event.stopPropagation()">
+        <span>🌙 Dark mode</span>
+        <select id="theme-select" onchange="setTheme(this.value)" style="border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:12px;">
+          <option value="auto">Tự động</option>
+          <option value="light">Sáng</option>
+          <option value="dark">Tối</option>
+        </select>
+      </label>
+      <label class="privacy-toggle user-menu-item" onclick="event.stopPropagation()">
         <span>🏆 Hiện trong bảng xếp hạng</span>
         <input type="checkbox" id="public-profile-checkbox" onchange="togglePublicProfile()" />
       </label>
       <button class="user-menu-item" onclick="showChangePwModal()">🔒 Đổi mật khẩu</button>
+      <button class="user-menu-item" id="install-app-btn" onclick="installPwaApp()" style="display:none;">📲 Cài đặt app vào máy</button>
       <button class="user-menu-item" onclick="importLocalProgress()">📥 Import tiến độ từ máy cũ</button>
       <button class="user-menu-item danger" onclick="logout()">🚪 Đăng xuất</button>
     </div>
   </div>
 </header>
 
-<nav class="tabs">
-  <button class="tab-btn active" data-tab="quiz">📝 Trắc nghiệm</button>
-  <button class="tab-btn" data-tab="srs">🔁 Ôn tập SRS <span id="srs-badge" style="background:var(--danger); color:white; font-size:10px; padding:1px 6px; border-radius:8px; margin-left:2px; display:none;"></span></button>
-  <button class="tab-btn" data-tab="mock">🎯 Thi thử</button>
-  <button class="tab-btn" data-tab="cases">💼 Tình huống</button>
-  <button class="tab-btn" data-tab="advanced">🎯 Nâng cao</button>
-  <button class="tab-btn" data-tab="gotchas">⚠️ Gotchas</button>
-  <button class="tab-btn" data-tab="workshop">📋 Workshop</button>
-  <button class="tab-btn" data-tab="retail">🏪 Retail</button>
-  <button class="tab-btn" data-tab="glossary">📖 Thuật ngữ</button>
-  <button class="tab-btn" data-tab="bookmarks">📌 Bookmarks</button>
-  <button class="tab-btn" data-tab="leaderboard">🏆 Top</button>
-  <button class="tab-btn" data-tab="stats">📊 Tiến độ</button>
-  <button class="tab-btn admin-only" data-tab="admin" id="tab-admin" style="display:none;">👥 Quản trị</button>
-</nav>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
-<main>
-  <div id="quiz" class="panel active"></div>
-  <div id="srs" class="panel"></div>
-  <div id="mock" class="panel"></div>
-  <div id="cases" class="panel"></div>
-  <div id="advanced" class="panel"></div>
-  <div id="gotchas" class="panel"></div>
-  <div id="workshop" class="panel"></div>
-  <div id="retail" class="panel"></div>
-  <div id="glossary" class="panel"></div>
-  <div id="bookmarks" class="panel"></div>
-  <div id="leaderboard" class="panel"></div>
-  <div id="stats" class="panel"></div>
-  <div id="admin" class="panel"></div>
-</main>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-group">
+      <h4>📚 Học tập</h4>
+      <button class="sidebar-item tab-btn active" data-tab="quiz"><span class="icon">📝</span><span>Trắc nghiệm</span></button>
+      <button class="sidebar-item tab-btn" data-tab="srs"><span class="icon">🔁</span><span>Ôn tập SRS</span><span id="srs-badge" class="badge" style="display:none;"></span></button>
+      <button class="sidebar-item tab-btn" data-tab="mock"><span class="icon">🎯</span><span>Thi thử</span></button>
+    </div>
+
+    <div class="sidebar-group">
+      <h4>📖 Tài liệu</h4>
+      <button class="sidebar-item tab-btn" data-tab="cases"><span class="icon">💼</span><span>Tình huống</span></button>
+      <button class="sidebar-item tab-btn" data-tab="advanced"><span class="icon">🎯</span><span>Nâng cao</span></button>
+      <button class="sidebar-item tab-btn" data-tab="gotchas"><span class="icon">⚠️</span><span>Gotchas</span></button>
+      <button class="sidebar-item tab-btn" data-tab="workshop"><span class="icon">📋</span><span>Workshop</span></button>
+      <button class="sidebar-item tab-btn" data-tab="retail"><span class="icon">🏪</span><span>Retail</span></button>
+      <button class="sidebar-item tab-btn" data-tab="glossary"><span class="icon">📖</span><span>Thuật ngữ</span></button>
+    </div>
+
+    <div class="sidebar-group">
+      <h4>👤 Cá nhân</h4>
+      <button class="sidebar-item tab-btn" data-tab="bookmarks"><span class="icon">📌</span><span>Bookmarks</span></button>
+      <button class="sidebar-item tab-btn" data-tab="stats"><span class="icon">📊</span><span>Tiến độ</span></button>
+    </div>
+
+    <div class="sidebar-group">
+      <h4>🌐 Cộng đồng</h4>
+      <button class="sidebar-item tab-btn" data-tab="leaderboard"><span class="icon">🏆</span><span>Top học viên</span></button>
+    </div>
+
+    <div class="sidebar-group admin-only" id="sidebar-admin-group" style="display:none;">
+      <h4>⚙️ Quản trị</h4>
+      <button class="sidebar-item tab-btn" data-tab="admin" id="tab-admin"><span class="icon">👥</span><span>Quản trị</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      HỌC VIỆN ERP CONSULTING<br>
+      <span style="opacity:0.7;">© Naviworld VN</span>
+    </div>
+  </aside>
+
+  <main>
+    <div id="quiz" class="panel active"></div>
+    <div id="srs" class="panel"></div>
+    <div id="mock" class="panel"></div>
+    <div id="cases" class="panel"></div>
+    <div id="advanced" class="panel"></div>
+    <div id="gotchas" class="panel"></div>
+    <div id="workshop" class="panel"></div>
+    <div id="retail" class="panel"></div>
+    <div id="glossary" class="panel"></div>
+    <div id="bookmarks" class="panel"></div>
+    <div id="leaderboard" class="panel"></div>
+    <div id="stats" class="panel"></div>
+    <div id="admin" class="panel"></div>
+  </main>
+</div>
 
 <!-- Share progress modal -->
 <div id="share-modal" class="modal-overlay">
@@ -2322,6 +2477,50 @@ function saveState() {
     }
   }, 1000);
 }
+
+// ============ THEME / DARK MODE ============
+const THEME_KEY = 'erp-theme';
+
+function applyTheme(theme) {
+  let effective = theme;
+  if (theme === 'auto') {
+    effective = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  if (effective === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+  } else {
+    document.body.removeAttribute('data-theme');
+  }
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = effective === 'dark' ? '#0F172A' : '#1F3864';
+}
+
+function setTheme(theme) {
+  state.theme = theme;
+  try { localStorage.setItem(THEME_KEY, theme); } catch(e) {}
+  saveState();
+  applyTheme(theme);
+}
+
+(function initThemeEarly() {
+  try {
+    const t = localStorage.getItem(THEME_KEY) || 'auto';
+    applyTheme(t);
+  } catch(e) {}
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) {
+      mq.addEventListener('change', () => {
+        if (!state.theme || state.theme === 'auto') applyTheme('auto');
+      });
+    }
+  }
+})();
 
 function getFilteredQuestions() {
   let qs = QUESTIONS;
@@ -3820,6 +4019,20 @@ function renderStats() {
   `;
 }
 
+// ============ SIDEBAR TOGGLE (mobile) ============
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebar-backdrop');
+  if (sb.classList.contains('open')) { closeSidebar(); }
+  else { sb.classList.add('open'); bd.classList.add('show'); }
+}
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebar-backdrop');
+  sb.classList.remove('open');
+  bd.classList.remove('show');
+}
+
 // ============ TAB SWITCHING ============
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -3828,6 +4041,10 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.add("active");
     const tab = btn.dataset.tab;
     document.getElementById(tab).classList.add("active");
+    // Close sidebar on mobile after selecting a tab
+    if (window.innerWidth <= 900) closeSidebar();
+    // Scroll main to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (tab === "stats") renderStats();
     if (tab === "admin") renderAdmin();
     if (tab === "leaderboard") renderLeaderboard();
@@ -3843,6 +4060,11 @@ const ADMIN_EMAIL = "notabin@gmail.com";
 
 async function initApp() {
   await loadState();
+  // Apply theme based on user state (after loading state from Firestore)
+  if (state.theme) {
+    try { localStorage.setItem(THEME_KEY, state.theme); } catch(e) {}
+    applyTheme(state.theme);
+  }
   // Merge Retail questions into QUESTIONS array (from data/retail.js)
   mergeRetailQuestions();
   // Load question overrides from Firestore (silently fail if no permission)
@@ -3896,6 +4118,8 @@ async function handleAuthStateChange(user) {
   userMenu.style.display = 'block';
   const searchBtn = document.getElementById('search-trigger-btn');
   if (searchBtn) searchBtn.style.display = 'flex';
+  const hamBtn = document.getElementById('hamburger-btn');
+  if (hamBtn && window.innerWidth <= 900) hamBtn.style.display = 'flex';
   const name = user.displayName || user.email.split('@')[0];
   document.getElementById('user-name').textContent = name;
   document.getElementById('user-email').textContent = user.email;
@@ -3906,14 +4130,14 @@ async function handleAuthStateChange(user) {
     avatar.innerHTML = name.charAt(0).toUpperCase();
   }
   const roleEl = document.getElementById('user-role');
-  const adminTab = document.getElementById('tab-admin');
+  const adminGroup = document.getElementById('sidebar-admin-group');
   if (user.email === ADMIN_EMAIL) {
     roleEl.textContent = 'Admin';
     roleEl.style.display = 'inline-block';
-    if (adminTab) adminTab.style.display = 'inline-block';
+    if (adminGroup) adminGroup.style.display = 'block';
   } else {
     roleEl.style.display = 'none';
-    if (adminTab) adminTab.style.display = 'none';
+    if (adminGroup) adminGroup.style.display = 'none';
   }
 
   await initApp();
@@ -4189,6 +4413,9 @@ function toggleUserMenu(event) {
     if (team) parts.push('👥 ' + team);
     streakEl.innerHTML = parts.join(' • ');
   }
+  // Sync theme selector
+  const themeSel = document.getElementById('theme-select');
+  if (themeSel) themeSel.value = state.theme || 'auto';
   document.getElementById('user-menu-dropdown').classList.toggle('show');
 }
 
@@ -7327,6 +7554,52 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     if (_searchResults[_searchSelectedIdx]) openSearchResult(_searchSelectedIdx);
   }
+});
+
+// ============ PWA: Service Worker + Install Prompt ============
+let _deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  // Register on load (don't block initial render)
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => {
+        console.log('SW registered, scope:', reg.scope);
+        // Check for updates periodically (every 60 min while open)
+        setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+      })
+      .catch(err => console.warn('SW registration failed:', err));
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  const btn = document.getElementById('install-app-btn');
+  if (btn) btn.style.display = 'block';
+});
+
+async function installPwaApp() {
+  document.getElementById('user-menu-dropdown').classList.remove('show');
+  if (!_deferredInstallPrompt) {
+    // iOS Safari fallback or already installed
+    alert('💡 Để cài đặt app:\n\n• Chrome/Edge: bấm biểu tượng "Cài đặt" ⬇️ trên thanh địa chỉ\n• Safari (iPhone/iPad): bấm "Chia sẻ" → "Thêm vào Màn hình chính"\n• Trên Mac: Chrome → bấm dấu "+" trong địa chỉ');
+    return;
+  }
+  _deferredInstallPrompt.prompt();
+  const choice = await _deferredInstallPrompt.userChoice;
+  _deferredInstallPrompt = null;
+  const btn = document.getElementById('install-app-btn');
+  if (btn) btn.style.display = 'none';
+  if (choice.outcome === 'accepted') {
+    setTimeout(() => alert('✅ Đã cài đặt thành công! App sẽ xuất hiện trên màn hình chính.'), 500);
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  _deferredInstallPrompt = null;
+  const btn = document.getElementById('install-app-btn');
+  if (btn) btn.style.display = 'none';
 });
 
 // Setup auth listener after Firebase is ready
