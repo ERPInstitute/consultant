@@ -349,7 +349,7 @@
   .bookmark-btn.active { color: var(--warning); }
 
   @media (max-width: 640px) {
-    nav.tabs button { padding: 12px 14px; font-size: 13px; }
+    nav.menu-bar .menu-trigger { padding: 10px 12px; font-size: 13px; }
     .question-card, .case-card { padding: 16px; }
     .question-text { font-size: 15px; }
     .option-text { font-size: 13px; }
@@ -491,9 +491,11 @@
   .user-avatar:hover { border-color: white; }
   .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
   .user-menu-dropdown {
-    position: absolute; top: 50px; right: 0; background: white;
+    position: absolute; top: 50px; right: 0; background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    min-width: 240px; display: none; overflow: hidden;
+    min-width: 260px; display: none;
+    max-height: calc(100vh - 80px); overflow-y: auto;
   }
   .user-menu-dropdown.show { display: block; }
   .user-menu-info {
@@ -1500,7 +1502,7 @@
 
   /* Print styles */
   @media print {
-    header, nav.tabs, .actions, .quiz-controls { display: none !important; }
+    header, nav.menu-bar, .actions, .quiz-controls { display: none !important; }
     body { background: white; }
     main { padding: 0; max-width: 100%; }
     .result-screen { box-shadow: none; border: 1px solid #ccc; page-break-after: avoid; }
@@ -4080,6 +4082,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "srs") renderSRS();
     if (tab === "mock") renderMockHome();
     if (tab === "glossary") renderGlossary();
+    if (tab === "retail") renderRetail();
   });
 });
 
@@ -4113,7 +4116,7 @@ async function initApp() {
 async function handleAuthStateChange(user) {
   const overlay = document.getElementById('auth-overlay');
   const header = document.querySelector('header');
-  const nav = document.querySelector('nav.tabs');
+  const nav = document.querySelector('nav.menu-bar');
   const main = document.querySelector('main');
   const userMenu = document.getElementById('user-menu');
 
