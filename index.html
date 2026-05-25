@@ -394,10 +394,89 @@
 
   .app-hidden { display: none !important; }
 
+  /* Admin Dashboard */
+  .admin-header h2 { color: var(--primary); margin: 0 0 4px 0; }
+  .admin-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .admin-controls {
+    display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .admin-controls input[type="search"] {
+    flex: 1; min-width: 200px;
+    padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; outline: none; font-family: inherit;
+  }
+  .admin-controls input[type="search"]:focus { border-color: var(--primary); }
+  .admin-controls button {
+    padding: 9px 14px; border: 1px solid var(--border); background: white;
+    border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  .admin-controls button:hover { background: #F3F4F6; }
+  .admin-table-wrap {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    overflow: auto;
+  }
+  .admin-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  .admin-table th {
+    background: #F9FAFB; color: var(--text-muted); padding: 10px 12px;
+    text-align: left; font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .admin-table td {
+    padding: 10px 12px; border-bottom: 1px solid #F3F4F6; vertical-align: middle;
+  }
+  .admin-table tr:hover td { background: #FAFBFC; }
+  .admin-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--primary); color: white; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .role-badge {
+    display: inline-block; padding: 1px 6px; border-radius: 8px;
+    background: var(--primary); color: white; font-size: 10px;
+    font-weight: 700; letter-spacing: 0.5px; margin-top: 2px;
+  }
+  .score-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 700; color: white;
+  }
+  .score-badge.good { background: var(--green); }
+  .score-badge.mid { background: var(--warning); }
+  .score-badge.low { background: var(--danger); }
+  .score-badge.none { background: #9CA3AF; }
+  .action-btn {
+    padding: 5px 10px; border: 1px solid var(--border); background: white;
+    border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
+    color: var(--text); margin-right: 4px;
+  }
+  .action-btn:hover { background: #F3F4F6; }
+  .action-btn.danger { color: var(--danger); border-color: #FECACA; }
+  .action-btn.danger:hover { background: var(--red-bg); }
+  .section-row {
+    padding: 8px 0; border-bottom: 1px solid #F3F4F6;
+  }
+  .section-row > div:first-child { font-weight: 500; margin-bottom: 4px; }
+  .modal-card.wide { max-width: 600px; }
+  .modal-card.wide .modal-body { max-height: 70vh; overflow-y: auto; }
+
   @media (max-width: 480px) {
     .auth-card { padding: 24px 20px; }
     .user-menu { top: 12px; right: 12px; }
     .user-avatar { width: 32px; height: 32px; font-size: 13px; }
+    .admin-table { font-size: 12px; }
+    .admin-table th, .admin-table td { padding: 8px 6px; }
   }
 
   /* Print styles */
@@ -530,6 +609,7 @@
   <button class="tab-btn" data-tab="gotchas">⚠️ Gotchas</button>
   <button class="tab-btn" data-tab="workshop">📋 Workshop</button>
   <button class="tab-btn" data-tab="stats">📊 Tiến độ</button>
+  <button class="tab-btn admin-only" data-tab="admin" id="tab-admin" style="display:none;">👥 Quản trị</button>
 </nav>
 
 <main>
@@ -539,7 +619,28 @@
   <div id="gotchas" class="panel"></div>
   <div id="workshop" class="panel"></div>
   <div id="stats" class="panel"></div>
+  <div id="admin" class="panel"></div>
 </main>
+
+<!-- User detail modal (admin) -->
+<div id="user-detail-modal" class="modal-overlay">
+  <div class="modal-card wide">
+    <button class="modal-close" onclick="hideUserDetail()">×</button>
+    <h3>👤 Chi tiết user</h3>
+    <div class="modal-body">
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+        <div class="admin-avatar" id="detail-avatar" style="width:48px; height:48px; font-size:18px;">U</div>
+        <div>
+          <div id="detail-name" style="font-weight:600; font-size:16px;">—</div>
+          <div id="detail-email" style="color:var(--text-muted); font-size:13px;">—</div>
+        </div>
+      </div>
+      <div id="detail-stats" style="font-size:13px; line-height:1.8; color:var(--text); margin-bottom:14px;"></div>
+      <h4 style="font-size:13px; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin:10px 0;">Tiến độ theo nhóm chủ đề</h4>
+      <div id="detail-sections"></div>
+    </div>
+  </div>
+</div>
 
 <!-- Firebase SDK + Auth/Firestore init -->
 <script type="module">
@@ -560,7 +661,8 @@
     reauthenticateWithCredential
   } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import {
-    getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp
+    getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp,
+    collection, getDocs, query, orderBy
   } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -592,7 +694,8 @@
     updateProfile,
     EmailAuthProvider,
     reauthenticateWithCredential,
-    doc, getDoc, setDoc, updateDoc, serverTimestamp
+    doc, getDoc, setDoc, updateDoc, serverTimestamp,
+    collection, getDocs, query, orderBy
   };
 
   // Notify main script Firebase is ready
@@ -3516,6 +3619,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     const tab = btn.dataset.tab;
     document.getElementById(tab).classList.add("active");
     if (tab === "stats") renderStats();
+    if (tab === "admin") renderAdmin();
   });
 });
 
@@ -3578,11 +3682,14 @@ async function handleAuthStateChange(user) {
     avatar.innerHTML = name.charAt(0).toUpperCase();
   }
   const roleEl = document.getElementById('user-role');
+  const adminTab = document.getElementById('tab-admin');
   if (user.email === ADMIN_EMAIL) {
     roleEl.textContent = 'Admin';
     roleEl.style.display = 'inline-block';
+    if (adminTab) adminTab.style.display = 'inline-block';
   } else {
     roleEl.style.display = 'none';
+    if (adminTab) adminTab.style.display = 'none';
   }
 
   await initApp();
@@ -3808,6 +3915,302 @@ document.addEventListener('click', (e) => {
     if (dd) dd.classList.remove('show');
   }
 });
+
+// ============ ADMIN DASHBOARD ============
+async function renderAdmin() {
+  const panel = document.getElementById('admin');
+  panel.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-muted);">⏳ Đang tải danh sách user...</div>';
+
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, 'users'));
+    const users = [];
+    snap.forEach(d => users.push({ uid: d.id, ...d.data() }));
+
+    // Sort by last activity desc
+    users.sort((a, b) => {
+      const aT = (a.lastActivity && a.lastActivity.toMillis && a.lastActivity.toMillis()) || (a.lastLogin && a.lastLogin.toMillis && a.lastLogin.toMillis()) || 0;
+      const bT = (b.lastActivity && b.lastActivity.toMillis && b.lastActivity.toMillis()) || (b.lastLogin && b.lastLogin.toMillis && b.lastLogin.toMillis()) || 0;
+      return bT - aT;
+    });
+
+    window._adminUsers = users;
+
+    const totalUsers = users.length;
+    const activeToday = users.filter(u => {
+      const last = (u.lastActivity && u.lastActivity.toMillis && u.lastActivity.toMillis()) || (u.lastLogin && u.lastLogin.toMillis && u.lastLogin.toMillis()) || 0;
+      return last > 0 && (Date.now() - last < 86400000);
+    }).length;
+    const activeWeek = users.filter(u => {
+      const last = (u.lastActivity && u.lastActivity.toMillis && u.lastActivity.toMillis()) || (u.lastLogin && u.lastLogin.toMillis && u.lastLogin.toMillis()) || 0;
+      return last > 0 && (Date.now() - last < 7 * 86400000);
+    }).length;
+    let totalAnswered = 0, totalCorrect = 0;
+    users.forEach(u => {
+      const ans = (u.progress && u.progress.answered) || {};
+      totalAnswered += Object.keys(ans).length;
+      totalCorrect += Object.values(ans).filter(a => a.correct).length;
+    });
+    const avgScore = totalAnswered > 0 ? Math.round(totalCorrect / totalAnswered * 100) : 0;
+
+    panel.innerHTML = `
+      <div class="admin-header">
+        <h2>👥 Admin Dashboard</h2>
+        <p style="color:var(--text-muted); margin:0 0 16px 0; font-size:14px;">Quản lý người dùng và theo dõi tiến độ học</p>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-num">${totalUsers}</div>
+          <div class="stat-label">Tổng user</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">${activeToday}</div>
+          <div class="stat-label">Hoạt động 24h</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">${activeWeek}</div>
+          <div class="stat-label">Hoạt động 7 ngày</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">${avgScore}%</div>
+          <div class="stat-label">Avg đúng (tất cả)</div>
+        </div>
+      </div>
+
+      <div class="admin-controls">
+        <input type="search" id="admin-search" placeholder="🔍 Tìm theo email hoặc tên..." />
+        <button onclick="exportUsersCSV()">📊 Export CSV</button>
+        <button onclick="renderAdmin()">🔄 Reload</button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Đăng ký</th>
+              <th>Last seen</th>
+              <th style="text-align:center;">Đã làm</th>
+              <th style="text-align:center;">Điểm</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body"></tbody>
+        </table>
+      </div>
+    `;
+
+    renderAdminTableBody(users);
+
+    document.getElementById('admin-search').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = users.filter(u =>
+        (u.email || '').toLowerCase().includes(q) ||
+        (u.displayName || '').toLowerCase().includes(q)
+      );
+      renderAdminTableBody(filtered);
+    });
+  } catch (e) {
+    panel.innerHTML = `<div class="auth-error show" style="margin:20px;">Lỗi tải danh sách: ${e.message}<br><br>Nếu lỗi "Missing or insufficient permissions", kiểm tra Firestore Security Rules có cho admin list users không.</div>`;
+  }
+}
+
+function renderAdminTableBody(users) {
+  const tbody = document.getElementById('admin-table-body');
+  if (!tbody) return;
+  if (users.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted);">Không có user nào</td></tr>';
+    return;
+  }
+
+  const totalQs = QUESTIONS.length;
+  tbody.innerHTML = users.map(u => {
+    const ans = (u.progress && u.progress.answered) || {};
+    const answered = Object.keys(ans).length;
+    const correct = Object.values(ans).filter(a => a.correct).length;
+    const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+    const lastSeen = (u.lastActivity && u.lastActivity.toMillis && u.lastActivity.toMillis()) || (u.lastLogin && u.lastLogin.toMillis && u.lastLogin.toMillis()) || 0;
+    const created = (u.createdAt && u.createdAt.toMillis && u.createdAt.toMillis()) || 0;
+    const isAdmin = u.email === ADMIN_EMAIL;
+    const scoreClass = answered === 0 ? 'none' : (pct >= 70 ? 'good' : pct >= 50 ? 'mid' : 'low');
+
+    return `
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="admin-avatar">${(u.displayName || u.email || '?').charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-weight:600;">${escapeHtml(u.displayName || '(no name)')}</div>
+              ${isAdmin ? '<span class="role-badge">Admin</span>' : ''}
+            </div>
+          </div>
+        </td>
+        <td style="font-size:12px; word-break:break-all; max-width:180px;">${escapeHtml(u.email || '-')}</td>
+        <td style="font-size:12px;">${formatTimeRel(created)}</td>
+        <td style="font-size:12px;">${formatTimeRel(lastSeen)}</td>
+        <td style="text-align:center; font-weight:600;">${answered}/${totalQs}</td>
+        <td style="text-align:center;">
+          <span class="score-badge ${scoreClass}">${answered === 0 ? '—' : pct + '%'}</span>
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="action-btn" onclick="showUserDetail('${u.uid}')">📊 Chi tiết</button>
+          ${!isAdmin ? `<button class="action-btn danger" onclick="resetUserProgress('${u.uid}', '${escapeHtml(u.email || '')}')">🗑️ Reset</button>` : ''}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function formatTimeRel(ts) {
+  if (!ts) return '—';
+  const diff = Date.now() - ts;
+  if (diff < 0) return '—';
+  if (diff < 60000) return 'Vừa xong';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' phút trước';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' giờ trước';
+  if (diff < 604800000) return Math.floor(diff/86400000) + ' ngày trước';
+  const d = new Date(ts);
+  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
+function showUserDetail(uid) {
+  const user = window._adminUsers.find(u => u.uid === uid);
+  if (!user) return;
+
+  const ans = (user.progress && user.progress.answered) || {};
+  const bookmarks = (user.progress && user.progress.bookmarks) || {};
+  const answered = Object.keys(ans).length;
+  const correct = Object.values(ans).filter(a => a.correct).length;
+  const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+
+  const sections = [...new Set(QUESTIONS.map(q => q.section))];
+  const sectionStats = sections.map(s => {
+    const sQs = QUESTIONS.filter(q => q.section === s);
+    const sAns = sQs.filter(q => ans[q.id]).length;
+    const sCorrect = sQs.filter(q => ans[q.id] && ans[q.id].correct).length;
+    return { section: s, answered: sAns, correct: sCorrect, total: sQs.length };
+  });
+
+  document.getElementById('detail-name').textContent = user.displayName || '(no name)';
+  document.getElementById('detail-email').textContent = user.email || '-';
+  document.getElementById('detail-avatar').textContent = (user.displayName || user.email || '?').charAt(0).toUpperCase();
+
+  const created = (user.createdAt && user.createdAt.toMillis && user.createdAt.toMillis()) || 0;
+  const lastSeen = (user.lastActivity && user.lastActivity.toMillis && user.lastActivity.toMillis()) || (user.lastLogin && user.lastLogin.toMillis && user.lastLogin.toMillis()) || 0;
+
+  document.getElementById('detail-stats').innerHTML = `
+    📅 Đăng ký: <strong>${formatTimeRel(created)}</strong><br>
+    🕐 Hoạt động gần nhất: <strong>${formatTimeRel(lastSeen)}</strong><br>
+    ✓ Đã làm: <strong>${answered} / ${QUESTIONS.length}</strong> (${Math.round(answered / QUESTIONS.length * 100)}%)<br>
+    🎯 Độ chính xác: <strong style="color:${pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--warning)' : 'var(--danger)'}">${answered === 0 ? '—' : pct + '%'}</strong> (${correct} đúng / ${answered - correct} sai)<br>
+    ⭐ Bookmark: <strong>${Object.keys(bookmarks).length}</strong> câu
+  `;
+
+  document.getElementById('detail-sections').innerHTML = sectionStats.map(s => {
+    const sPct = s.answered > 0 ? Math.round(s.correct / s.answered * 100) : 0;
+    const sBar = s.total > 0 ? (s.correct / s.total) * 100 : 0;
+    return `
+      <div class="section-row">
+        <div>${escapeHtml(s.section)}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+          Đã làm: ${s.answered}/${s.total} • Đúng: ${s.correct}/${s.total} (${sPct}%)
+        </div>
+        <div class="progress-bar" style="height:6px;">
+          <div class="progress-fill" style="width:${sBar}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('user-detail-modal').classList.add('show');
+}
+
+function hideUserDetail() {
+  document.getElementById('user-detail-modal').classList.remove('show');
+}
+
+async function resetUserProgress(uid, email) {
+  if (!confirm('XÓA toàn bộ tiến độ học của\n' + email + '?\n\nHành động này KHÔNG thể undo.')) return;
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, 'users', uid), {
+      progress: {
+        answered: {},
+        bookmarks: {},
+        currentIdx: 0,
+        filter: 'all',
+        firstStart: null,
+        lastActivity: null
+      }
+    });
+    alert('✓ Đã reset tiến độ của ' + email);
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+function exportUsersCSV() {
+  const users = window._adminUsers || [];
+  if (users.length === 0) { alert('Chưa có user để export'); return; }
+
+  const sections = [...new Set(QUESTIONS.map(q => q.section))];
+  const headers = ['Email', 'Name', 'Created', 'Last Login', 'Last Activity', 'Total Answered', 'Total Correct', 'Score %', 'Bookmarks'];
+  sections.forEach(s => { headers.push(s + ' Done'); headers.push(s + ' Correct'); });
+
+  const escapeCSV = (v) => {
+    if (v === null || v === undefined) return '';
+    const s = String(v);
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+
+  let csv = headers.map(escapeCSV).join(',') + '\n';
+  users.forEach(u => {
+    const ans = (u.progress && u.progress.answered) || {};
+    const bookmarks = (u.progress && u.progress.bookmarks) || {};
+    const answered = Object.keys(ans).length;
+    const correct = Object.values(ans).filter(a => a.correct).length;
+    const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+    const toISO = (t) => {
+      if (!t) return '';
+      const d = (t.toDate && t.toDate()) || null;
+      return d ? d.toISOString() : '';
+    };
+
+    const row = [
+      u.email || '',
+      u.displayName || '',
+      toISO(u.createdAt),
+      toISO(u.lastLogin),
+      toISO(u.lastActivity),
+      answered,
+      correct,
+      pct,
+      Object.keys(bookmarks).length
+    ];
+    sections.forEach(s => {
+      const sQs = QUESTIONS.filter(q => q.section === s);
+      const sAns = sQs.filter(q => ans[q.id]).length;
+      const sCorrect = sQs.filter(q => ans[q.id] && ans[q.id].correct).length;
+      row.push(sAns); row.push(sCorrect);
+    });
+    csv += row.map(escapeCSV).join(',') + '\n';
+  });
+
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'users-erp-portal-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 // Setup auth listener after Firebase is ready
 function setupFirebaseAuth() {
