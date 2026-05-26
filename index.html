@@ -1030,6 +1030,50 @@
     .admin-table th, .admin-table td { padding: 8px 6px; }
   }
 
+  /* Playbook / Cẩm nang */
+  .playbook-intro {
+    background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+    color: white; border-radius: 12px; padding: 22px; margin-bottom: 18px;
+  }
+  .playbook-intro h2 { margin: 0 0 6px 0; font-size: 22px; }
+  .playbook-intro p { margin: 0; opacity: 0.92; font-size: 14px; }
+  .playbook-phase {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 12px; overflow: hidden;
+  }
+  .playbook-phase-head {
+    padding: 14px 18px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    color: white; font-weight: 700; font-size: 15px;
+  }
+  .playbook-phase-head .ph-icon { font-size: 24px; }
+  .playbook-phase-head .ph-count {
+    margin-left: auto; background: rgba(255,255,255,0.25); padding: 3px 10px;
+    border-radius: 10px; font-size: 12px; font-weight: 600;
+  }
+  .playbook-phase-head .ph-toggle { transition: transform 0.2s; }
+  .playbook-phase.open .playbook-phase-head .ph-toggle { transform: rotate(180deg); }
+  .playbook-phase-body { display: none; padding: 14px 16px; }
+  .playbook-phase.open .playbook-phase-body { display: block; }
+  .playbook-rule {
+    background: #F9FAFB; border-left: 4px solid var(--border);
+    border-radius: 6px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .playbook-rule:hover { border-left-color: var(--primary); }
+  .playbook-rule .pr-title {
+    font-weight: 700; color: var(--text); margin-bottom: 8px; font-size: 14px;
+  }
+  .playbook-rule .pr-section { margin-top: 8px; font-size: 13px; line-height: 1.6; }
+  .playbook-rule .pr-label {
+    display: inline-block; padding: 1px 8px; border-radius: 8px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+  .playbook-rule .pr-label.why { background: var(--yellow-bg); color: var(--warning); }
+  .playbook-rule .pr-label.action { background: var(--green-bg); color: var(--green); }
+  body[data-theme="dark"] .playbook-rule {
+    background: rgba(255,255,255,0.04); border-left-color: var(--border);
+  }
+
   /* Retail Practice tab */
   .retail-intro {
     background: linear-gradient(135deg, #DB2777 0%, #BE185D 100%);
@@ -1950,6 +1994,7 @@
       <button class="menu-item tab-btn" data-tab="workshop"><span class="icon">📋</span><span>Workshop</span></button>
       <button class="menu-item tab-btn" data-tab="retail"><span class="icon">🏪</span><span>Retail</span></button>
       <button class="menu-item tab-btn" data-tab="manufacturing"><span class="icon">🏭</span><span>Manufacturing</span></button>
+      <button class="menu-item tab-btn" data-tab="playbook"><span class="icon">💎</span><span>Cẩm nang triển khai</span></button>
       <button class="menu-item tab-btn" data-tab="glossary"><span class="icon">📖</span><span>Thuật ngữ</span></button>
     </div>
   </div>
@@ -1987,6 +2032,7 @@
   <div id="workshop" class="panel"></div>
   <div id="retail" class="panel"></div>
   <div id="manufacturing" class="panel"></div>
+  <div id="playbook" class="panel"></div>
   <div id="glossary" class="panel"></div>
   <div id="bookmarks" class="panel"></div>
   <div id="leaderboard" class="panel"></div>
@@ -2105,6 +2151,7 @@
 <script src="data/questions.js"></script>
 <script src="data/retail.js"></script>
 <script src="data/manufacturing.js"></script>
+<script src="data/playbook.js"></script>
 <script>
 // ============ DATA ============
 // QUESTIONS data is loaded from data/questions.js (window.QUESTIONS), with inline fallback.
@@ -4328,6 +4375,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "glossary") renderGlossary();
     if (tab === "retail") renderRetail();
     if (tab === "manufacturing") renderManufacturing();
+    if (tab === "playbook") renderPlaybook();
   });
 });
 
@@ -4344,8 +4392,9 @@ async function initApp() {
   // Merge Retail + Manufacturing questions into QUESTIONS array
   mergeRetailQuestions();
   mergeManufacturingQuestions();
-  // Load question overrides from Firestore (silently fail if no permission)
+  // Load question + playbook overrides from Firestore (silently fail if no permission)
   try { await loadQuestionOverrides(); } catch (e) {}
+  try { await loadPlaybookOverrides(); } catch (e) {}
   renderQuiz();
   renderCases("cases", CASES);
   renderCases("advanced", ADVANCED_CASES);
@@ -4797,6 +4846,7 @@ async function renderAdmin() {
         <button class="admin-subtab ${activeSubtab === 'teams' ? 'active' : ''}" onclick="setAdminSubtab('teams')">👨‍👩‍👧 Teams</button>
         <button class="admin-subtab ${activeSubtab === 'heatmap' ? 'active' : ''}" onclick="setAdminSubtab('heatmap')">📊 Phân tích câu hỏi</button>
         <button class="admin-subtab ${activeSubtab === 'editor' ? 'active' : ''}" onclick="setAdminSubtab('editor')">📝 Editor câu hỏi</button>
+        <button class="admin-subtab ${activeSubtab === 'playbook' ? 'active' : ''}" onclick="setAdminSubtab('playbook')">💎 Editor Cẩm nang</button>
       </div>
 
       ${activeSubtab === 'heatmap' ? renderDifficultyHeatmap(users) :
@@ -4845,6 +4895,8 @@ async function renderAdmin() {
       attachHeatmapHandlers(users);
     } else if (activeSubtab === 'editor') {
       renderQuestionEditor();
+    } else if (activeSubtab === 'playbook') {
+      renderPlaybookEditor();
     }
   } catch (e) {
     panel.innerHTML = `<div class="auth-error show" style="margin:20px;">Lỗi tải danh sách: ${e.message}<br><br>Nếu lỗi "Missing or insufficient permissions", kiểm tra Firestore Security Rules có cho admin list users không.</div>`;
@@ -5779,6 +5831,345 @@ async function revertQuestionOverride(qid) {
   }
 }
 
+// ============ PLAYBOOK EDITOR (Admin) ============
+const PBED_COLLECTION = 'playbook_overrides';
+let _pbedOverrides = [];
+let _pbedBaseLoaded = false;
+
+async function loadPlaybookOverrides() {
+  if (!window.fb) return;
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, PBED_COLLECTION));
+    _pbedOverrides = [];
+    snap.forEach(d => _pbedOverrides.push({ ...d.data(), docId: d.id }));
+    applyPlaybookOverrides();
+  } catch (e) {
+    console.warn('Cannot load playbook_overrides:', e.message);
+  }
+}
+
+function applyPlaybookOverrides() {
+  if (!window.PLAYBOOK_DATA) return;
+  if (!_pbedBaseLoaded) {
+    window._PLAYBOOK_BASE = JSON.parse(JSON.stringify(window.PLAYBOOK_DATA));
+    _pbedBaseLoaded = true;
+  }
+  let merged = JSON.parse(JSON.stringify(window._PLAYBOOK_BASE || []));
+  const sortedOv = _pbedOverrides.slice().sort((a, b) => {
+    const ta = (a.updatedAt && a.updatedAt.toMillis && a.updatedAt.toMillis()) || 0;
+    const tb = (b.updatedAt && b.updatedAt.toMillis && b.updatedAt.toMillis()) || 0;
+    return ta - tb;
+  });
+  sortedOv.forEach(ov => {
+    if (ov.type === 'edit_rule' && ov.targetPhaseKey && ov.targetRuleKey) {
+      const p = merged.find(x => x.phase === ov.targetPhaseKey);
+      if (p) {
+        const idx = p.rules.findIndex(r => r.title === ov.targetRuleKey);
+        if (idx >= 0) p.rules[idx] = { ...p.rules[idx], ...ov.data, _edited: true };
+      }
+    } else if (ov.type === 'add_rule' && ov.targetPhaseKey) {
+      const p = merged.find(x => x.phase === ov.targetPhaseKey);
+      if (p && ov.data) p.rules.push({ ...ov.data, _added: true });
+    } else if (ov.type === 'delete_rule' && ov.targetPhaseKey && ov.targetRuleKey) {
+      const p = merged.find(x => x.phase === ov.targetPhaseKey);
+      if (p) p.rules = p.rules.filter(r => r.title !== ov.targetRuleKey);
+    } else if (ov.type === 'add_phase' && ov.data) {
+      merged.push({ ...ov.data, _added: true });
+    } else if (ov.type === 'edit_phase' && ov.targetPhaseKey) {
+      const idx = merged.findIndex(x => x.phase === ov.targetPhaseKey);
+      if (idx >= 0) merged[idx] = { ...merged[idx], ...ov.data, _edited: true };
+    } else if (ov.type === 'delete_phase' && ov.targetPhaseKey) {
+      merged = merged.filter(x => x.phase !== ov.targetPhaseKey);
+    }
+  });
+  window.PLAYBOOK_DATA = merged;
+  _searchIndex = null;
+}
+
+function escapeAttr(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+function decodeAttr(s) {
+  return String(s || '').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+}
+
+function renderPlaybookEditor() {
+  const root = document.getElementById('pbed-root');
+  if (!root) return;
+  if (!window._pbedLoadedOnce) {
+    window._pbedLoadedOnce = true;
+    loadPlaybookOverrides().then(() => renderPlaybookEditor());
+    return;
+  }
+  const data = window.PLAYBOOK_DATA || [];
+  const totalRules = data.reduce((s, p) => s + p.rules.length, 0);
+  const editsCount = _pbedOverrides.filter(o => o.type === 'edit_rule').length;
+  const addedRules = _pbedOverrides.filter(o => o.type === 'add_rule').length;
+  const deletedRules = _pbedOverrides.filter(o => o.type === 'delete_rule').length;
+  const addedPhases = _pbedOverrides.filter(o => o.type === 'add_phase').length;
+
+  root.innerHTML = `
+    <div style="background:var(--yellow-bg); border-left:4px solid var(--warning); padding:12px 14px; border-radius:6px; margin-bottom:14px; font-size:13px;">
+      ⚠️ <strong>Lưu ý:</strong> Thay đổi áp dụng cho TẤT CẢ user xem tab Cẩm nang. Sửa/xoá/thêm có thể revert.
+    </div>
+    <div class="heatmap-summary">
+      <div class="card"><div class="n">${data.length}</div><div class="l">Phase hiện tại</div></div>
+      <div class="card"><div class="n">${totalRules}</div><div class="l">Quy tắc</div></div>
+      <div class="card warning"><div class="n">${editsCount}</div><div class="l">Đã sửa</div></div>
+      <div class="card green"><div class="n">${addedRules + addedPhases}</div><div class="l">Đã thêm</div></div>
+      <div class="card danger"><div class="n">${deletedRules}</div><div class="l">Đã xoá</div></div>
+    </div>
+
+    <div class="qed-toolbar">
+      <button class="primary" onclick="openPbedRuleModal('', '')">+ Thêm quy tắc</button>
+      <button class="primary" onclick="openPbedPhaseModal('')" style="background:var(--accent); border-color:var(--accent);">+ Thêm phase mới</button>
+      <button onclick="renderPlaybookEditor()">🔄 Reload</button>
+    </div>
+
+    ${data.map((phase, pi) => `
+      <div class="playbook-phase" id="pbed-phase-${pi}">
+        <div class="playbook-phase-head" onclick="togglePbedPhase(${pi})" style="background:linear-gradient(135deg, ${phase.color || '#1F3864'} 0%, ${shadeColor(phase.color || '#1F3864', -20)} 100%);">
+          <span class="ph-icon">${phase.icon || '📌'}</span>
+          <span>${escapeHtml(phase.phase)} ${phase._added ? '<span style="background:rgba(255,255,255,0.3); font-size:10px; padding:1px 8px; border-radius:8px; margin-left:6px;">MỚI</span>' : ''} ${phase._edited ? '<span style="background:rgba(255,255,255,0.3); font-size:10px; padding:1px 8px; border-radius:8px; margin-left:6px;">ĐÃ SỬA</span>' : ''}</span>
+          <span class="ph-count">${phase.rules.length} quy tắc</span>
+          <span class="ph-toggle">▼</span>
+        </div>
+        <div class="playbook-phase-body">
+          <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <button class="action-btn" onclick="event.stopPropagation(); openPbedRuleModal('${escapeAttr(phase.phase)}', '')">+ Thêm quy tắc</button>
+            <button class="action-btn" onclick="event.stopPropagation(); openPbedPhaseModal('${escapeAttr(phase.phase)}')">✏️ Sửa phase</button>
+          </div>
+          ${phase.rules.map((r, ri) => `
+            <div class="playbook-rule" style="position:relative;">
+              <div style="position:absolute; top:8px; right:8px; display:flex; gap:4px;">
+                <button class="action-btn" onclick="openPbedRuleModal('${escapeAttr(phase.phase)}', '${escapeAttr(r.title)}')">✏️</button>
+                <button class="action-btn danger" onclick="deletePbedRule('${escapeAttr(phase.phase)}', '${escapeAttr(r.title)}')">🗑️</button>
+                ${r._edited || r._added ? `<button class="action-btn" onclick="revertPbedRule('${escapeAttr(phase.phase)}', '${escapeAttr(r.title)}')" style="color:var(--text-muted);" title="Revert">↩️</button>` : ''}
+              </div>
+              <div class="pr-title" style="padding-right:140px;">${ri+1}. ${escapeHtml(r.title)}
+                ${r._added ? '<span style="background:var(--green-bg); color:var(--green); font-size:10px; padding:1px 8px; border-radius:8px; margin-left:6px;">MỚI</span>' : ''}
+                ${r._edited ? '<span style="background:var(--yellow-bg); color:var(--warning); font-size:10px; padding:1px 8px; border-radius:8px; margin-left:6px;">ĐÃ SỬA</span>' : ''}
+              </div>
+              <div class="pr-section"><span class="pr-label why">Vì sao</span>${escapeHtml(r.why)}</div>
+              <div class="pr-section"><span class="pr-label action">Làm thế nào</span>${escapeHtml(r.action)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+
+    <div id="pbed-rule-modal" class="qed-modal">
+      <div class="qed-box">
+        <button class="qed-close" onclick="closePbedRuleModal()">×</button>
+        <h3 id="pbed-rule-title">Chỉnh sửa quy tắc</h3>
+        <div class="qed-form" id="pbed-rule-form-body"></div>
+      </div>
+    </div>
+    <div id="pbed-phase-modal" class="qed-modal">
+      <div class="qed-box">
+        <button class="qed-close" onclick="closePbedPhaseModal()">×</button>
+        <h3 id="pbed-phase-title">Phase mới</h3>
+        <div class="qed-form" id="pbed-phase-form-body"></div>
+      </div>
+    </div>
+  `;
+}
+
+function togglePbedPhase(idx) {
+  const el = document.getElementById('pbed-phase-' + idx);
+  if (el) el.classList.toggle('open');
+}
+
+function openPbedRuleModal(phaseKey, ruleKey) {
+  const data = window.PLAYBOOK_DATA || [];
+  let rule = { title: '', why: '', action: '' };
+  let editing = false;
+  let originalRuleKey = '';
+  const selectedPhase = decodeAttr(phaseKey);
+  if (selectedPhase && ruleKey) {
+    const decodedKey = decodeAttr(ruleKey);
+    const p = data.find(x => x.phase === selectedPhase);
+    if (p) {
+      const r = p.rules.find(x => x.title === decodedKey);
+      if (r) { rule = { title: r.title, why: r.why, action: r.action }; editing = true; originalRuleKey = decodedKey; }
+    }
+  }
+
+  document.getElementById('pbed-rule-title').textContent = editing ? '✏️ Sửa quy tắc' : '+ Thêm quy tắc mới';
+  const body = document.getElementById('pbed-rule-form-body');
+  body.innerHTML = `
+    <div>
+      <label>Phase</label>
+      <select id="pbed-rule-phase">
+        ${data.map(p => '<option value="' + escapeHtml(p.phase) + '"' + (p.phase === selectedPhase ? ' selected' : '') + '>' + escapeHtml(p.phase) + '</option>').join('')}
+      </select>
+    </div>
+    <div>
+      <label>Tiêu đề quy tắc</label>
+      <input type="text" id="pbed-rule-title-input" value="${escapeHtml(rule.title)}" placeholder="VD: Khách hỏi giá trước khi hiểu vấn đề = sales bị động" />
+    </div>
+    <div>
+      <label>Vì sao (lý do, bối cảnh)</label>
+      <textarea id="pbed-rule-why" style="min-height:80px;" placeholder="Giải thích vì sao quy tắc này quan trọng, kèm bối cảnh thực tế">${escapeHtml(rule.why)}</textarea>
+    </div>
+    <div>
+      <label>Làm thế nào (action cụ thể)</label>
+      <textarea id="pbed-rule-action" style="min-height:80px;" placeholder="Action cụ thể, bước thực hiện">${escapeHtml(rule.action)}</textarea>
+    </div>
+    <div class="qed-actions">
+      <button class="cancel" onclick="closePbedRuleModal()">Huỷ</button>
+      <button class="save" onclick="savePbedRule(${editing}, '${escapeAttr(originalRuleKey)}')">💾 Lưu</button>
+    </div>
+  `;
+  document.getElementById('pbed-rule-modal').classList.add('show');
+}
+
+function closePbedRuleModal() {
+  const m = document.getElementById('pbed-rule-modal');
+  if (m) m.classList.remove('show');
+}
+
+async function savePbedRule(isEditing, originalRuleKeyAttr) {
+  const originalRuleKey = decodeAttr(originalRuleKeyAttr);
+  const phase = document.getElementById('pbed-rule-phase').value;
+  const title = document.getElementById('pbed-rule-title-input').value.trim();
+  const why = document.getElementById('pbed-rule-why').value.trim();
+  const action = document.getElementById('pbed-rule-action').value.trim();
+  if (!title || !why || !action) return alert('Vui lòng điền đầy đủ Tiêu đề, Vì sao, Làm thế nào.');
+
+  const docData = isEditing
+    ? { type: 'edit_rule', targetPhaseKey: phase, targetRuleKey: originalRuleKey, data: { title, why, action }, updatedAt: window.fb.serverTimestamp() }
+    : { type: 'add_rule', targetPhaseKey: phase, data: { title, why, action }, updatedAt: window.fb.serverTimestamp() };
+
+  try {
+    const existing = isEditing
+      ? _pbedOverrides.find(o => o.type === 'edit_rule' && o.targetPhaseKey === phase && o.targetRuleKey === originalRuleKey)
+      : null;
+    if (existing && existing.docId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, PBED_COLLECTION, existing.docId), docData);
+      Object.assign(existing, docData);
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, PBED_COLLECTION), docData);
+      _pbedOverrides.push({ ...docData, docId: ref.id });
+    }
+    applyPlaybookOverrides();
+    closePbedRuleModal();
+    renderPlaybookEditor();
+  } catch (e) {
+    alert('Lỗi khi lưu: ' + e.message + '\n\nNếu lỗi "Missing permissions", admin cần update Firestore rules cho collection "playbook_overrides".');
+  }
+}
+
+async function deletePbedRule(phaseKeyAttr, ruleKeyAttr) {
+  const phaseKey = decodeAttr(phaseKeyAttr);
+  const ruleKey = decodeAttr(ruleKeyAttr);
+  if (!confirm('Xoá quy tắc "' + ruleKey + '"?\nCó thể revert sau qua "Khôi phục".')) return;
+  try {
+    const existing = _pbedOverrides.find(o => o.type === 'delete_rule' && o.targetPhaseKey === phaseKey && o.targetRuleKey === ruleKey);
+    if (existing) { alert('Quy tắc này đã xoá rồi.'); return; }
+    const docData = { type: 'delete_rule', targetPhaseKey: phaseKey, targetRuleKey: ruleKey, updatedAt: window.fb.serverTimestamp() };
+    const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, PBED_COLLECTION), docData);
+    _pbedOverrides.push({ ...docData, docId: ref.id });
+    applyPlaybookOverrides();
+    renderPlaybookEditor();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+async function revertPbedRule(phaseKeyAttr, ruleKeyAttr) {
+  const phaseKey = decodeAttr(phaseKeyAttr);
+  const ruleKey = decodeAttr(ruleKeyAttr);
+  if (!confirm('Khôi phục quy tắc về bản gốc? Mọi sửa/thêm sẽ bị huỷ.')) return;
+  try {
+    const matching = _pbedOverrides.filter(ov =>
+      ov.targetPhaseKey === phaseKey && (ov.targetRuleKey === ruleKey || (ov.data && ov.data.title === ruleKey)) &&
+      (ov.type === 'edit_rule' || ov.type === 'add_rule' || ov.type === 'delete_rule')
+    );
+    if (matching.length === 0) { alert('Không có override để revert.'); return; }
+    for (const ov of matching) {
+      if (ov.docId) await window.fb.deleteDoc(window.fb.doc(window.fb.db, PBED_COLLECTION, ov.docId));
+      _pbedOverrides = _pbedOverrides.filter(x => x.docId !== ov.docId);
+    }
+    applyPlaybookOverrides();
+    renderPlaybookEditor();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+function openPbedPhaseModal(phaseKeyAttr) {
+  const data = window.PLAYBOOK_DATA || [];
+  let editing = false;
+  let phase = { phase: '', icon: '📌', color: '#1F3864' };
+  const phaseKey = decodeAttr(phaseKeyAttr);
+  if (phaseKey) {
+    const p = data.find(x => x.phase === phaseKey);
+    if (p) { phase = { phase: p.phase, icon: p.icon, color: p.color || '#1F3864' }; editing = true; }
+  }
+  document.getElementById('pbed-phase-title').textContent = editing ? '✏️ Sửa phase' : '+ Thêm phase mới';
+  const body = document.getElementById('pbed-phase-form-body');
+  body.innerHTML = `
+    <div style="display:grid; grid-template-columns: 80px 1fr 120px; gap:10px;">
+      <div>
+        <label>Icon (emoji)</label>
+        <input type="text" id="pbed-phase-icon" value="${escapeHtml(phase.icon)}" placeholder="📌" />
+      </div>
+      <div>
+        <label>Tên phase</label>
+        <input type="text" id="pbed-phase-name" value="${escapeHtml(phase.phase)}" placeholder="VD: 16. ĐỔI MỚI SỐ" />
+      </div>
+      <div>
+        <label>Màu (hex)</label>
+        <input type="text" id="pbed-phase-color" value="${escapeHtml(phase.color)}" placeholder="#1F3864" />
+      </div>
+    </div>
+    <div class="qed-actions">
+      <button class="cancel" onclick="closePbedPhaseModal()">Huỷ</button>
+      <button class="save" onclick="savePbedPhase(${editing}, '${escapeAttr(phase.phase)}')">💾 Lưu</button>
+    </div>
+  `;
+  document.getElementById('pbed-phase-modal').classList.add('show');
+}
+
+function closePbedPhaseModal() {
+  const m = document.getElementById('pbed-phase-modal');
+  if (m) m.classList.remove('show');
+}
+
+async function savePbedPhase(isEditing, originalPhaseKeyAttr) {
+  const originalPhaseKey = decodeAttr(originalPhaseKeyAttr);
+  const phaseName = document.getElementById('pbed-phase-name').value.trim();
+  const icon = document.getElementById('pbed-phase-icon').value.trim() || '📌';
+  const color = document.getElementById('pbed-phase-color').value.trim() || '#1F3864';
+  if (!phaseName) return alert('Vui lòng nhập tên phase.');
+
+  const data = window.PLAYBOOK_DATA || [];
+  if (!isEditing && data.some(p => p.phase === phaseName)) return alert('Phase với tên này đã tồn tại.');
+
+  const docData = isEditing
+    ? { type: 'edit_phase', targetPhaseKey: originalPhaseKey, data: { phase: phaseName, icon, color }, updatedAt: window.fb.serverTimestamp() }
+    : { type: 'add_phase', data: { phase: phaseName, icon, color, rules: [] }, updatedAt: window.fb.serverTimestamp() };
+
+  try {
+    const existing = isEditing
+      ? _pbedOverrides.find(o => o.type === 'edit_phase' && o.targetPhaseKey === originalPhaseKey)
+      : null;
+    if (existing && existing.docId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, PBED_COLLECTION, existing.docId), docData);
+      Object.assign(existing, docData);
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, PBED_COLLECTION), docData);
+      _pbedOverrides.push({ ...docData, docId: ref.id });
+    }
+    applyPlaybookOverrides();
+    closePbedPhaseModal();
+    renderPlaybookEditor();
+  } catch (e) {
+    alert('Lỗi khi lưu: ' + e.message);
+  }
+}
+
 // ============ PHASE 3a: LEADERBOARD ============
 async function renderLeaderboard() {
   const panel = document.getElementById('leaderboard');
@@ -6645,6 +7036,74 @@ function practiceMfgChapter(label) {
   saveState();
   document.querySelector('[data-tab="quiz"]').click();
   renderQuiz();
+}
+
+// ============ PLAYBOOK / CẨM NANG TRIỂN KHAI ============
+function renderPlaybook() {
+  const panel = document.getElementById('playbook');
+  const data = window.PLAYBOOK_DATA;
+  if (!data || !Array.isArray(data)) {
+    panel.innerHTML = '<div class="srs-empty">⚠️ Không tải được nội dung Cẩm nang (data/playbook.js).</div>';
+    return;
+  }
+  const totalRules = data.reduce((s, p) => s + p.rules.length, 0);
+
+  panel.innerHTML = `
+    <div class="playbook-intro">
+      <h2>💎 Cẩm nang Triển khai ERP — Bí kíp Truyền tay</h2>
+      <p>Bộ sưu tập ${totalRules} nguyên tắc / bí quyết / bài học được đúc kết từ nhiều dự án ERP thực tế — phân theo ${data.length} giai đoạn của vòng đời triển khai. Đây là kiến thức "tribal" (truyền tay) thường không có trong textbook nhưng quyết định 80% thành/bại của dự án.</p>
+    </div>
+
+    <div style="background:var(--yellow-bg); border-left:4px solid var(--warning); padding:12px 14px; border-radius:6px; margin-bottom:14px; font-size:13px;">
+      💡 <strong>Cách dùng:</strong> Mỗi quy tắc gồm <span class="pr-label why">Vì sao</span> (lý do, bối cảnh thực tế) và <span class="pr-label action">Làm thế nào</span> (action cụ thể áp dụng). Đọc 1 phase trước khi bước vào giai đoạn đó của dự án bạn đang làm. Reread sau mỗi dự án để cảm nhận sâu hơn.
+    </div>
+
+    ${data.map((phase, i) => `
+      <div class="playbook-phase" id="playbook-phase-${i}">
+        <div class="playbook-phase-head" onclick="togglePlaybookPhase(${i})" style="background:linear-gradient(135deg, ${phase.color} 0%, ${shadeColor(phase.color, -20)} 100%);">
+          <span class="ph-icon">${phase.icon}</span>
+          <span>${escapeHtml(phase.phase)}</span>
+          <span class="ph-count">${phase.rules.length} quy tắc</span>
+          <span class="ph-toggle">▼</span>
+        </div>
+        <div class="playbook-phase-body">
+          ${phase.rules.map((r, j) => `
+            <div class="playbook-rule">
+              <div class="pr-title">${j+1}. ${escapeHtml(r.title)}</div>
+              <div class="pr-section"><span class="pr-label why">Vì sao</span>${escapeHtml(r.why)}</div>
+              <div class="pr-section"><span class="pr-label action">Làm thế nào</span>${escapeHtml(r.action)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+
+    <div style="background:var(--blue-bg); border-radius:8px; padding:16px; margin-top:16px; font-size:13px; line-height:1.7;">
+      <strong>🎯 Cẩm nang này không thay thế được kinh nghiệm thực chiến, nhưng:</strong>
+      <ul style="margin:8px 0 0 18px; padding:0;">
+        <li>Junior consultant: đọc để tránh tự gặp phải những sai lầm cổ điển</li>
+        <li>Mid-level: đọc để nhận ra pattern mình đã trải qua → systemize</li>
+        <li>Senior: đọc để teach lại junior trong team mình</li>
+        <li>Khi gặp tình huống khó → quay lại đây tìm phase tương ứng</li>
+      </ul>
+    </div>
+  `;
+}
+
+function togglePlaybookPhase(i) {
+  const el = document.getElementById('playbook-phase-' + i);
+  if (el) el.classList.toggle('open');
+}
+
+function shadeColor(hex, percent) {
+  // hex like "#7C3AED", percent negative = darker, positive = lighter
+  let r = parseInt(hex.slice(1, 3), 16);
+  let g = parseInt(hex.slice(3, 5), 16);
+  let b = parseInt(hex.slice(5, 7), 16);
+  r = Math.max(0, Math.min(255, r + Math.round(r * percent / 100)));
+  g = Math.max(0, Math.min(255, g + Math.round(g * percent / 100)));
+  b = Math.max(0, Math.min(255, b + Math.round(b * percent / 100)));
+  return '#' + [r,g,b].map(c => c.toString(16).padStart(2, '0')).join('');
 }
 
 // ============ STREAK & ACHIEVEMENTS ============
@@ -7774,6 +8233,24 @@ function buildSearchIndex() {
       raw: g
     });
   });
+  // Index Playbook rules
+  if (window.PLAYBOOK_DATA) {
+    window.PLAYBOOK_DATA.forEach((phase, pIdx) => {
+      phase.rules.forEach((r, rIdx) => {
+        const haystack = [phase.phase, r.title, r.why, r.action].join(' ');
+        idx.push({
+          type: 'playbook',
+          typeLabel: 'CẨM NANG',
+          typeClass: 'workshop',
+          id: pIdx * 100 + rIdx,
+          title: phase.icon + ' ' + phase.phase + ' — ' + r.title,
+          snippet: r.why,
+          haystack: normalizeVN(haystack),
+          raw: { phaseIdx: pIdx, ruleIdx: rIdx }
+        });
+      });
+    });
+  }
   // Workshop is a single static panel; index its rubric content
   idx.push({
     type: 'workshop',
@@ -7881,6 +8358,15 @@ function openSearchResult(i) {
     }, 100);
   } else if (r.type === 'workshop') {
     document.querySelector('[data-tab="workshop"]').click();
+  } else if (r.type === 'playbook') {
+    document.querySelector('[data-tab="playbook"]').click();
+    setTimeout(() => {
+      const phaseEl = document.getElementById('playbook-phase-' + r.raw.phaseIdx);
+      if (phaseEl) {
+        phaseEl.classList.add('open');
+        phaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
   }
 }
 
