@@ -242,6 +242,12 @@
     color: var(--text);
   }
 
+  /* Kahoot live mode animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
   /* Competency framework — dark mode adjustments */
   body[data-theme="dark"] [style*="background:#D1FAE5"] { background:#064E3B !important; color:#A7F3D0 !important; }
   body[data-theme="dark"] [style*="background:#D1FAE5"] strong { color:#34D399 !important; }
@@ -2245,7 +2251,7 @@
     🔍 <span class="search-label">Tìm kiếm</span> <span class="kbd">/</span>
   </button>
   <div class="app-version-badge" id="app-version-badge" onclick="showVersionDetails()" title="Click để xem chi tiết version + force reload">
-    <span class="v-num" id="v-num">v3.3.0</span>
+    <span class="v-num" id="v-num">v3.5.0</span>
   </div>
   <h1>📘 HỌC VIỆN ERP CONSULTING</h1>
   <p>Giải pháp Dynamics và Hệ sinh thái Microsoft</p>
@@ -2440,7 +2446,7 @@
   } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp,
-    collection, getDocs, query, orderBy, where, addDoc, deleteDoc, deleteField, limit
+    collection, getDocs, query, orderBy, where, addDoc, deleteDoc, deleteField, limit, onSnapshot
   } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -2473,7 +2479,7 @@
     EmailAuthProvider,
     reauthenticateWithCredential,
     doc, getDoc, setDoc, updateDoc, serverTimestamp,
-    collection, getDocs, query, orderBy, where, addDoc, deleteDoc, deleteField, limit
+    collection, getDocs, query, orderBy, where, addDoc, deleteDoc, deleteField, limit, onSnapshot
   };
 
   // Notify main script Firebase is ready
@@ -5054,9 +5060,13 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.3.0',
+  num: 'v3.5.0',
   date: '2026-05-26',
   notes: [
+    '🎮 MỚI: Kahoot-style Live Mode — trainer start session, members join với PIN, real-time leaderboard, ranked by SPEED (đáp đúng nhanh = nhiều điểm), Web Audio beeps + animations',
+    '✏️ MỚI: Edit Training Session — trainer/admin sửa course khi chưa diễn ra (button vàng trong detail modal)',
+    '📥 MỚI: Import bài tập từ JSON/CSV — tải template, điền, upload + auto-validate',
+    '📅 Calendar: tăng contrast — date numbers đậm 700-800 weight, event chips full background màu với chữ trắng bold',
     '🎓 Training Exercise — trainer BẮT BUỘC tạo bài tập (1-10 câu) khi đăng course',
     '🎓 Điểm danh qua Exercise — member làm bài SAU training để được tính ĐÃ THAM GIA (actuallyAttended)',
     '🎓 Member Points: thêm cột "Đã tham gia" hiển thị X/Y sessions + avg score % của bài tập',
@@ -12705,13 +12715,13 @@ function renderTrainingMonth() {
     const events = isValid ? (byDate.get(d) || []) : [];
     cells += `
       <div style="min-height:90px; border:1px solid var(--border); border-radius:6px; padding:6px; background:${isToday ? '#FEF3C7' : isWeekend ? 'var(--bg, #FAFBFC)' : 'var(--card)'}; opacity:${isValid ? 1 : 0.3};">
-        <div style="font-size:12px; font-weight:${isToday ? '700' : '500'}; color:${isToday ? '#92400E' : 'var(--text-muted)'}; margin-bottom:4px;">${isValid ? d : ''}</div>
+        <div style="font-size:13px; font-weight:${isToday ? '800' : '700'}; color:${isToday ? '#92400E' : (isWeekend ? '#B91C1C' : '#1F2937')}; margin-bottom:4px;">${isValid ? d : ''}</div>
         ${events.map(ev => {
           const dt = ev.scheduledAt.toMillis ? new Date(ev.scheduledAt.toMillis()) : null;
           const time = dt ? dt.getHours().toString().padStart(2, '0') + ':' + dt.getMinutes().toString().padStart(2, '0') : '';
           const isEnrolled = !!_trainingMyEnrolls[ev.id];
           const safeId = JSON.stringify(ev.id);
-          return `<div onclick='openCourseDetail(${safeId})' style="background:${isEnrolled ? '#DCFCE7' : 'var(--blue-bg)'}; border-left:3px solid ${isEnrolled ? '#16A34A' : 'var(--primary)'}; padding:3px 6px; margin-bottom:3px; border-radius:4px; cursor:pointer; font-size:11px; line-height:1.4; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(ev.title)}">${time ? '<strong>' + time + '</strong> ' : ''}${escapeHtml(ev.title.substring(0, 30))}${ev.title.length > 30 ? '...' : ''}</div>`;
+          return `<div onclick='openCourseDetail(${safeId})' style="background:${isEnrolled ? '#16A34A' : 'var(--primary)'}; color:#FFFFFF; padding:4px 7px; margin-bottom:3px; border-radius:4px; cursor:pointer; font-size:11px; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;" title="${escapeHtml(ev.title)}">${time ? '<strong>' + time + '</strong> ' : ''}${escapeHtml(ev.title.substring(0, 28))}${ev.title.length > 28 ? '...' : ''}</div>`;
         }).join('')}
       </div>
     `;
@@ -12793,18 +12803,18 @@ function renderTrainingWeek() {
           });
           return `
             <div style="background:${isToday ? '#FEF3C7' : isWeekend ? 'var(--bg, #FAFBFC)' : 'var(--card)'}; border:1px solid ${isToday ? '#F59E0B' : 'var(--border)'}; border-radius:6px; padding:8px; min-height:200px;">
-              <div style="font-size:11px; font-weight:600; color:${isWeekend ? 'var(--danger)' : 'var(--text-muted)'}; margin-bottom:6px;">${escapeHtml(dowLabels[i])}</div>
-              <div style="font-size:18px; font-weight:700; color:${isToday ? '#92400E' : 'var(--text)'}; margin-bottom:8px;">${d.getDate()}</div>
+              <div style="font-size:12px; font-weight:700; color:${isWeekend ? '#B91C1C' : '#1F2937'}; margin-bottom:6px;">${escapeHtml(dowLabels[i])}</div>
+              <div style="font-size:20px; font-weight:800; color:${isToday ? '#92400E' : '#111827'}; margin-bottom:8px;">${d.getDate()}</div>
               ${dayCourses.map(c => {
                 const dt = new Date(c.scheduledAt.toMillis());
                 const time = dt.getHours().toString().padStart(2, '0') + ':' + dt.getMinutes().toString().padStart(2, '0');
                 const isEnrolled = !!_trainingMyEnrolls[c.id];
                 const safeId = JSON.stringify(c.id);
                 return `
-                  <div onclick='openCourseDetail(${safeId})' style="background:${isEnrolled ? '#DCFCE7' : 'var(--blue-bg)'}; border-left:3px solid ${isEnrolled ? '#16A34A' : 'var(--primary)'}; padding:6px 8px; border-radius:4px; cursor:pointer; margin-bottom:4px;">
-                    <div style="font-size:11px; font-weight:600; color:var(--primary);">${time} · ${escapeHtml(String(c.durationMin || '?'))}phút</div>
-                    <div style="font-size:12px; margin-top:2px; line-height:1.4;">${escapeHtml(c.title.substring(0, 50))}${c.title.length > 50 ? '...' : ''}</div>
-                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">👨‍🏫 ${escapeHtml(c.instructorName || '?')}</div>
+                  <div onclick='openCourseDetail(${safeId})' style="background:${isEnrolled ? '#16A34A' : 'var(--primary)'}; color:#FFFFFF; padding:7px 9px; border-radius:6px; cursor:pointer; margin-bottom:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size:11px; font-weight:700; opacity:0.9;">${time} · ${escapeHtml(String(c.durationMin || '?'))}phút</div>
+                    <div style="font-size:13px; margin-top:3px; line-height:1.4; font-weight:600;">${escapeHtml(c.title.substring(0, 50))}${c.title.length > 50 ? '...' : ''}</div>
+                    <div style="font-size:10px; opacity:0.85; margin-top:3px;">👨‍🏫 ${escapeHtml(c.instructorName || '?')}</div>
                   </div>
                 `;
               }).join('')}
@@ -12895,22 +12905,119 @@ function openCourseDetail(courseId) {
 
     ${c.meetingLink ? '<div style="margin-bottom:14px; padding:10px 14px; background:var(--blue-bg); border-left:4px solid var(--primary); border-radius:6px;"><strong>🔗 Meeting link:</strong> <a href="' + escapeHtml(c.meetingLink) + '" target="_blank" rel="noopener" style="color:var(--primary);">' + escapeHtml(c.meetingLink) + '</a></div>' : ''}
 
-    ${(c.exercises && c.exercises.length > 0) ? '<div style="margin-top:14px; padding:10px 14px; background:#FEF3C7; border-left:4px solid #F59E0B; border-radius:6px; font-size:13px;"><strong>📝 Bài tập kiểm tra bắt buộc:</strong> ' + c.exercises.length + ' câu hỏi. Hoàn thành bài này SAU buổi training để được tính ĐIỂM DANH.</div>' : ''}
+    ${(c.exercises && c.exercises.length > 0) ? '<div style="margin-top:14px; padding:10px 14px; background:#FEF3C7; border-left:4px solid #F59E0B; border-radius:6px; font-size:13px;"><strong>📝 Bài tập kiểm tra bắt buộc:</strong> ' + c.exercises.length + ' câu hỏi. Hoàn thành bài này SAU buổi training để được tính ĐIỂM DANH.<br><strong style="color:#7C3AED;">🎮 Live Mode (Kahoot-style):</strong> Trainer có thể start session live để tất cả member làm bài đồng thời, leaderboard real-time, ranked by speed!</div>' : ''}
 
     <div style="display:flex; gap:8px; flex-wrap:wrap; padding-top:14px; border-top:1px solid var(--border);">
       ${!myEnroll ? '<button onclick="enrollCourse(' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">📝 Đăng ký tham gia (+5 điểm)</button>' :
         '<button onclick="unenrollCourse(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#FEF3C7; color:#92400E; border:1px solid #F59E0B; border-radius:6px; cursor:pointer; font-size:13px;">✓ Đã đăng ký · Click huỷ</button>'}
 
-      ${myEnroll && isPast && !myEnroll.exerciseSubmittedAt ? '<button onclick="openExerciseModal(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#F59E0B; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">📝 Làm bài kiểm tra (ĐIỂM DANH)</button>' : ''}
+      ${myEnroll && isPast && !myEnroll.exerciseSubmittedAt ? '<button onclick="openExerciseModal(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#F59E0B; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">📝 Làm bài cá nhân (ĐIỂM DANH)</button>' : ''}
+      ${(isOwner || isAdminUser) && c.exercises && c.exercises.length > 0 ? '<button onclick="startLiveSession(' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#7C3AED; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">🎮 Start Live Mode (Kahoot)</button>' : ''}
+      ${myEnroll && c.exercises && c.exercises.length > 0 ? '<button onclick="joinLiveSession(' + safeCid.replace(/"/g,"&quot;") + ', ' + safeEid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#0E7490; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">🎮 Join Live Session</button>' : ''}
       ${myEnroll && myEnroll.exerciseSubmittedAt ? '<span style="padding:8px 16px; background:#DCFCE7; color:#15803D; border-radius:6px; font-size:13px; font-weight:600;">✓ Đã làm bài: ' + (myEnroll.exerciseScore || 0) + '/' + (myEnroll.exerciseTotal || 0) + ' câu đúng</span>' : ''}
 
       ${myEnroll && myEnroll.exerciseSubmittedAt && !myEnroll.rating && !myEnroll.ratings ? '<button onclick="openRateCourseModal(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 16px; background:#16A34A; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">⭐ Đánh giá course (+1 điểm)</button>' : ''}
       ${myEnroll && (myEnroll.rating || myEnroll.ratings) ? '<span style="padding:8px 16px; color:var(--green); font-size:13px;">⭐ Bạn đã đánh giá: ' + (myEnroll.rating || 0).toFixed(2) + '/5</span>' : ''}
 
+      ${(isOwner || isAdminUser) && !isPast ? '<button onclick="openEditCourseModal(' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 14px; background:#F59E0B; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">✏️ Sửa course</button>' : ''}
       ${(isOwner || isAdminUser) ? '<button onclick="deleteCourse(' + safeCid.replace(/"/g,"&quot;") + '); document.getElementById(\'course-detail-modal\').classList.remove(\'show\')" style="padding:8px 14px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:12px;">🗑️ Xoá course</button>' : ''}
     </div>
   `;
   modal.classList.add('show');
+}
+
+// ============ EDIT COURSE ============
+function openEditCourseModal(courseId) {
+  const course = _trainingCourses.find(c => c.id === courseId);
+  if (!course) { alert('Không tìm thấy course.'); return; }
+  // Reuse new-course modal — pre-fill values, change save button to update
+  openNewCourseModal();
+  const modal = document.getElementById('course-new-modal');
+  modal._editingCourseId = courseId;
+  // Update modal title
+  const h3 = modal.querySelector('h3');
+  if (h3) h3.textContent = '✏️ Sửa Training Session';
+  // Pre-fill fields
+  setTimeout(() => {
+    document.getElementById('crsnew-title').value = course.title || '';
+    document.getElementById('crsnew-description').value = course.description || '';
+    document.getElementById('crsnew-audience').value = course.targetAudience || '';
+    document.getElementById('crsnew-category').value = course.category || 'other';
+    document.getElementById('crsnew-level').value = course.level || 'beginner';
+    // Format datetime-local
+    if (course.scheduledAt && course.scheduledAt.toMillis) {
+      const dt = new Date(course.scheduledAt.toMillis());
+      // Adjust to local timezone for input
+      const pad = n => String(n).padStart(2, '0');
+      const localStr = dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+      document.getElementById('crsnew-scheduled').value = localStr;
+    }
+    document.getElementById('crsnew-duration').value = course.durationMin || 60;
+    document.getElementById('crsnew-seats').value = course.maxSeats || 20;
+    document.getElementById('crsnew-meeting').value = course.meetingLink || '';
+    // Pre-fill exercises
+    modal._exercises = (course.exercises || []).map(ex => ({
+      q: ex.q || '',
+      options: (ex.options || ['', '', '', '']).slice(0, 4).concat(['', '', '', '']).slice(0, 4),
+      correct: ex.correct || 0,
+      exp: ex.exp || ''
+    }));
+    if (modal._exercises.length === 0) modal._exercises = [{ q: '', options: ['', '', '', ''], correct: 0, exp: '' }];
+    renderExerciseQuestionsList();
+    // Change Save button to update
+    const saveBtn = modal.querySelector('button[onclick="submitNewCourse()"]');
+    if (saveBtn) {
+      saveBtn.textContent = '💾 Lưu thay đổi';
+      saveBtn.setAttribute('onclick', 'submitEditCourse()');
+    }
+  }, 50);
+}
+
+async function submitEditCourse() {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const modal = document.getElementById('course-new-modal');
+  const courseId = modal._editingCourseId;
+  if (!courseId) return alert('Lỗi: không có courseId.');
+
+  const title = document.getElementById('crsnew-title').value.trim();
+  const description = document.getElementById('crsnew-description').value.trim();
+  const targetAudience = document.getElementById('crsnew-audience').value.trim();
+  const category = document.getElementById('crsnew-category').value;
+  const level = document.getElementById('crsnew-level').value;
+  const scheduledStr = document.getElementById('crsnew-scheduled').value;
+  const durationMin = parseInt(document.getElementById('crsnew-duration').value, 10);
+  const maxSeats = parseInt(document.getElementById('crsnew-seats').value, 10);
+  const meetingLink = document.getElementById('crsnew-meeting').value.trim();
+  if (!title || !description || !targetAudience || !scheduledStr) return alert('Điền đủ các trường bắt buộc.');
+
+  saveExerciseFormState();
+  const exercises = (modal._exercises || []).map(ex => ({
+    q: (ex.q || '').trim(),
+    options: ex.options.map(o => (o || '').trim()),
+    correct: ex.correct,
+    exp: (ex.exp || '').trim()
+  })).filter(ex => ex.q);
+  if (exercises.length === 0) return alert('Bài tập kiểm tra bắt buộc: ít nhất 1 câu.');
+  for (let i = 0; i < exercises.length; i++) {
+    const ex = exercises[i];
+    if (ex.options.filter(o => o).length < 2) return alert('Câu ' + (i + 1) + ': cần ≥2 đáp án.');
+    if (!ex.options[ex.correct]) return alert('Câu ' + (i + 1) + ': đáp án đúng chưa có nội dung.');
+  }
+
+  const scheduledAt = new Date(scheduledStr);
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, courseId), {
+      title, description, targetAudience, category, level,
+      scheduledAt, durationMin, maxSeats, meetingLink,
+      exercises,
+      updatedAt: window.fb.serverTimestamp()
+    });
+    modal.classList.remove('show');
+    modal._editingCourseId = null;
+    renderTraining();
+    alert('✅ Đã lưu thay đổi.');
+  } catch (e) { alert('Lỗi: ' + e.message); }
 }
 
 // ============ EXERCISE TAKING + ATTENDANCE ============
@@ -13044,6 +13151,371 @@ async function submitExercise() {
   }
 }
 
+// ============ KAHOOT-STYLE LIVE MODE ============
+const LIVE_SESSIONS_COLLECTION = 'training_live_sessions';
+const QUESTION_DURATION_MS = 20000;
+let _liveSessionId = null;
+let _liveListener = null;
+let _liveAudioCtx = null;
+let _liveLastQIdx = null;  // track last question idx player saw
+
+function playBeep(freq, duration, type) {
+  try {
+    if (!_liveAudioCtx) _liveAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = _liveAudioCtx.createOscillator();
+    const gain = _liveAudioCtx.createGain();
+    osc.connect(gain); gain.connect(_liveAudioCtx.destination);
+    osc.frequency.value = freq;
+    osc.type = type || 'sine';
+    gain.gain.setValueAtTime(0.3, _liveAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, _liveAudioCtx.currentTime + duration);
+    osc.start();
+    osc.stop(_liveAudioCtx.currentTime + duration);
+  } catch (e) {}
+}
+function playSoundCorrect() { playBeep(660, 0.1); setTimeout(() => playBeep(880, 0.15), 100); }
+function playSoundWrong() { playBeep(220, 0.3, 'sawtooth'); }
+function playSoundTick() { playBeep(1200, 0.05, 'square'); }
+function playSoundWin() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playBeep(f, 0.2), i * 120)); }
+function playSoundStart() { playBeep(523, 0.1); setTimeout(() => playBeep(659, 0.1), 100); setTimeout(() => playBeep(784, 0.2), 200); }
+
+async function startLiveSession(courseId) {
+  const course = _trainingCourses.find(c => c.id === courseId);
+  if (!course || !course.exercises || course.exercises.length === 0) {
+    alert('Course này chưa có bài tập.'); return;
+  }
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const pin = Math.floor(100000 + Math.random() * 900000).toString();
+  try {
+    const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, LIVE_SESSIONS_COLLECTION), {
+      courseId, courseTitle: course.title, pin,
+      hostUid: me.uid, hostName: me.displayName,
+      status: 'lobby',
+      currentQuestionIdx: -1,
+      questionStartedAt: null,
+      exercises: course.exercises,
+      createdAt: window.fb.serverTimestamp(),
+      participants: {}
+    });
+    _liveSessionId = ref.id;
+    renderLiveHostScreen(ref.id);
+    playSoundStart();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function joinLiveSession(courseId, enrollmentId) {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, LIVE_SESSIONS_COLLECTION));
+    let session = null;
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.courseId === courseId && data.status !== 'finished') {
+        session = { id: d.id, ...data };
+      }
+    });
+    if (!session) return alert('Không có live session đang chạy. Đợi trainer start nhé!');
+    const updates = {};
+    updates['participants.' + me.uid] = {
+      uid: me.uid, name: me.displayName, email: me.email,
+      score: 0, correctCount: 0, joinedAt: Date.now()
+    };
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, LIVE_SESSIONS_COLLECTION, session.id), updates);
+    _liveSessionId = session.id;
+    renderLivePlayerScreen(session.id, enrollmentId);
+    playSoundStart();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+function openLiveModal() {
+  let modal = document.getElementById('live-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'live-modal';
+    modal.style.cssText = 'position:fixed; inset:0; background:linear-gradient(135deg, #7C3AED 0%, #1F3864 100%); z-index:9999; overflow-y:auto;';
+    modal.innerHTML = '<button onclick="closeLiveSession()" style="position:fixed; top:14px; right:14px; padding:8px 16px; background:rgba(255,255,255,0.2); color:#FFF; border:1px solid rgba(255,255,255,0.4); border-radius:6px; cursor:pointer; z-index:10000; font-weight:600;">✕ Thoát</button><div id="live-body" style="padding:40px 20px; max-width:1000px; margin:0 auto;"></div>';
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'block';
+  _liveLastQIdx = null;
+  return modal;
+}
+
+function closeLiveSession() {
+  if (_liveListener) { try { _liveListener(); } catch (e) {} _liveListener = null; }
+  _liveSessionId = null;
+  _liveLastQIdx = null;
+  const modal = document.getElementById('live-modal');
+  if (modal) modal.style.display = 'none';
+  renderTraining();
+}
+
+function renderLiveHostScreen(sessionId) {
+  openLiveModal();
+  const ref = window.fb.doc(window.fb.db, LIVE_SESSIONS_COLLECTION, sessionId);
+  _liveListener = window.fb.onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return;
+    renderLiveHostBody({ id: snap.id, ...snap.data() });
+  });
+}
+
+function renderLiveHostBody(session) {
+  const body = document.getElementById('live-body');
+  if (!body) return;
+  const participants = Object.values(session.participants || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
+  const qIdx = session.currentQuestionIdx;
+
+  if (session.status === 'lobby') {
+    body.innerHTML = `
+      <div style="text-align:center; color:#FFF;">
+        <div style="font-size:60px; margin-bottom:10px;">🎮</div>
+        <h2 style="margin:0 0 6px 0; color:#FFF;">${escapeHtml(session.courseTitle)}</h2>
+        <p style="opacity:0.85; margin:0 0 20px 0;">Chia sẻ PIN này với members để họ tham gia (Join Live Session)</p>
+        <div style="background:rgba(0,0,0,0.3); padding:30px; border-radius:14px; display:inline-block; margin-bottom:20px;">
+          <div style="font-size:14px; opacity:0.8; margin-bottom:6px;">🎯 GAME PIN</div>
+          <div style="font-size:60px; font-weight:800; letter-spacing:6px; color:#FBBF24;">${session.pin}</div>
+        </div>
+        <h3 style="color:#FFF;">👥 ${participants.length} người đã tham gia</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:14px auto; max-width:700px;">
+          ${participants.map((p, i) => '<div style="background:rgba(255,255,255,0.2); color:#FFF; padding:8px 16px; border-radius:20px; font-size:14px; font-weight:600; animation:fadeIn 0.5s;">' + escapeHtml(p.name) + '</div>').join('')}
+        </div>
+        <button onclick="hostNextQuestion()" style="padding:14px 36px; background:#16A34A; color:#FFF; border:none; border-radius:10px; cursor:pointer; font-size:18px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin-top:20px;">▶️ Bắt đầu Game</button>
+      </div>
+    `;
+  } else if (session.status === 'running' && qIdx >= 0 && qIdx < session.exercises.length) {
+    const q = session.exercises[qIdx];
+    const startTs = toMs(session.questionStartedAt);
+    const elapsed = Date.now() - startTs;
+    const remaining = Math.max(0, QUESTION_DURATION_MS - elapsed);
+    const answered = Object.values(session.participants || {}).filter(p => p.lastQuestionAnsweredIdx === qIdx).length;
+    body.innerHTML = `
+      <div style="color:#FFF;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+          <div style="background:rgba(0,0,0,0.3); padding:8px 16px; border-radius:8px; font-size:14px; font-weight:600;">Câu ${qIdx + 1} / ${session.exercises.length}</div>
+          <div id="live-timer-host" style="background:#FBBF24; color:#1F2937; padding:8px 24px; border-radius:8px; font-weight:800; font-size:28px;">${Math.ceil(remaining / 1000)}s</div>
+          <div style="background:rgba(0,0,0,0.3); padding:8px 16px; border-radius:8px; font-size:14px; font-weight:600;">${answered} / ${participants.length} đã trả lời</div>
+        </div>
+        <h2 style="text-align:center; color:#FFF; font-size:30px; margin:30px 0; line-height:1.4;">${escapeHtml(q.q)}</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; max-width:900px; margin:0 auto;">
+          ${q.options.map((opt, oi) => {
+            if (!opt) return '';
+            const colors = ['#DC2626', '#0E7490', '#F59E0B', '#16A34A'];
+            return `<div style="background:${colors[oi]}; color:#FFF; padding:28px; border-radius:14px; font-size:18px; font-weight:700; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.3);"><span style="font-size:32px; margin-right:10px;">${String.fromCharCode(65 + oi)}</span> ${escapeHtml(opt)}</div>`;
+          }).join('')}
+        </div>
+        <div style="text-align:center; margin-top:30px;">
+          <button onclick="hostNextQuestion()" style="padding:12px 32px; background:#16A34A; color:#FFF; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600;">${qIdx + 1 < session.exercises.length ? '⏭️ Câu tiếp →' : '🏁 Kết thúc & xem kết quả'}</button>
+        </div>
+
+        ${participants.length > 0 ? '<div style="margin-top:30px; padding:14px; background:rgba(0,0,0,0.2); border-radius:8px;"><h4 style="color:#FFF; margin:0 0 8px 0;">📊 Leaderboard hiện tại:</h4><div style="display:flex; flex-direction:column; gap:4px;">' +
+          participants.slice(0, 5).map((p, i) => '<div style="background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:6px; display:flex; gap:10px; align-items:center;"><span style="font-weight:700; min-width:30px;">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1)) + '</span><span style="flex:1;">' + escapeHtml(p.name) + '</span><span style="font-weight:700; color:#FBBF24;">' + (p.score || 0) + '</span></div>').join('')
+        + '</div></div>' : ''}
+      </div>
+    `;
+    if (remaining > 0) updateLiveTimer('live-timer-host', startTs);
+  } else if (session.status === 'finished' || qIdx >= session.exercises.length) {
+    body.innerHTML = renderLiveLeaderboard(session, true);
+    if (_liveLastQIdx !== 'finished') { _liveLastQIdx = 'finished'; playSoundWin(); }
+  }
+}
+
+function renderLiveLeaderboard(session, isFinal) {
+  const participants = Object.values(session.participants || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
+  return `
+    <div style="color:#FFF; text-align:center;">
+      <div style="font-size:60px; margin-bottom:10px;">${isFinal ? '🏆' : '📊'}</div>
+      <h2 style="color:#FFF; margin:0 0 8px 0;">${isFinal ? 'KẾT QUẢ CUỐI CÙNG' : 'Bảng xếp hạng'}</h2>
+      <div style="opacity:0.85; margin-bottom:20px; font-size:14px;">${escapeHtml(session.courseTitle)}</div>
+      <div style="max-width:700px; margin:0 auto;">
+        ${participants.slice(0, 10).map((p, i) => {
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+          const colors = ['#FBBF24', '#9CA3AF', '#B45309'];
+          const bg = i < 3 ? colors[i] : 'rgba(255,255,255,0.18)';
+          const color = i < 3 ? '#1F2937' : '#FFF';
+          return `<div style="background:${bg}; color:${color}; padding:16px 22px; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:14px; transform:scale(${i === 0 ? 1.05 : 1}); transition:all 0.3s;">
+              <div style="font-size:28px; font-weight:800; min-width:60px; text-align:left;">${medal}</div>
+              <div style="flex:1; text-align:left;">
+                <div style="font-weight:700; font-size:17px;">${escapeHtml(p.name)}</div>
+                <div style="font-size:12px; opacity:0.85;">${p.correctCount || 0} câu đúng</div>
+              </div>
+              <div style="font-size:28px; font-weight:800;">${p.score || 0}</div>
+            </div>`;
+        }).join('')}
+      </div>
+      ${isFinal ? '<button onclick="closeLiveSession()" style="margin-top:24px; padding:12px 36px; background:#16A34A; color:#FFF; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600;">✓ Hoàn tất</button>' : ''}
+    </div>
+  `;
+}
+
+async function hostNextQuestion() {
+  if (!_liveSessionId) return;
+  try {
+    const ref = window.fb.doc(window.fb.db, LIVE_SESSIONS_COLLECTION, _liveSessionId);
+    const snap = await window.fb.getDoc(ref);
+    if (!snap.exists()) return;
+    const session = snap.data();
+    const cur = session.currentQuestionIdx;
+    const next = (cur === undefined || cur === null ? -1 : cur) + 1;
+    if (next >= session.exercises.length) {
+      // Mark attendance for all participants
+      const updates = { status: 'finished' };
+      // After finish, write attendance to enrollments for each participant — done client-side by each player
+      await window.fb.updateDoc(ref, updates);
+      return;
+    }
+    await window.fb.updateDoc(ref, {
+      status: 'running', currentQuestionIdx: next, questionStartedAt: Date.now()
+    });
+    playBeep(880, 0.2);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+function updateLiveTimer(elId, startTs) {
+  const tEl = document.getElementById(elId);
+  if (!tEl || !_liveSessionId) return;
+  const rem = Math.max(0, Math.ceil((QUESTION_DURATION_MS - (Date.now() - startTs)) / 1000));
+  tEl.textContent = rem + 's';
+  if (rem <= 5 && rem > 0) {
+    playSoundTick();
+    tEl.style.background = '#DC2626';
+    tEl.style.color = '#FFF';
+  } else {
+    tEl.style.background = '#FBBF24';
+    tEl.style.color = '#1F2937';
+  }
+  if (rem > 0) setTimeout(() => updateLiveTimer(elId, startTs), 1000);
+}
+
+function renderLivePlayerScreen(sessionId, enrollmentId) {
+  const modal = openLiveModal();
+  modal._enrollmentId = enrollmentId;
+  modal._sessionId = sessionId;
+  const ref = window.fb.doc(window.fb.db, LIVE_SESSIONS_COLLECTION, sessionId);
+  _liveListener = window.fb.onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return;
+    renderLivePlayerBody({ id: snap.id, ...snap.data() });
+  });
+}
+
+function renderLivePlayerBody(session) {
+  const body = document.getElementById('live-body');
+  const modal = document.getElementById('live-modal');
+  if (!body) return;
+  const me = getCurrentUserInfo();
+  if (!me) return;
+  const myData = (session.participants || {})[me.uid] || { score: 0, correctCount: 0 };
+  const qIdx = session.currentQuestionIdx;
+
+  // Play sound on question change
+  if (session.status === 'running' && qIdx !== _liveLastQIdx && qIdx >= 0) {
+    _liveLastQIdx = qIdx;
+    playBeep(880, 0.15);
+  }
+
+  if (session.status === 'lobby') {
+    const participants = Object.values(session.participants || {});
+    body.innerHTML = `
+      <div style="text-align:center; color:#FFF;">
+        <div style="font-size:60px; margin-bottom:10px;">⏳</div>
+        <h2 style="color:#FFF; margin:0 0 10px 0;">Đợi trainer bắt đầu...</h2>
+        <p style="opacity:0.85;">${escapeHtml(session.courseTitle)}</p>
+        <div style="margin-top:20px; background:rgba(0,0,0,0.3); padding:14px 20px; border-radius:8px; display:inline-block;">👥 ${participants.length} người đang đợi</div>
+        <div style="margin-top:14px; font-size:14px;">Bạn: <strong style="color:#FBBF24;">${escapeHtml(me.displayName)}</strong></div>
+      </div>
+    `;
+  } else if (session.status === 'running' && qIdx >= 0 && qIdx < session.exercises.length) {
+    const q = session.exercises[qIdx];
+    const myAnswered = myData.lastQuestionAnsweredIdx === qIdx;
+    const startTs = toMs(session.questionStartedAt);
+    const elapsed = Date.now() - startTs;
+    const remaining = Math.max(0, QUESTION_DURATION_MS - elapsed);
+
+    if (myAnswered) {
+      const correct = myData.lastAnswerCorrect;
+      body.innerHTML = `
+        <div style="text-align:center; color:#FFF;">
+          <div style="font-size:100px; margin:20px 0; animation:scaleIn 0.4s;">${correct ? '✅' : '❌'}</div>
+          <h2 style="color:#FFF; margin:0 0 10px 0; font-size:36px;">${correct ? 'CHÍNH XÁC!' : 'CHƯA ĐÚNG'}</h2>
+          ${correct ? '<p style="font-size:22px; color:#FBBF24; font-weight:700;">+' + (myData.lastQuestionScore || 0) + ' điểm</p>' : ''}
+          <p style="opacity:0.85; margin-top:14px; font-size:14px;">Đợi mọi người trả lời xong...</p>
+          <div style="margin-top:24px; font-size:14px;">Tổng điểm: <strong style="font-size:36px; color:#FBBF24;">${myData.score || 0}</strong></div>
+        </div>
+      `;
+    } else {
+      body.innerHTML = `
+        <div style="color:#FFF;">
+          <div style="text-align:center; margin-bottom:24px;">
+            <div id="live-timer-player" style="display:inline-block; background:#FBBF24; color:#1F2937; padding:12px 30px; border-radius:10px; font-weight:800; font-size:32px;">${Math.ceil(remaining / 1000)}s</div>
+            <div style="margin-top:10px; opacity:0.85; font-size:13px;">Câu ${qIdx + 1} / ${session.exercises.length} · ⚡ Nhanh = điểm cao!</div>
+          </div>
+          <h2 style="text-align:center; color:#FFF; font-size:26px; margin:24px 0 30px 0; line-height:1.4;">${escapeHtml(q.q)}</h2>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:700px; margin:0 auto;">
+            ${q.options.map((opt, oi) => {
+              if (!opt) return '';
+              const colors = ['#DC2626', '#0E7490', '#F59E0B', '#16A34A'];
+              return `<button onclick="livePlayerAnswer(${qIdx}, ${oi})" style="background:${colors[oi]}; color:#FFF; padding:24px 18px; border-radius:14px; font-size:17px; font-weight:700; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3); transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"><span style="font-size:28px; margin-right:10px;">${String.fromCharCode(65 + oi)}</span> ${escapeHtml(opt)}</button>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+      updateLiveTimer('live-timer-player', startTs);
+    }
+  } else if (session.status === 'finished') {
+    body.innerHTML = renderLiveLeaderboard(session, true);
+    // Mark attendance once
+    if (modal && modal._enrollmentId && !modal._attendanceMarked) {
+      modal._attendanceMarked = true;
+      window.fb.updateDoc(window.fb.doc(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION, modal._enrollmentId), {
+        exerciseSubmittedAt: window.fb.serverTimestamp(),
+        exerciseScore: myData.correctCount || 0,
+        exerciseTotal: session.exercises.length,
+        actuallyAttended: true,
+        attendedAt: window.fb.serverTimestamp(),
+        liveSessionId: session.id,
+        liveScore: myData.score || 0
+      }).then(() => {
+        // Update course attendedCount
+        const courseRef = window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, session.courseId);
+        return window.fb.getDoc(courseRef).then(cs => {
+          if (cs.exists()) return window.fb.updateDoc(courseRef, { attendedCount: (cs.data().attendedCount || 0) + 1 });
+        });
+      }).catch(() => {});
+    }
+    if (_liveLastQIdx !== 'finished') { _liveLastQIdx = 'finished'; playSoundWin(); }
+  }
+}
+
+async function livePlayerAnswer(qIdx, oIdx) {
+  if (!_liveSessionId) return;
+  const me = getCurrentUserInfo();
+  if (!me) return;
+  try {
+    const ref = window.fb.doc(window.fb.db, LIVE_SESSIONS_COLLECTION, _liveSessionId);
+    const snap = await window.fb.getDoc(ref);
+    if (!snap.exists()) return;
+    const session = snap.data();
+    if (session.currentQuestionIdx !== qIdx) return;
+    const q = session.exercises[qIdx];
+    const isCorrect = oIdx === q.correct;
+    const elapsed = Date.now() - toMs(session.questionStartedAt);
+    const speedFactor = Math.max(0.5, 1 - elapsed / QUESTION_DURATION_MS / 2);
+    const points = isCorrect ? Math.round(1000 * speedFactor) : 0;
+    if (isCorrect) playSoundCorrect(); else playSoundWrong();
+
+    const myData = (session.participants || {})[me.uid] || { score: 0, correctCount: 0 };
+    const updates = {};
+    updates['participants.' + me.uid + '.score'] = (myData.score || 0) + points;
+    updates['participants.' + me.uid + '.correctCount'] = (myData.correctCount || 0) + (isCorrect ? 1 : 0);
+    updates['participants.' + me.uid + '.lastQuestionAnsweredIdx'] = qIdx;
+    updates['participants.' + me.uid + '.lastAnswerCorrect'] = isCorrect;
+    updates['participants.' + me.uid + '.lastQuestionScore'] = points;
+    updates['participants.' + me.uid + '.lastAnswerTime'] = elapsed;
+    await window.fb.updateDoc(ref, updates);
+  } catch (e) { console.warn('livePlayerAnswer:', e.message); }
+}
+
 function renderCourseCardCommunity(c, myEnroll, me, isAdminUser) {
   const cat = getCommunityCategoryByKey(c.category || 'other');
   const dt = c.scheduledAt && c.scheduledAt.toMillis ? new Date(c.scheduledAt.toMillis()) : null;
@@ -13109,11 +13581,16 @@ function openNewCourseModal() {
       <label><div style="font-weight:600; font-size:13px;">Meeting link (Teams/Zoom)</div><input type="url" id="crsnew-meeting" placeholder="https://teams.microsoft.com/..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
 
       <div style="background:var(--bg, #F9FAFB); border:2px solid var(--warning); border-radius:8px; padding:12px; margin-top:6px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <h4 style="margin:0;">📝 Bài tập kiểm tra (BẮT BUỘC — dùng để điểm danh)</h4>
-          <button type="button" onclick="addExerciseQuestion()" style="padding:6px 12px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">➕ Thêm câu hỏi</button>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" onclick="downloadExerciseTemplate()" style="padding:6px 12px; background:transparent; border:1px solid var(--border); color:var(--text); border-radius:6px; cursor:pointer; font-size:12px;" title="Tải file mẫu để điền">📋 Tải template</button>
+            <button type="button" onclick="document.getElementById('ex-import-file').click()" style="padding:6px 12px; background:#0E7490; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">📥 Import file</button>
+            <input type="file" id="ex-import-file" accept=".json,.csv" style="display:none;" onchange="handleImportExerciseFile(event)">
+            <button type="button" onclick="addExerciseQuestion()" style="padding:6px 12px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">➕ Thêm câu hỏi</button>
+          </div>
         </div>
-        <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px 0;">Member phải làm bài này SAU buổi training để được tính ĐIỂM DANH (đã tham gia). Tối thiểu 1 câu, tối đa 10 câu. Khuyên dùng 3-5 câu để check nhanh.</p>
+        <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px 0;">Member phải làm bài này SAU buổi training để được tính ĐIỂM DANH. Tối thiểu 1 câu, tối đa 10 câu. Khuyên dùng 3-5 câu. <strong>Import:</strong> JSON hoặc CSV (tải template để xem format).</p>
         <div id="exercise-questions-list"></div>
       </div>
 
@@ -13123,8 +13600,19 @@ function openNewCourseModal() {
       </div>
     </div>
   `;
-  // Reset exercises state and add first question by default
+  // Reset state and add first question by default
   modal._exercises = [];
+  modal._editingCourseId = null;
+  // Reset modal title + save button (in case last opened was Edit mode)
+  const h3 = modal.querySelector('h3');
+  if (h3) h3.textContent = '➕ Đăng Training Session';
+  setTimeout(() => {
+    const saveBtn = modal.querySelector('button[onclick*="submitEditCourse"], button[onclick="submitNewCourse()"]');
+    if (saveBtn) {
+      saveBtn.textContent = '📝 Đăng';
+      saveBtn.setAttribute('onclick', 'submitNewCourse()');
+    }
+  }, 10);
   addExerciseQuestion();
   modal.classList.add('show');
 }
@@ -13184,6 +13672,155 @@ function renderExerciseQuestionsList() {
       <input type="text" id="ex-exp-${idx}" value="${escapeHtml(ex.exp || '')}" placeholder="Giải thích (optional)" style="width:100%; padding:5px; border:1px solid var(--border); border-radius:4px; font-size:11px; margin-top:4px; color:var(--text-muted);">
     </div>
   `).join('');
+}
+
+// ============ EXERCISE IMPORT / TEMPLATE ============
+function downloadExerciseTemplate() {
+  const sample = [
+    { q: 'BC core hỗ trợ bao nhiêu Global Dimensions?', options: ['2', '4', '8', '16'], correct: 2, exp: 'BC có 8 Global Dimensions cho phân tích đa chiều.' },
+    { q: 'Phương trình kế toán cơ bản là?', options: ['Tài sản = Vốn', 'Tài sản = Nợ phải trả + Vốn chủ', 'Tài sản = Doanh thu - Chi phí', 'Vốn = Tài sản - Doanh thu'], correct: 1, exp: 'Assets = Liabilities + Equity là nền tảng kế toán kép.' },
+    { q: 'FEFO là viết tắt của gì?', options: ['First Entry First Out', 'First Expiry First Out', 'Final Expiry First Out', 'First Effective Final Out'], correct: 1, exp: 'FEFO = First Expiry First Out, áp dụng cho hàng có HSD.' }
+  ];
+  const fmt = confirm('Click OK để tải JSON template, Cancel để tải CSV template') ? 'json' : 'csv';
+  let blob, filename;
+  if (fmt === 'json') {
+    blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+    filename = 'training_exercise_template.json';
+  } else {
+    const headers = 'q,optionA,optionB,optionC,optionD,correct,exp';
+    const rows = [headers];
+    sample.forEach(ex => {
+      const cells = [
+        '"' + (ex.q || '').replace(/"/g, '""') + '"',
+        '"' + (ex.options[0] || '').replace(/"/g, '""') + '"',
+        '"' + (ex.options[1] || '').replace(/"/g, '""') + '"',
+        '"' + (ex.options[2] || '').replace(/"/g, '""') + '"',
+        '"' + (ex.options[3] || '').replace(/"/g, '""') + '"',
+        ex.correct + 1,
+        '"' + (ex.exp || '').replace(/"/g, '""') + '"'
+      ];
+      rows.push(cells.join(','));
+    });
+    blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+    filename = 'training_exercise_template.csv';
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  setTimeout(() => alert('✅ Đã tải: ' + filename + '\n\n💡 CSV: cột "correct" dùng 1-4 (A=1, B=2, C=3, D=4).\nĐiền xong → bấm "📥 Import file" để upload.'), 100);
+}
+
+function handleImportExerciseFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    let parsed;
+    try {
+      if (file.name.toLowerCase().endsWith('.json')) parsed = parseExerciseJSON(text);
+      else if (file.name.toLowerCase().endsWith('.csv')) parsed = parseExerciseCSV(text);
+      else { alert('Chỉ hỗ trợ .json hoặc .csv'); return; }
+      const { valid, errors } = validateImportedExercises(parsed);
+      if (valid.length === 0) {
+        alert('Không có câu hỏi hợp lệ.\n' + errors.slice(0, 5).join('\n'));
+        console.error('Import errors:', errors);
+        return;
+      }
+      const mode = confirm('File có ' + valid.length + ' câu hợp lệ' + (errors.length ? ' (' + errors.length + ' câu lỗi sẽ skip)' : '') + '.\n\nOK = THAY THẾ tất cả câu hiện có.\nCancel = THÊM vào danh sách.');
+      saveExerciseFormState();
+      const modal = document.getElementById('course-new-modal');
+      if (mode) {
+        modal._exercises = valid;
+      } else {
+        if (modal._exercises.length + valid.length > 10) {
+          alert('Tổng > 10 câu (' + (modal._exercises.length + valid.length) + '). Bớt đi.');
+          return;
+        }
+        modal._exercises = modal._exercises.filter(ex => (ex.q || '').trim().length > 0);
+        modal._exercises = modal._exercises.concat(valid);
+      }
+      if (modal._exercises.length > 10) modal._exercises = modal._exercises.slice(0, 10);
+      renderExerciseQuestionsList();
+      event.target.value = '';
+      alert('✅ Đã import ' + valid.length + ' câu.' + (errors.length ? '\n⚠️ ' + errors.length + ' câu skip (xem console).' : ''));
+    } catch (err) {
+      alert('Lỗi đọc file: ' + err.message);
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function parseExerciseJSON(text) {
+  const cleaned = text.replace(/^﻿/, '').trim();
+  const data = JSON.parse(cleaned);
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.exercises)) return data.exercises;
+  if (data && Array.isArray(data.questions)) return data.questions;
+  throw new Error('JSON phải là array hoặc {exercises: [...]}');
+}
+
+function parseExerciseCSV(text) {
+  const cleaned = text.replace(/^﻿/, '');
+  const lines = csvSplitLines(cleaned);
+  if (lines.length < 2) throw new Error('CSV cần header + ít nhất 1 dòng');
+  const headers = csvSplitRow(lines[0]).map(h => h.trim().toLowerCase());
+  const out = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const row = csvSplitRow(lines[i]);
+    const obj = { options: ['', '', '', ''] };
+    headers.forEach((h, idx) => {
+      const v = (row[idx] || '').trim();
+      if (h === 'q' || h === 'question') obj.q = v;
+      else if (h === 'optiona' || h === 'a') obj.options[0] = v;
+      else if (h === 'optionb' || h === 'b') obj.options[1] = v;
+      else if (h === 'optionc' || h === 'c') obj.options[2] = v;
+      else if (h === 'optiond' || h === 'd') obj.options[3] = v;
+      else if (h === 'correct' || h === 'answer') {
+        if (/^[A-Da-d]$/.test(v)) obj.correct = v.toUpperCase().charCodeAt(0) - 65;
+        else {
+          const n = parseInt(v, 10);
+          if (!isNaN(n)) obj.correct = n >= 1 && n <= 4 ? n - 1 : n;
+        }
+      }
+      else if (h === 'exp' || h === 'explanation' || h === 'expl') obj.exp = v;
+    });
+    if (obj.q) out.push(obj);
+  }
+  return out;
+}
+
+function validateImportedExercises(arr) {
+  const valid = [], errors = [];
+  arr.forEach((ex, idx) => {
+    if (!ex || typeof ex !== 'object') { errors.push('Row ' + (idx + 1) + ': not an object'); return; }
+    const q = (ex.q || ex.question || '').trim();
+    if (!q) { errors.push('Row ' + (idx + 1) + ': thiếu câu hỏi'); return; }
+    let options = ex.options;
+    if (!Array.isArray(options)) {
+      options = [ex.optionA, ex.optionB, ex.optionC, ex.optionD].map(o => (o || '').toString());
+    }
+    options = options.map(o => (o || '').toString().trim());
+    if (options.filter(o => o).length < 2) { errors.push('Row ' + (idx + 1) + ' (' + q.substring(0, 40) + '...): cần ≥2 đáp án'); return; }
+    let correct = ex.correct;
+    if (correct === undefined || correct === null) correct = 0;
+    if (typeof correct === 'string') {
+      if (/^[A-Da-d]$/.test(correct)) correct = correct.toUpperCase().charCodeAt(0) - 65;
+      else correct = parseInt(correct, 10);
+    }
+    if (typeof correct !== 'number' || isNaN(correct) || correct < 0 || correct >= options.length || !options[correct]) {
+      errors.push('Row ' + (idx + 1) + ' (' + q.substring(0, 40) + '...): correct index không hợp lệ');
+      return;
+    }
+    valid.push({
+      q, options: options.concat(['', '', '', '']).slice(0, 4),
+      correct, exp: (ex.exp || ex.explanation || '').toString().trim()
+    });
+  });
+  return { valid, errors };
 }
 
 async function submitNewCourse() {
