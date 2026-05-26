@@ -2239,7 +2239,7 @@
     🔍 <span class="search-label">Tìm kiếm</span> <span class="kbd">/</span>
   </button>
   <div class="app-version-badge" id="app-version-badge" onclick="showVersionDetails()" title="Click để xem chi tiết version + force reload">
-    <span class="v-num" id="v-num">v2.6.3</span>
+    <span class="v-num" id="v-num">v2.7.0</span>
   </div>
   <h1>📘 HỌC VIỆN ERP CONSULTING</h1>
   <p>Giải pháp Dynamics và Hệ sinh thái Microsoft</p>
@@ -2296,6 +2296,7 @@
       <button class="menu-item tab-btn" data-tab="manufacturing"><span class="icon">🏭</span><span>Manufacturing</span></button>
       <button class="menu-item tab-btn" data-tab="accounting"><span class="icon">📊</span><span>Kế toán (2 cấp)</span></button>
       <button class="menu-item tab-btn" data-tab="playbook"><span class="icon">💎</span><span>Cẩm nang triển khai</span></button>
+      <button class="menu-item tab-btn" data-tab="videos"><span class="icon">📺</span><span>Video Demo</span></button>
       <button class="menu-item tab-btn" data-tab="glossary"><span class="icon">📖</span><span>Thuật ngữ</span></button>
     </div>
   </div>
@@ -2325,6 +2326,7 @@
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="editor"><span class="icon">📝</span><span>Editor + Import/Export câu hỏi</span></button>
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="playbook"><span class="icon">💎</span><span>Editor Cẩm nang</span></button>
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="certsessions"><span class="icon">📜</span><span>Cert Exam Sessions</span></button>
+      <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="videos"><span class="icon">📺</span><span>Video tracking</span></button>
     </div>
   </div>
 </nav>
@@ -2343,6 +2345,7 @@
   <div id="manufacturing" class="panel"></div>
   <div id="accounting" class="panel"></div>
   <div id="playbook" class="panel"></div>
+  <div id="videos" class="panel"></div>
   <div id="level" class="panel"></div>
   <div id="glossary" class="panel"></div>
   <div id="bookmarks" class="panel"></div>
@@ -5017,6 +5020,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "manufacturing") renderManufacturing();
     if (tab === "accounting") renderAccounting();
     if (tab === "playbook") renderPlaybook();
+    if (tab === "videos") renderVideos();
     if (tab === "level") renderLevelAssessment();
     if (tab === "roadmap") renderRoadmap();
     if (tab === "cert") renderCertExam();
@@ -5025,17 +5029,17 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v2.6.3',
+  num: 'v2.7.0',
   date: '2026-05-26',
   notes: [
-    'Version Badge MÀU VÀNG rực rỡ ở góc trái — luôn hiển thị, không thể miss',
-    'Badge tự fetch SW cache version để verify đã update thành công',
+    '📺 MỚI: Tab Video Demo — embed YouTube với tracking ai đã xem video nào',
+    '📺 Admin: tab Video tracking — xem stats per-video + per-user',
+    'Video Badge ngắn gọn "v2.7.0" sát mép trái — không đè text mobile',
     'Rebalanced 309 câu hỏi — đáp án sai đã dài tương đương đáp án đúng',
     'Cases gom 1 tab + Q&A check tự động cho 14 cases',
-    'Admin menu tách 6 mục riêng + Reset User Progress button',
+    'Admin menu tách 7 mục riêng + Reset User Progress button',
     'Import/Export câu hỏi theo 13 module (JSON+CSV)',
-    'Kế toán 2 cấp 24 chương + 72 câu multi-choice (TT 30/2025, NĐ 70/2025)',
-    'Principal milestone buttons hiển thị rõ ràng theo loại'
+    'Kế toán 2 cấp 24 chương + 72 câu multi-choice (TT 30/2025, NĐ 70/2025)'
   ]
 };
 
@@ -5582,13 +5586,15 @@ async function renderAdmin() {
         <button class="admin-subtab ${activeSubtab === 'editor' ? 'active' : ''}" onclick="setAdminSubtab('editor')">📝 Editor + Import/Export câu hỏi</button>
         <button class="admin-subtab ${activeSubtab === 'playbook' ? 'active' : ''}" onclick="setAdminSubtab('playbook')">💎 Editor Cẩm nang</button>
         <button class="admin-subtab ${activeSubtab === 'certsessions' ? 'active' : ''}" onclick="setAdminSubtab('certsessions')">📜 Cert Exam Sessions</button>
+        <button class="admin-subtab ${activeSubtab === 'videos' ? 'active' : ''}" onclick="setAdminSubtab('videos')">📺 Video tracking</button>
       </div>
 
       ${activeSubtab === 'heatmap' ? renderDifficultyHeatmap(users) :
         activeSubtab === 'teams' ? renderTeamsAnalysis(users) :
         activeSubtab === 'editor' ? '<div id="qed-root">⏳ Đang tải editor...</div>' :
         activeSubtab === 'playbook' ? '<div id="pbed-root">⏳ Đang tải editor cẩm nang...</div>' :
-        activeSubtab === 'certsessions' ? '<div id="certadmin-root">⏳ Đang tải Cert Exam admin...</div>' : `
+        activeSubtab === 'certsessions' ? '<div id="certadmin-root">⏳ Đang tải Cert Exam admin...</div>' :
+        activeSubtab === 'videos' ? renderVideoTrackingAdmin(users) : `
         <div class="admin-controls">
           <input type="search" id="admin-search" placeholder="🔍 Tìm theo email hoặc tên..." />
           <button onclick="exportUsersCSV()">📊 Export CSV</button>
@@ -6094,7 +6100,7 @@ async function executeResetProgress() {
   } else if (scope === 'answered_srs') {
     fieldsToDelete = ['progress.answered', 'progress.confidence', 'progress.srs'];
   } else if (scope === 'full_quiz') {
-    fieldsToDelete = ['progress.answered', 'progress.confidence', 'progress.srs', 'progress.mockExamHistory', 'progress.caseAssessments', 'progress.caseQuickCheckAnswers'];
+    fieldsToDelete = ['progress.answered', 'progress.confidence', 'progress.srs', 'progress.mockExamHistory', 'progress.caseAssessments', 'progress.caseQuickCheckAnswers', 'progress.videoWatched'];
   }
 
   // Determine target users
@@ -8682,6 +8688,317 @@ function renderPlaybook() {
 function togglePlaybookPhase(i) {
   const el = document.getElementById('playbook-phase-' + i);
   if (el) el.classList.toggle('open');
+}
+
+// ============ VIDEO LIBRARY ============
+// Each video: { id, title, ytId, duration, description, sectionMatch, level, language }
+// ytId = YouTube video ID (the part after ?v= in URL)
+// sectionMatch = regex string matching question sections (for context discovery)
+const VIDEO_LIBRARY = [
+  {
+    id: 'bc-intro-msft',
+    title: 'Microsoft Dynamics 365 Business Central — Overview',
+    ytId: 'S1Gn5fmPwgs',
+    duration: '2:30',
+    description: 'Video chính thức của Microsoft giới thiệu tổng quan Dynamics 365 Business Central — phù hợp để bắt đầu làm quen với BC. Dùng tạm cho mọi chương BC Core (A-F) và Modern Stack (V-AA).',
+    chapters: [
+      { groupKey: 'bc-core', label: 'BC Core — Item Tracking, Warehouse, Planning' },
+      { groupKey: 'bc-modern', label: 'BC 2026 / Copilot / Fabric' }
+    ],
+    level: 'beginner',
+    language: 'English',
+    source: 'Microsoft'
+  }
+  // Thêm video mới qua VIDEO_LIBRARY array — hoặc qua admin editor (future)
+];
+
+// Groupings — pair each video to a chapter group via groupKey
+const VIDEO_GROUPS = [
+  { key: 'bc-core', icon: '🔧', name: 'BC Core (A-F)', color: '#1F3864', match: s => /^[A-F]\./.test(s) },
+  { key: 'mapping', icon: '🌉', name: 'Mapping nghiệp vụ ↔ BC (G-N)', color: '#0E7490', match: s => /^[G-N]\./.test(s) },
+  { key: 'biz', icon: '💼', name: 'Nghiệp vụ thuần (O-S)', color: '#7C3AED', match: s => /^[OPQRS]\. /.test(s) },
+  { key: 'biz-adv', icon: '📈', name: 'Nghiệp vụ nâng cao (O2-S2)', color: '#7C3AED', match: s => /^[OPQRS]2\./.test(s) },
+  { key: 'workshop', icon: '🎓', name: 'Workshop ERP Consultant (T)', color: '#385723', match: s => /^T\./.test(s) },
+  { key: 'bc-modern', icon: '🤖', name: 'BC 2026 / Copilot / Fabric (V-AA)', color: '#0891B2', match: s => /^[VWXY]\. /.test(s) || /^AA\./.test(s) },
+  { key: 'master', icon: '🧠', name: 'Master Level Tích hợp (AB)', color: '#16A34A', match: s => /^AB\./.test(s) },
+  { key: 'retail', icon: '🏪', name: 'Retail Industry (Z1-Z13)', color: '#DC2626', match: s => /^Z\d/.test(s) },
+  { key: 'mfg', icon: '🏭', name: 'Manufacturing (M1-M12)', color: '#0891B2', match: s => /^M\d+\./.test(s) && s.includes('Mfg') },
+  { key: 'acc-basic', icon: '📊', name: 'Kế toán Căn bản (AC1)', color: '#16A34A', match: s => /^AC1\./.test(s) },
+  { key: 'acc-adv', icon: '📈', name: 'Kế toán Nâng cao (AC2)', color: '#7C3AED', match: s => /^AC2\./.test(s) }
+];
+
+function renderVideos() {
+  const panel = document.getElementById('videos');
+  if (!panel) return;
+
+  const watched = (state.videoWatched || {});
+  const totalVideos = VIDEO_LIBRARY.length;
+  const watchedCount = Object.keys(watched).length;
+
+  // Group videos by groupKey
+  const byGroup = {};
+  VIDEO_GROUPS.forEach(g => byGroup[g.key] = []);
+  VIDEO_LIBRARY.forEach(v => {
+    if (v.chapters && v.chapters.length) {
+      v.chapters.forEach(c => {
+        if (byGroup[c.groupKey]) byGroup[c.groupKey].push(v);
+      });
+    }
+  });
+
+  panel.innerHTML = `
+    <div style="background:linear-gradient(135deg, #DC2626 0%, #1F3864 100%); color:#FFF; padding:16px 18px; border-radius:10px; margin-bottom:14px;">
+      <h2 style="margin:0 0 4px 0; color:#FFF;">📺 Video Demo & Training</h2>
+      <p style="margin:0; font-size:13px; opacity:0.92;">Thư viện video demo + training cho consultant. Tracking ai đã xem video nào để admin nắm tiến độ. Khi học chương lý thuyết, có thể xem video tương ứng kết hợp.</p>
+      <div style="margin-top:10px; display:flex; gap:14px; font-size:12px;">
+        <span>📚 <strong>${totalVideos}</strong> video</span>
+        <span>✅ Bạn đã xem: <strong>${watchedCount} / ${totalVideos}</strong></span>
+      </div>
+    </div>
+
+    ${totalVideos === 0 ? `
+      <div style="background:var(--card); padding:30px; border-radius:10px; text-align:center; border:2px dashed var(--border);">
+        <div style="font-size:48px;">📭</div>
+        <h3 style="margin:10px 0;">Chưa có video nào</h3>
+        <p style="color:var(--text-muted);">Admin có thể thêm video qua menu Quản trị (tính năng sắp ra mắt) hoặc cập nhật trực tiếp <code>VIDEO_LIBRARY</code> trong source code.</p>
+      </div>
+    ` : `
+      ${VIDEO_GROUPS.map(g => {
+        const videos = byGroup[g.key];
+        if (!videos || videos.length === 0) return '';
+        return `
+          <div class="video-group" style="margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+            <div style="background:linear-gradient(135deg, ${g.color} 0%, #1F3864 100%); color:#FFF; padding:10px 14px; display:flex; align-items:center; gap:8px; font-weight:600;">
+              <span style="font-size:18px;">${g.icon}</span>
+              <span>${escapeHtml(g.name)}</span>
+              <span style="margin-left:auto; font-size:12px; opacity:0.85;">${videos.length} video</span>
+            </div>
+            <div style="padding:10px;">
+              ${videos.map(v => renderVideoCard(v, g)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    `}
+
+    <div style="background:var(--blue-bg); border-radius:8px; padding:14px; margin-top:14px; font-size:13px; line-height:1.7;">
+      <strong>💡 Cách dùng:</strong> Click vào video card → mở player. Hệ thống tự ghi nhận bạn đã xem (tracking lưu Firestore). Admin có thể xem ai đã/chưa xem qua trang Quản trị (sắp ra mắt).<br>
+      <strong>📥 Offline:</strong> Video cần kết nối internet — không xem được khi offline. App vẫn dùng được các tính năng khác offline.
+    </div>
+  `;
+}
+
+function renderVideoCard(v, group) {
+  const watched = (state.videoWatched || {})[v.id];
+  const isWatched = !!watched;
+  const watchedDate = watched ? new Date(watched.watchedAt).toLocaleDateString('vi-VN') : '';
+  const thumbUrl = 'https://img.youtube.com/vi/' + v.ytId + '/mqdefault.jpg';
+
+  return `
+    <div class="video-card" style="display:flex; gap:12px; padding:10px; border-radius:8px; cursor:pointer; transition:background 0.15s; align-items:flex-start;"
+      onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='transparent'"
+      onclick="openVideoPlayer('${v.id}')">
+      <div style="position:relative; flex-shrink:0;">
+        <img src="${thumbUrl}" alt="" style="width:140px; height:78px; object-fit:cover; border-radius:6px; background:#000;" loading="lazy" onerror="this.style.display='none'">
+        <div style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.85); color:#FFF; font-size:10px; padding:1px 6px; border-radius:3px;">${escapeHtml(v.duration || '')}</div>
+        ${isWatched ? '<div style="position:absolute; top:4px; left:4px; background:#16A34A; color:#FFF; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">✓ Đã xem</div>' : ''}
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:600; font-size:14px; margin-bottom:4px; color:var(--text);">${escapeHtml(v.title)}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">${escapeHtml(v.description.substring(0, 160))}${v.description.length > 160 ? '...' : ''}</div>
+        <div style="display:flex; gap:8px; font-size:11px; color:var(--text-muted); flex-wrap:wrap;">
+          <span>🎬 ${escapeHtml(v.source || 'YouTube')}</span>
+          <span>🌐 ${escapeHtml(v.language || 'Không rõ')}</span>
+          <span>📊 ${escapeHtml(v.level || 'all')}</span>
+          ${isWatched ? '<span style="color:var(--green);">📅 Xem lần cuối: ' + watchedDate + '</span>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openVideoPlayer(videoId) {
+  const video = VIDEO_LIBRARY.find(v => v.id === videoId);
+  if (!video) { alert('Không tìm thấy video.'); return; }
+
+  let modal = document.getElementById('video-player-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'video-player-modal';
+    modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px;';
+    modal.innerHTML = '<div id="video-player-box" style="background:#000; border-radius:12px; max-width:960px; width:100%; max-height:90vh; overflow:auto; position:relative;"><button onclick="closeVideoPlayer()" style="position:absolute; top:10px; right:14px; background:rgba(255,255,255,0.2); color:#FFF; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:20px; line-height:1; z-index:10;">×</button><div id="video-player-body"></div></div>';
+    document.body.appendChild(modal);
+    // Click outside to close
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeVideoPlayer(); });
+  }
+
+  const body = document.getElementById('video-player-body');
+  // Embed YouTube via privacy-enhanced URL with autoplay
+  const embedUrl = 'https://www.youtube-nocookie.com/embed/' + video.ytId + '?autoplay=1&rel=0&modestbranding=1';
+  body.innerHTML = `
+    <div style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
+      <iframe src="${embedUrl}"
+        style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+    <div style="background:var(--card); padding:14px 18px; color:var(--text);">
+      <h3 style="margin:0 0 6px 0; font-size:16px;">${escapeHtml(video.title)}</h3>
+      <p style="margin:0 0 8px 0; font-size:13px; color:var(--text-muted); line-height:1.6;">${escapeHtml(video.description)}</p>
+      <div style="display:flex; gap:12px; font-size:11px; color:var(--text-muted); flex-wrap:wrap;">
+        <span>⏱️ ${escapeHtml(video.duration || 'N/A')}</span>
+        <span>🎬 ${escapeHtml(video.source || 'YouTube')}</span>
+        <span>🌐 ${escapeHtml(video.language || 'N/A')}</span>
+        <span>📊 ${escapeHtml(video.level || 'all')}</span>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
+
+  // Mark as watched after 5 seconds (proxy for "really watching")
+  // — avoid logging accidental opens. Re-watch updates timestamp.
+  if (!modal._watchTimer) {
+    modal._watchTimer = setTimeout(() => markVideoWatched(videoId), 5000);
+  }
+}
+
+function closeVideoPlayer() {
+  const modal = document.getElementById('video-player-modal');
+  if (!modal) return;
+  // Clear iframe to stop video playback
+  const body = document.getElementById('video-player-body');
+  if (body) body.innerHTML = '';
+  modal.style.display = 'none';
+  if (modal._watchTimer) {
+    clearTimeout(modal._watchTimer);
+    modal._watchTimer = null;
+  }
+}
+
+function markVideoWatched(videoId) {
+  if (!state.videoWatched) state.videoWatched = {};
+  const prev = state.videoWatched[videoId];
+  state.videoWatched[videoId] = {
+    watched: true,
+    watchedAt: Date.now(),
+    watchCount: (prev && prev.watchCount ? prev.watchCount : 0) + 1,
+    firstWatchedAt: (prev && prev.firstWatchedAt) || Date.now()
+  };
+  saveState();
+}
+
+// ============ ADMIN: Video tracking dashboard ============
+function renderVideoTrackingAdmin(users) {
+  if (!VIDEO_LIBRARY || VIDEO_LIBRARY.length === 0) {
+    return '<div style="background:var(--card); padding:30px; border-radius:10px; text-align:center; border:1px solid var(--border);"><div style="font-size:48px;">📭</div><h3>Chưa có video</h3><p style="color:var(--text-muted);">Thêm video vào <code>VIDEO_LIBRARY</code> trong source code để theo dõi.</p></div>';
+  }
+
+  // Cross-tab matrix: rows = users, cols = videos
+  const totalUsers = users.length;
+
+  // Per-video stats
+  const videoStats = VIDEO_LIBRARY.map(v => {
+    let watchedBy = 0;
+    let totalWatches = 0;
+    users.forEach(u => {
+      const w = (u.progress && u.progress.videoWatched) || {};
+      if (w[v.id]) {
+        watchedBy++;
+        totalWatches += (w[v.id].watchCount || 1);
+      }
+    });
+    return {
+      video: v,
+      watchedBy,
+      totalWatches,
+      watchedPct: totalUsers > 0 ? Math.round(watchedBy / totalUsers * 100) : 0
+    };
+  });
+
+  // Per-user stats
+  const userStats = users.map(u => {
+    const w = (u.progress && u.progress.videoWatched) || {};
+    const watchedVideos = Object.keys(w).filter(k => VIDEO_LIBRARY.some(v => v.id === k));
+    return {
+      user: u,
+      watchedCount: watchedVideos.length,
+      lastWatch: Math.max(0, ...watchedVideos.map(k => (w[k].watchedAt || 0)))
+    };
+  }).sort((a, b) => b.lastWatch - a.lastWatch);
+
+  return `
+    <div style="margin-bottom:14px;">
+      <h3 style="margin:0 0 4px 0;">📺 Video Watch Tracking</h3>
+      <p style="color:var(--text-muted); font-size:13px; margin:0;">Tracking ai đã xem video nào trong thư viện ${VIDEO_LIBRARY.length} video.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:18px;">
+      <div style="background:var(--card); padding:14px; border-radius:8px; border:1px solid var(--border);">
+        <div style="font-size:11px; color:var(--text-muted);">Tổng video</div>
+        <div style="font-size:24px; font-weight:700;">${VIDEO_LIBRARY.length}</div>
+      </div>
+      <div style="background:var(--card); padding:14px; border-radius:8px; border:1px solid var(--border);">
+        <div style="font-size:11px; color:var(--text-muted);">Tổng user</div>
+        <div style="font-size:24px; font-weight:700;">${totalUsers}</div>
+      </div>
+      <div style="background:var(--card); padding:14px; border-radius:8px; border:1px solid var(--border);">
+        <div style="font-size:11px; color:var(--text-muted);">Tổng lượt xem</div>
+        <div style="font-size:24px; font-weight:700; color:var(--primary);">${videoStats.reduce((s, v) => s + v.totalWatches, 0)}</div>
+      </div>
+      <div style="background:var(--card); padding:14px; border-radius:8px; border:1px solid var(--border);">
+        <div style="font-size:11px; color:var(--text-muted);">User đã xem ≥1 video</div>
+        <div style="font-size:24px; font-weight:700; color:var(--green);">${userStats.filter(u => u.watchedCount > 0).length}</div>
+      </div>
+    </div>
+
+    <h4 style="margin:14px 0 8px 0; color:var(--primary);">📹 Per-video stats</h4>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Video</th><th style="width:120px;">Source</th><th style="width:90px;">Đã xem bởi</th><th style="width:90px;">% users</th><th style="width:90px;">Tổng lượt</th></tr>
+        </thead>
+        <tbody>
+          ${videoStats.map(s => {
+            const color = s.watchedPct >= 70 ? 'var(--green)' : s.watchedPct >= 40 ? 'var(--primary)' : s.watchedPct >= 15 ? 'var(--warning)' : 'var(--text-muted)';
+            return `
+              <tr>
+                <td><strong>${escapeHtml(s.video.title)}</strong><br><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(s.video.duration)} · ${escapeHtml(s.video.language)}</span></td>
+                <td>${escapeHtml(s.video.source || '—')}</td>
+                <td><strong>${s.watchedBy}</strong> / ${totalUsers}</td>
+                <td><strong style="color:${color};">${s.watchedPct}%</strong></td>
+                <td>${s.totalWatches}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <h4 style="margin:18px 0 8px 0; color:var(--primary);">👥 Per-user tracking (Top 30 — sorted by latest watch)</h4>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr><th>User</th><th>Email</th><th style="width:120px;">Video đã xem</th><th style="width:140px;">Lần xem cuối</th><th style="width:200px;">Videos</th></tr>
+        </thead>
+        <tbody>
+          ${userStats.slice(0, 30).map(us => {
+            const u = us.user;
+            const w = (u.progress && u.progress.videoWatched) || {};
+            const watched = VIDEO_LIBRARY.filter(v => w[v.id]).map(v => v.title.substring(0, 30) + (v.title.length > 30 ? '...' : ''));
+            return `
+              <tr>
+                <td><strong>${escapeHtml(u.displayName || '(no name)')}</strong></td>
+                <td style="font-size:12px;">${escapeHtml(u.email || '')}</td>
+                <td>${us.watchedCount} / ${VIDEO_LIBRARY.length}</td>
+                <td style="font-size:12px;">${us.lastWatch > 0 ? new Date(us.lastWatch).toLocaleString('vi-VN') : '—'}</td>
+                <td style="font-size:11px;">${watched.length > 0 ? watched.map(t => escapeHtml(t)).join(', ') : '<span style="color:var(--text-muted);">chưa xem video nào</span>'}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function shadeColor(hex, percent) {
