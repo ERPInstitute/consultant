@@ -4,7 +4,7 @@
 //  - Firebase Firestore / Auth: network-only (always live)
 //  - Other Firebase scripts (CDN): cache-first
 
-const CACHE_VERSION = 'erp-pwa-v2';
+const CACHE_VERSION = 'erp-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const APP_SHELL = [
   './data/questions.js',
   './data/retail.js',
   './data/manufacturing.js',
+  './data/playbook.js',
   // Firebase SDK from gstatic — cached for offline parse, but auth/firestore endpoints stay live
   'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js',
