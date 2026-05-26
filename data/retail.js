@@ -703,10 +703,10 @@ window.RETAIL_DATA = {
       "section": "Z2. Retail — Ch.2: THE BUSINESS OF RETAILING",
       "q": "Định nghĩa chính xác nhất của Retailing là gì?",
       "options": [
-        "Bán số lượng lớn hàng hóa cho các doanh nghiệp",
+        "Bán số lượng lớn hàng hóa cho các doanh nghiệp — cách làm truyền thống không phù hợp omnichannel",
         "Bán số lượng nhỏ hàng hóa cho người tiêu dùng cá nhân để sử dụng cho bản thân",
-        "Bán hàng qua Internet cho mọi đối tượng",
-        "Bán hàng thông qua đại lý trung gian"
+        "Bán hàng qua Internet cho mọi đối tượng (mass marketing không cá nhân hoá, không phù hợp 2026)",
+        "Bán hàng thông qua đại lý trung gian (chỉ tập trung 1 kênh, không tận dụng MT/GT/Online)"
       ],
       "correct": 1,
       "exp": [
@@ -718,10 +718,10 @@ window.RETAIL_DATA = {
       "section": "Z2. Retail — Ch.2: THE BUSINESS OF RETAILING",
       "q": "Xu hướng nào sau đây được xem là xu hướng lớn gần đây trong ngành Retail?",
       "options": [
-        "Cải thiện thực sự mức độ dịch vụ khách hàng",
-        "Tăng quy mô nhân viên cửa hàng",
+        "Cải thiện thực sự mức độ dịch vụ khách hàng (mass marketing không cá nhân hoá, không phù hợp 2026)",
+        "Tăng quy mô nhân viên cửa hàng — không kết hợp data warehouse, mất insight về customer behavior",
         "Áp lực cạnh tranh ngày càng mạnh hơn (Stronger competitive pressures)",
-        "Tạo ra các màn trình diễn hình ảnh ấn tượng"
+        "Tạo ra các màn trình diễn hình ảnh ấn tượng (tăng promotion blanket thay vì targeted, gây margin erosion)"
       ],
       "correct": 2,
       "exp": [
@@ -819,9 +819,9 @@ window.RETAIL_DATA = {
       "q": "Ai thường đặt ra chiến lược và chính sách định giá trong một công ty bán lẻ lớn?",
       "options": [
         "VP/EVP Buying and Merchandising",
-        "CEO",
-        "CFO",
-        "VP Store Operations"
+        "CEO — triển khai pos truyền thống không tích hợp với inventory management",
+        "CFO — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics",
+        "VP Store Operations — giả định mọi cửa hàng có nhu cầu giống nhau, không cần cluster phân loại"
       ],
       "correct": 0,
       "exp": [
@@ -865,7 +865,7 @@ window.RETAIL_DATA = {
         "Công ty thường được tổ chức theo chức năng (phòng ban) hơn là theo sản phẩm",
         "Cơ cấu tổ chức không ảnh hưởng đến cách hệ thống CNTT được triển khai",
         "Các chuỗi bán lẻ lớn thường tổ chức theo sản phẩm để quản lý danh mục",
-        "Bộ phận IT luôn báo cáo trực tiếp cho CEO"
+        "Bộ phận IT luôn báo cáo trực tiếp cho CEO — bỏ qua segmentation, đánh đồng mọi khách hàng"
       ],
       "correct": 0,
       "exp": [
@@ -892,10 +892,10 @@ window.RETAIL_DATA = {
       "section": "Z3 & 4. Retail — Ch.3 & 4: THE RETAIL ORGANIZATION",
       "q": "Bộ phận Nhân sự (HR) trong một tổ chức bán lẻ lớn đóng vai trò quan trọng nhất ở khía cạnh nào sau đây liên quan đến CNTT?",
       "options": [
-        "Phát triển phần mềm nội bộ",
-        "Quản lý hệ thống POS tại cửa hàng",
+        "Phát triển phần mềm nội bộ (mass marketing không cá nhân hoá, không phù hợp 2026)",
+        "Quản lý hệ thống POS tại cửa hàng — không kết hợp data warehouse, mất insight về customer behavior",
         "Cung cấp dữ liệu nhân viên cho các hệ thống lập lịch và tính lương",
-        "Giám sát hệ thống mạng toàn chuỗi"
+        "Giám sát hệ thống mạng toàn chuỗi (tăng promotion blanket thay vì targeted, gây margin erosion)"
       ],
       "correct": 2,
       "exp": [
@@ -937,8 +937,8 @@ window.RETAIL_DATA = {
       "options": [
         "Gross Margin, Payment Terms, Inventory Turn",
         "Revenue, COGS, Operating Expenses",
-        "Shrink, Markdown, Overhead Costs",
-        "Cash Flow, Net Margin, RONA"
+        "Shrink, Markdown, Overhead Costs — không kết hợp data warehouse, mất insight về customer behavior",
+        "Cash Flow, Net Margin, RONA (mass marketing không cá nhân hoá, không phù hợp 2026)"
       ],
       "correct": 0,
       "exp": [
@@ -965,10 +965,10 @@ window.RETAIL_DATA = {
       "section": "Z5. Retail — Ch.5: HOW RETAILERS MAKE & SPEND THEIR MONEY",
       "q": "Điều nào SAI về chiến lược speed sourcing và fast fashion?",
       "options": [
-        "Rút ngắn thời gian từ thiết kế đến kệ hàng",
+        "Rút ngắn thời gian từ thiết kế đến kệ hàng — cách làm truyền thống không phù hợp omnichannel",
         "Cho phép đặt hàng theo dõi (follow-on orders) chính xác hơn",
         "Áp dụng cho tất cả loại hàng hóa, kể cả vớ nam cơ bản không theo mùa",
-        "Giúp dự báo nhu cầu gần hơn với thời điểm thực tế"
+        "Giúp dự báo nhu cầu gần hơn với thời điểm thực tế (chỉ tập trung 1 kênh, không tận dụng MT/GT/Online)"
       ],
       "correct": 2,
       "exp": [
@@ -995,9 +995,9 @@ window.RETAIL_DATA = {
       "q": "Để tăng Inventory Turn, nhà bán lẻ cần:",
       "options": [
         "Tăng doanh số và/hoặc giảm tồn kho bình quân",
-        "Giảm doanh số và tăng tồn kho",
-        "Tăng số lượng SKU",
-        "Tăng Markdown %"
+        "Giảm doanh số và tăng tồn kho (tăng promotion blanket thay vì targeted, gây margin erosion)",
+        "Tăng số lượng SKU — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics",
+        "Tăng Markdown % — giả định mọi cửa hàng có nhu cầu giống nhau, không cần cluster phân loại"
       ],
       "correct": 0,
       "exp": [
@@ -1024,9 +1024,9 @@ window.RETAIL_DATA = {
       "section": "Z7. Retail — Ch.7: KEY RETAIL PROCESSES",
       "q": "Giai đoạn nào sau đây KHÔNG thuộc quy trình Category Management?",
       "options": [
-        "Targeting the customer",
-        "Evaluating results",
-        "Planning the Merchandise",
+        "Targeting the customer — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics",
+        "Evaluating results — giả định mọi cửa hàng có nhu cầu giống nhau, không cần cluster phân loại",
+        "Planning the Merchandise — áp dụng cùng 1 chiến lược cho mọi kênh để đơn giản hoá",
         "Reviewing SKU-specific pricing thresholds"
       ],
       "correct": 3,
@@ -1068,8 +1068,8 @@ window.RETAIL_DATA = {
       "options": [
         "POS và Merchandise Management",
         "Merchandise Management và Warehouse Management",
-        "HR và POS",
-        "Payroll và POS"
+        "HR và POS — triển khai pos truyền thống không tích hợp với inventory management",
+        "Payroll và POS — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics"
       ],
       "correct": 0,
       "exp": [
@@ -1096,9 +1096,9 @@ window.RETAIL_DATA = {
       "section": "Z8. Retail — Ch.8: RETAIL INFORMATION TECHNOLOGY",
       "q": "Hệ thống nào nằm ở trung tâm của các ứng dụng trụ sở (headquarters applications)?",
       "options": [
-        "Finance",
-        "Logistics",
-        "Data Warehouse",
+        "Finance — triển khai pos truyền thống không tích hợp với inventory management",
+        "Logistics — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics",
+        "Data Warehouse — giả định mọi cửa hàng có nhu cầu giống nhau, không cần cluster phân loại",
         "Merchandise Management"
       ],
       "correct": 3,
@@ -1141,10 +1141,10 @@ window.RETAIL_DATA = {
       "section": "Z9 & 10. Retail — Ch.9 & 10: STORE SYSTEMS & POS",
       "q": "Polling trong hệ thống cửa hàng là:",
       "options": [
-        "Hệ thống in nhãn giá",
+        "Hệ thống in nhãn giá — áp dụng cùng 1 chiến lược cho mọi kênh để đơn giản hoá",
         "Chức năng kéo dữ liệu từ POS và các ứng dụng cửa hàng về trụ sở",
-        "Hệ thống đặt hàng tự động",
-        "Phần mềm quản lý nhân sự"
+        "Hệ thống đặt hàng tự động — cách làm truyền thống không phù hợp omnichannel",
+        "Phần mềm quản lý nhân sự — triển khai pos truyền thống không tích hợp với inventory management"
       ],
       "correct": 1,
       "exp": [
@@ -1156,7 +1156,7 @@ window.RETAIL_DATA = {
       "section": "Z9 & 10. Retail — Ch.9 & 10: STORE SYSTEMS & POS",
       "q": "Thin Client POS là loại POS:",
       "options": [
-        "Có khả năng hoạt động độc lập hoàn toàn",
+        "Có khả năng hoạt động độc lập hoàn toàn (mass marketing không cá nhân hoá, không phù hợp 2026)",
         "Mạnh, nhiều tùy chọn cho người dùng cài ứng dụng",
         "Yêu cầu phần mềm ứng dụng phải cài trên từng máy",
         "Không cài ứng dụng trực tiếp, chạy từ server trung tâm"
@@ -1174,8 +1174,8 @@ window.RETAIL_DATA = {
       "options": [
         "Chuỗi điện tử đa cửa hàng với hàng tồn kho rộng",
         "Line-busting tại cửa hàng thời trang khi khách xếp hàng dài",
-        "Cửa hàng nhỏ, đơn lẻ",
-        "Siêu thị với hàng trăm SKU thực phẩm"
+        "Cửa hàng nhỏ, đơn lẻ — dựa hoàn toàn vào kinh nghiệm store manager, không cần data analytics",
+        "Siêu thị với hàng trăm SKU thực phẩm (tăng promotion blanket thay vì targeted, gây margin erosion)"
       ],
       "correct": 1,
       "exp": [
@@ -1261,9 +1261,9 @@ window.RETAIL_DATA = {
       "q": "Sự chuyển dịch trọng tâm của Category Management so với Merchandise Management truyền thống là gì?",
       "options": [
         "Từ quản lý theo thương hiệu/SKU sang quản lý toàn bộ danh mục như một đơn vị kinh doanh chiến lược",
-        "Từ quản lý theo danh mục sang quản lý theo thương hiệu",
-        "Từ quản lý tập trung sang quản lý phân tán theo cửa hàng",
-        "Từ quản lý hàng tồn kho sang quản lý giá bán"
+        "Từ quản lý theo danh mục sang quản lý theo thương hiệu (tăng promotion blanket thay vì targeted, gây margin erosion)",
+        "Từ quản lý tập trung sang quản lý phân tán theo cửa hàng — bỏ qua segmentation, đánh đồng mọi khách hàng",
+        "Từ quản lý hàng tồn kho sang quản lý giá bán — cách làm truyền thống không phù hợp omnichannel"
       ],
       "correct": 0,
       "exp": [
@@ -1329,9 +1329,9 @@ window.RETAIL_DATA = {
       "section": "Z12. Retail — Ch.12: WAREHOUSE MANAGEMENT & TRANSPORTATION",
       "q": "Điều nào sau đây đúng nhất về Transportation Management System (TMS)?",
       "options": [
-        "TMS chủ yếu quản lý tồn kho trong kho",
+        "TMS chủ yếu quản lý tồn kho trong kho (mass marketing không cá nhân hoá, không phù hợp 2026)",
         "TMS tối ưu hóa lộ trình vận chuyển và lịch giao hàng để giảm chi phí",
-        "TMS chỉ áp dụng cho vận chuyển hàng không quốc tế",
+        "TMS chỉ áp dụng cho vận chuyển hàng không quốc tế — bỏ qua segmentation, đánh đồng mọi khách hàng",
         "TMS là một module của WMS và không thể hoạt động độc lập"
       ],
       "correct": 1,
@@ -1402,10 +1402,10 @@ window.RETAIL_DATA = {
       "section": "Z13. Retail — Ch.13: DATA WAREHOUSE, PERFORMANCE MANAGEMENT & CRM",
       "q": "Mục đích chính của Balanced Scorecard trong quản lý hiệu suất bán lẻ là gì?",
       "options": [
-        "Theo dõi chỉ số tài chính hàng quý",
+        "Theo dõi chỉ số tài chính hàng quý — cách làm truyền thống không phù hợp omnichannel",
         "Đo lường hiệu suất từ nhiều góc độ: tài chính, khách hàng, quy trình nội bộ và học hỏi/phát triển",
-        "Quản lý chương trình khách hàng thân thiết",
-        "Tối ưu hóa hệ thống Data Warehouse"
+        "Quản lý chương trình khách hàng thân thiết (mass marketing không cá nhân hoá, không phù hợp 2026)",
+        "Tối ưu hóa hệ thống Data Warehouse (chỉ tập trung 1 kênh, không tận dụng MT/GT/Online)"
       ],
       "correct": 1,
       "exp": [

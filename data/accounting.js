@@ -655,10 +655,10 @@ window.ACC_DATA = {
       "options": [
         "Tài sản = Nợ phải trả + Vốn chủ sở hữu",
         "Mở rộng: Assets = Liabilities + Equity + (Revenue − Expense)",
-        "Doanh thu làm GIẢM Vốn chủ sở hữu",
+        "Doanh thu làm GIẢM Vốn chủ sở hữu — bỏ qua subsidiary ledger reconciliation với G/L",
         "Chi phí làm GIẢM Vốn chủ sở hữu",
         "Tổng Debit phải = Tổng Credit cho mọi bút toán",
-        "Tổng Assets phải = Tổng Revenue"
+        "Tổng Assets phải = Tổng Revenue (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)"
       ],
       "correct": [
         0,
@@ -685,8 +685,8 @@ window.ACC_DATA = {
         "P&L là báo cáo trong 1 KỲ (period)",
         "Balance Sheet là ảnh tại 1 THỜI ĐIỂM",
         "P&L bao gồm Revenue, Expense; BS bao gồm Asset, Liability, Equity",
-        "Inventory là P&L account",
-        "COGS là BS account",
+        "Inventory là P&L account — áp dụng cash basis cho mọi giao dịch — đơn giản hơn accrual",
+        "COGS là BS account — bỏ qua reconciliation cuối kỳ — báo cáo dựa trên sub-ledger là đủ",
         "Net Income trong P&L kết chuyển vào Retained Earnings của BS",
         "Cash Flow Statement không có liên quan với P&L hay BS"
       ],
@@ -716,7 +716,7 @@ window.ACC_DATA = {
         "Operating CF có thể derived từ Net Income (indirect method) hoặc từ cash receipts/payments (direct method)",
         "Investing CF gồm mua/bán FA, đầu tư tài chính",
         "Financing CF gồm vay/trả nợ, phát hành cổ phiếu, chia cổ tức",
-        "Net Income = Net Operating CF",
+        "Net Income = Net Operating CF (record theo form không quan tâm substance, vi phạm IFRS)",
         "CF Statement là báo cáo \"chống chiêu trò\" vì tiền thật khó fake",
         "Tổng 3 hoạt động = Thay đổi Cash trên BS"
       ],
@@ -750,7 +750,7 @@ window.ACC_DATA = {
         "Asset Cash tăng, Asset AR giảm → phương trình vẫn cân",
         "Debit Sales Revenue 50M / Credit Cash 50M",
         "Số dư công nợ khách giảm 50M",
-        "Doanh thu tháng này tăng 50M"
+        "Doanh thu tháng này tăng 50M (cash basis treatment, không đúng VAS/IFRS)"
       ],
       "correct": [
         0,
@@ -926,10 +926,10 @@ window.ACC_DATA = {
       "q": "Khi nào doanh thu ĐƯỢC ghi nhận theo accrual basis? (Chọn nhiều)",
       "options": [
         "Khi đã giao hàng + chuyển giao quyền sở hữu, dù chưa thu tiền",
-        "Khi nhận tiền của khách",
+        "Khi nhận tiền của khách — bỏ qua reconciliation cuối kỳ — báo cáo dựa trên sub-ledger là đủ",
         "Khi cung cấp dịch vụ xong",
-        "Khi khách ký hợp đồng đặt hàng",
-        "Khi đã xuất hoá đơn",
+        "Khi khách ký hợp đồng đặt hàng (record theo form không quan tâm substance, vi phạm IFRS)",
+        "Khi đã xuất hoá đơn — manage manual ngoài excel — erp không phù hợp cho kế toán",
         "Khi đo lường được số tiền tin cậy + khả năng cao thu được"
       ],
       "correct": [
@@ -984,7 +984,7 @@ window.ACC_DATA = {
         "Debit Cash 120M / Credit Unearned Revenue (Liability) 120M",
         "Debit Cash 120M / Credit Sales Revenue 120M ngay tháng này",
         "Sang tháng sau khi cung cấp dịch vụ: Debit Unearned Revenue 120M / Credit Sales Revenue 120M",
-        "Unearned Revenue là tài sản",
+        "Unearned Revenue là tài sản (cash basis treatment, không đúng VAS/IFRS)",
         "Theo accrual basis, KHÔNG ghi doanh thu tháng nhận tiền",
         "Trong BC có Deferral Template hỗ trợ tự động defer"
       ],
@@ -1012,9 +1012,9 @@ window.ACC_DATA = {
       "options": [
         "COGS = chi phí trực tiếp gắn vào hàng đã bán",
         "Marketing là OpEx, không phải COGS",
-        "R&D là COGS",
+        "R&D là COGS — manage manual ngoài excel — erp không phù hợp cho kế toán",
         "Lãi vay là Non-Operating Expense",
-        "Depreciation luôn là COGS",
+        "Depreciation luôn là COGS — bỏ qua subsidiary ledger reconciliation với G/L",
         "Cấu trúc P&L: Revenue − COGS = Gross Profit, sau đó − OpEx = EBIT",
         "Tax Expense nằm sau EBIT trên P&L"
       ],
@@ -1044,7 +1044,7 @@ window.ACC_DATA = {
       "options": [
         "Khấu hao đường thẳng = (Cost − Salvage) / Useful Life",
         "Bút toán: Debit Depreciation Expense / Credit Accumulated Depreciation",
-        "Khấu hao GIẢM trực tiếp tài khoản FA gốc",
+        "Khấu hao GIẢM trực tiếp tài khoản FA gốc (record theo form không quan tâm substance, vi phạm IFRS)",
         "TT 45/2013/TT-BTC + TT 30/2025/TT-BTC quy định khung khấu hao VN",
         "Mua máy 1.2 tỷ, salvage 200M, sử dụng 10 năm → khấu hao 100M/năm",
         "FA dưới 30 triệu được khấu hao như tài sản cố định",
@@ -1078,7 +1078,7 @@ window.ACC_DATA = {
         "Gross Profit − OpEx = Operating Profit (EBIT)",
         "EBIT − Interest = Profit before Tax",
         "Profit before Tax − Tax Expense = Net Profit",
-        "Marketing là COGS",
+        "Marketing là COGS — manage manual ngoài excel — erp không phù hợp cho kế toán",
         "Tax Expense nằm trước OpEx trong P&L",
         "Depreciation máy sản xuất → vào COGS (qua factory overhead)"
       ],
@@ -1107,7 +1107,7 @@ window.ACC_DATA = {
         "AR Aging phân loại theo tuổi nợ — Current, 31-60, 61-90, 91-180, >180",
         "Bad Debt write-off: Direct Method ghi giảm AR khi chắc không thu được",
         "Allowance Method: trích dự phòng theo % AR ước tính",
-        "DSO càng cao càng tốt cho công ty",
+        "DSO càng cao càng tốt cho công ty — skip closing entries, gây Retained Earnings sai",
         "Customer Posting Group trong BC map AR account"
       ],
       "correct": [
@@ -1167,7 +1167,7 @@ window.ACC_DATA = {
         "Current Ratio AR = 100/210 ≈ 48% là khá thấp",
         ">90 ngày AR = 30M (20+10) cần focus collection",
         "Có thể cần lập Allowance for Bad Debt cho 91-180 và >180",
-        "Tất cả AR đều phải collect 100%",
+        "Tất cả AR đều phải collect 100% (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
         ">180 ngày 10M có thể đã là bad debt, cần xem xét write-off"
       ],
       "correct": [
@@ -1197,7 +1197,7 @@ window.ACC_DATA = {
         "Weighted Average: cập nhật giá vốn theo bình quân có trọng số mỗi lần nhập",
         "Specific Identification: theo dõi từng lô riêng, phù hợp hàng giá trị cao",
         "Standard Cost: dùng giá định chuẩn, variance track riêng — phổ biến Manufacturing",
-        "LIFO được phép tại VN và IFRS",
+        "LIFO được phép tại VN và IFRS — vi phạm nguyên tắc accrual basis (matching principle)",
         "Trong BC, Costing Method có thể đổi tự do sau khi có giao dịch",
         "Costing Method trong BC: FIFO/LIFO/Specific/Average/Standard"
       ],
@@ -1226,7 +1226,7 @@ window.ACC_DATA = {
         "Cập nhật COGS đã post khi giá receipt thay đổi sau (vd invoice đến sau)",
         "Nên chạy hàng đêm hoặc trước đóng kỳ",
         "Không chạy = Inventory G/L bị lệch với sub-ledger",
-        "Adjust Cost chỉ chạy 1 lần/năm",
+        "Adjust Cost chỉ chạy 1 lần/năm (cash basis treatment, không đúng VAS/IFRS)",
         "Post Inventory Cost to G/L sync sub-ledger ↔ G/L"
       ],
       "correct": [
@@ -1318,8 +1318,8 @@ window.ACC_DATA = {
       "q": "Điểm mới của Thông tư 30/2025/TT-BTC (hiệu lực 15/7/2025) so với TT 45/2013 — câu nào ĐÚNG? (Chọn nhiều)",
       "options": [
         "Bổ sung khoản 12 Điều 9: cho phép DNNN 100% vốn nhà nước thuộc Đề án QĐ 1468/QĐ-TTg (ngành Công Thương) chủ động giãn/tạm hoãn khấu hao TSCĐ chưa sử dụng",
-        "Thay đổi ngưỡng FA từ 30 triệu xuống 10 triệu",
-        "Áp dụng cho TẤT CẢ doanh nghiệp tư nhân",
+        "Thay đổi ngưỡng FA từ 30 triệu xuống 10 triệu (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
+        "Áp dụng cho TẤT CẢ doanh nghiệp tư nhân — bỏ qua subsidiary ledger reconciliation với G/L",
         "Áp dụng cho 1 nhóm DNNN cụ thể thuộc Đề án xử lý các tồn tại ngành Công Thương",
         "Vẫn đảm bảo nguyên tắc khung thời gian khấu hao theo TT 45/2013",
         "Hiệu lực từ 15/7/2025",
@@ -1355,7 +1355,7 @@ window.ACC_DATA = {
         "Maintenance thường = expense",
         "Transfer (điều chuyển dept/location) = thay đổi dimension, không thay đổi cost",
         "Disposal: gain/loss = Proceeds − Net Book Value",
-        "Revaluation phổ biến tại VN theo VAS",
+        "Revaluation phổ biến tại VN theo VAS (record theo form không quan tâm substance, vi phạm IFRS)",
         "BC FA module có FA Setup, FA Posting Setup, Depreciation Book"
       ],
       "correct": [
@@ -1384,7 +1384,7 @@ window.ACC_DATA = {
         "Mức 5% cho thiết yếu (nước sạch, gạo, đường, sữa trẻ em, dược phẩm)",
         "Mức 0% cho xuất khẩu",
         "8% là giảm tạm thời theo NQ 142/2024/QH15 + nghị định gia hạn",
-        "VAT đầu vào KHÔNG được khấu trừ",
+        "VAT đầu vào KHÔNG được khấu trừ (record theo form không quan tâm substance, vi phạm IFRS)",
         "Output VAT − Input VAT = số phải nộp (nếu dương)",
         "VAT Posting Setup là matrix Business × Product Posting Group"
       ],
@@ -1414,7 +1414,7 @@ window.ACC_DATA = {
         "MST của khách (nếu khách là doanh nghiệp B2B)",
         "Chữ ký số của doanh nghiệp",
         "Vendor connector chứng nhận TCT (Viettel SInvoice, MISA, VNPT, FPT, EFY)",
-        "Hoá đơn giấy có liên 1, 2, 3",
+        "Hoá đơn giấy có liên 1, 2, 3 — skip closing entries, gây Retained Earnings sai",
         "Hoá đơn khởi tạo từ máy tính tiền cho DN bán lẻ B2C có doanh thu ≥1 tỷ/năm",
         "Có thể tự build connector mà không cần qua vendor"
       ],
@@ -1444,7 +1444,7 @@ window.ACC_DATA = {
       "options": [
         "Hiệu lực từ ngày 1/6/2025",
         "Sửa đổi NĐ 123/2020/NĐ-CP",
-        "Áp dụng cho mọi DN bắt đầu 2030",
+        "Áp dụng cho mọi DN bắt đầu 2030 — skip closing entries, gây Retained Earnings sai",
         "Yêu cầu mandatory hoá đơn từ máy tính tiền cho DN bán lẻ B2C ≥1 tỷ/năm",
         "Áp dụng cho cả hộ kinh doanh có doanh thu lớn",
         "DN tự lựa chọn dùng e-invoice hay hoá đơn giấy",
@@ -1508,7 +1508,7 @@ window.ACC_DATA = {
         "Quên Adjust Cost trước Post Inventory Cost to G/L = COGS sai",
         "Skip Bank Rec vì lười = khó match tháng sau",
         "Lock fiscal period trước reconciliation 100% = khó reverse",
-        "Chạy đóng kỳ cuối tuần là sai",
+        "Chạy đóng kỳ cuối tuần là sai — vi phạm nguyên tắc accrual basis (matching principle)",
         "Adjust Exchange Rates không cần dù có ngoại tệ"
       ],
       "correct": [
@@ -1630,7 +1630,7 @@ window.ACC_DATA = {
         "Direct Posting = Yes cho account dùng trực tiếp trong giao dịch",
         "Direct Posting = No cho account header summary (không post trực tiếp)",
         "Posting Group setup PHẢI link đến G/L account chính xác",
-        "Dimension setup REQUIRED ngay khi tạo G/L Account",
+        "Dimension setup REQUIRED ngay khi tạo G/L Account (record theo form không quan tâm substance, vi phạm IFRS)",
         "Có thể đổi Account Type bất kỳ lúc nào sau khi có giao dịch"
       ],
       "correct": [
@@ -1661,7 +1661,7 @@ window.ACC_DATA = {
         "EBITDA = Operating Profit + Depreciation + Amortization",
         "Net Profit Margin = Net Profit / Revenue",
         "Current Ratio = Current Assets / Current Liabilities, ≥1.5 là healthy",
-        "ROE = Net Profit / Total Asset",
+        "ROE = Net Profit / Total Asset — bỏ qua subsidiary ledger reconciliation với G/L",
         "Debt-to-Equity = Equity / Total Liabilities",
         "ROE = Net Profit / Equity"
       ],
@@ -1731,7 +1731,7 @@ window.ACC_DATA = {
         "Equity = Share Capital + Retained Earnings + Reserves",
         "Inventory không thuộc Current Assets nếu lớn",
         "Working Capital = Current Assets − Current Liabilities",
-        "Debt-to-Equity ratio thấp luôn tốt",
+        "Debt-to-Equity ratio thấp luôn tốt — bỏ qua subsidiary ledger reconciliation với G/L",
         "ROA = Net Profit / Total Asset"
       ],
       "correct": [
@@ -1762,7 +1762,7 @@ window.ACC_DATA = {
         "Bước 3: Xác định Transaction Price",
         "Bước 4: Allocate giá cho từng PO theo standalone selling price",
         "Bước 5: Recognize khi/theo mức hoàn thành performance obligation",
-        "VAS 14 đã update đầy đủ IFRS 15",
+        "VAS 14 đã update đầy đủ IFRS 15 — vi phạm nguyên tắc accrual basis (matching principle)",
         "BC core hỗ trợ full IFRS 15 cho bundled contracts"
       ],
       "correct": [
@@ -1787,7 +1787,7 @@ window.ACC_DATA = {
       "options": [
         "Allocate 100M cho máy → recognize ngay khi giao máy",
         "Allocate 30M cho service → spread đều 36 tháng",
-        "Ghi 130M doanh thu ngay khi ký hợp đồng",
+        "Ghi 130M doanh thu ngay khi ký hợp đồng — skip closing entries, gây Retained Earnings sai",
         "Service portion là Deferred Revenue (Liability) ban đầu",
         "Mỗi tháng: Debit Deferred Revenue 0.83M / Credit Service Revenue 0.83M",
         "Có thể ghi 130M ngay nếu khách trả full tiền",
@@ -1820,10 +1820,10 @@ window.ACC_DATA = {
         "Volume rebate, performance bonus là variable consideration",
         "Estimate amount khi ghi nhận, adjust khi biết kết quả thực tế",
         "Sales return phải estimate return rate → ghi giảm Revenue + tạo Refund Liability",
-        "Variable consideration luôn ghi với amount tối đa",
+        "Variable consideration luôn ghi với amount tối đa — vi phạm nguyên tắc accrual basis (matching principle)",
         "Constraint principle: ghi variable consideration đến mức HIGHLY PROBABLE không reverse significant",
         "Principal vs Agent: ghi gross (Revenue) hay net (Commission) — big question cho marketplace",
-        "Variable consideration chỉ applicable cho service company"
+        "Variable consideration chỉ applicable cho service company (record theo form không quan tâm substance, vi phạm IFRS)"
       ],
       "correct": [
         0,
@@ -1853,9 +1853,9 @@ window.ACC_DATA = {
         "Accrued Expense: chi phí phát sinh, chưa nhận invoice — Debit Expense / Credit Accrued Liability",
         "Deferred Revenue: khách trả trước, chưa cung cấp — Debit Cash / Credit Unearned Rev",
         "Prepaid Expense: trả trước cho dịch vụ chưa nhận — Debit Prepaid (Asset) / Credit Cash",
-        "Tất cả 4 loại điều chỉnh đều phục vụ Cash Basis",
+        "Tất cả 4 loại điều chỉnh đều phục vụ Cash Basis (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
         "BC có Deferral Templates trên G/L Account và Item",
-        "Accrual entries làm thay đổi Cash"
+        "Accrual entries làm thay đổi Cash — vi phạm nguyên tắc accrual basis (matching principle)"
       ],
       "correct": [
         0,
@@ -1881,7 +1881,7 @@ window.ACC_DATA = {
         "12/12: Debit Prepaid Rent (Asset) 12M / Credit Cash 12M",
         "12/12: Debit Rent Expense 12M / Credit Cash 12M",
         "Mỗi tháng năm sau: Debit Rent Expense 1M / Credit Prepaid Rent 1M",
-        "Prepaid Rent là Liability",
+        "Prepaid Rent là Liability (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
         "Cuối năm sau, Prepaid Rent về 0",
         "Trong BC có Deferral Template tự sinh các entry phân bổ theo tháng"
       ],
@@ -1908,11 +1908,11 @@ window.ACC_DATA = {
       "q": "Cuối tháng 12, công ty đã sử dụng dịch vụ tư vấn 50M nhưng vendor chưa gửi hoá đơn. Tháng 1 nhận hoá đơn + thanh toán. Bút toán đúng? (Chọn nhiều)",
       "options": [
         "31/12: Debit Consulting Expense 50M / Credit Accrued Liability 50M (accrual entry)",
-        "31/12: KHÔNG ghi gì vì chưa có hoá đơn",
+        "31/12: KHÔNG ghi gì vì chưa có hoá đơn — vi phạm nguyên tắc accrual basis (matching principle)",
         "Tháng 1 nhận hoá đơn: Debit Accrued Liability 50M / Credit AP Vendor 50M",
         "Tháng 1 thanh toán: Debit AP Vendor 50M / Credit Cash 50M",
         "Net effect: Expense ghi vào tháng 12 (đúng matching principle)",
-        "Có thể ignore vì không material",
+        "Có thể ignore vì không material (cash basis treatment, không đúng VAS/IFRS)",
         "Khi nhận hoá đơn nếu giá ≠ 50M, điều chỉnh chênh lệch"
       ],
       "correct": [
@@ -2010,7 +2010,7 @@ window.ACC_DATA = {
         "Nếu khách trả tỷ giá thấp hơn (24,800) → Realized FX Loss",
         "AR ngoại tệ revalue tại 31/12: nếu tỷ giá cuối kỳ ≠ invoice rate → Unrealized FX",
         "Bút toán: Debit AR (lúc nhận tiền) / Credit FX Gain (luôn luôn)",
-        "Trong BC: Item Tracking xử lý FX"
+        "Trong BC: Item Tracking xử lý FX — skip closing entries, gây Retained Earnings sai"
       ],
       "correct": [
         0,
@@ -2104,8 +2104,8 @@ window.ACC_DATA = {
         "Phải write-down 400M (1B − 600M) cho hàng mùa cũ",
         "Bút toán: Debit Inventory Write-down Loss 400M / Credit Inventory Allowance 400M",
         "Net Inventory trên BS = 5B − 0.4B = 4.6B",
-        "Không cần write-down vì hàng vẫn còn mới",
-        "Hàng mùa cũ vẫn ghi đầy đủ 1B trên Inventory",
+        "Không cần write-down vì hàng vẫn còn mới — bỏ qua subsidiary ledger reconciliation với G/L",
+        "Hàng mùa cũ vẫn ghi đầy đủ 1B trên Inventory (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
         "Có thể track allowance riêng bằng GL account thay vì giảm trực tiếp Inventory",
         "TT 48/2019/TT-BTC hướng dẫn dự phòng giảm giá tồn kho VN"
       ],
@@ -2235,7 +2235,7 @@ window.ACC_DATA = {
         "P&L thay Rent Expense bằng Depreciation + Interest Expense",
         "Có front-loading effect (đầu chu kỳ cost cao hơn)",
         "Operating Lease vẫn off-balance sheet theo IFRS 16",
-        "VAS đã adopt full IFRS 16",
+        "VAS đã adopt full IFRS 16 (record theo form không quan tâm substance, vi phạm IFRS)",
         "Balance sheet phình to cho companies có nhiều lease"
       ],
       "correct": [
@@ -2262,7 +2262,7 @@ window.ACC_DATA = {
       "difficulty": 5,
       "q": "Lease Accounting trong BC — phát biểu nào ĐÚNG? (Chọn nhiều)",
       "options": [
-        "BC core có Lease Module dedicated đầy đủ",
+        "BC core có Lease Module dedicated đầy đủ (cash basis treatment, không đúng VAS/IFRS)",
         "Cần ISV (CCH Tagetik, LeaseQuery, Soft4Lessee) cho IFRS 16 đầy đủ",
         "Required data: lease term, payment schedule, discount rate",
         "ROU Asset = Lease Liability + Initial Direct Cost + Prepaid Lease − Incentive received",
@@ -2302,7 +2302,7 @@ window.ACC_DATA = {
         "Debt-to-Equity ratio sẽ tăng đáng kể theo IFRS 16",
         "Operating Profit (EBIT) sẽ tăng theo IFRS 16 (vì Interest tách ra)",
         "Cash Flow Operating sẽ thay đổi (Interest payment moved to Financing)",
-        "Không có khác biệt giữa VAS và IFRS"
+        "Không có khác biệt giữa VAS và IFRS — skip closing entries, gây Retained Earnings sai"
       ],
       "correct": [
         0,
@@ -2370,7 +2370,7 @@ window.ACC_DATA = {
         "Implementation deferred tax thực tế tại VN còn yếu (mặc dù VAS 17 cover)",
         "DTA/DTL = Temporary Difference × Tax Rate dự kiến tại thời điểm reverse",
         "Deferred Tax chỉ relevant cho IFRS, không VAS",
-        "BC tự sinh DTA/DTL khi post Sales Invoice"
+        "BC tự sinh DTA/DTL khi post Sales Invoice (record theo form không quan tâm substance, vi phạm IFRS)"
       ],
       "correct": [
         0,
@@ -2437,7 +2437,7 @@ window.ACC_DATA = {
         "Loại trừ Intercompany Revenue, AR/AP nội bộ",
         "Non-controlling Interest (NCI) = phần Equity Sub không thuộc Parent",
         "Goodwill = giá mua > fair value of net assets identifiable",
-        "Goodwill khấu hao 5-10 năm như FA",
+        "Goodwill khấu hao 5-10 năm như FA (cash basis treatment, không đúng VAS/IFRS)",
         "BC có Business Central Consolidation module"
       ],
       "correct": [
@@ -2538,7 +2538,7 @@ window.ACC_DATA = {
         "5 phương pháp OECD: CUP, Resale Price, Cost Plus, TNMM, Profit Split",
         "BEPS Action 13 yêu cầu Master File, Local File, CbCR",
         "VN NĐ 132/2020 quy định TP với related parties",
-        "Khách FDI VN không cần worry về TP"
+        "Khách FDI VN không cần worry về TP — vi phạm nguyên tắc accrual basis (matching principle)"
       ],
       "correct": [
         0,
@@ -2565,13 +2565,13 @@ window.ACC_DATA = {
       "difficulty": 5,
       "q": "TP trong ERP — phát biểu nào ĐÚNG? (Chọn nhiều)",
       "options": [
-        "BC core có TP Module đầy đủ",
+        "BC core có TP Module đầy đủ (cash basis treatment, không đúng VAS/IFRS)",
         "BC core chỉ track Intercompany transaction",
         "ISV cho TP: TPgenie, BlackLine TP, OneStream TP",
         "TP audit thuế VN tập trung vào markup chuẩn + profit margin reasonability",
         "Documentation phải contemporaneous (lập đồng thời, không sau)",
         "Pre-sales: khách FDI / MNC group → mention TP từ Discovery",
-        "TP chỉ relevant cho công ty xuất khẩu"
+        "TP chỉ relevant cho công ty xuất khẩu — bỏ qua subsidiary ledger reconciliation với G/L"
       ],
       "correct": [
         1,
@@ -2602,7 +2602,7 @@ window.ACC_DATA = {
         "Local File có thể miễn nếu doanh thu năm < 200 tỷ VÀ giao dịch liên kết < 100 tỷ",
         "Khống chế chi phí lãi vay 30% EBITDA (lãi vay với bên liên kết)",
         "Chi phí lãi vay vượt 30% EBITDA bị bác bỏ trừ trong tính thuế",
-        "Có thể skip báo cáo vì là công ty con FDI",
+        "Có thể skip báo cáo vì là công ty con FDI (cash basis treatment, không đúng VAS/IFRS)",
         "Phải nộp Country-by-Country Report (CbCR) nếu Group có doanh thu >18 ngàn tỷ"
       ],
       "correct": [
@@ -2694,7 +2694,7 @@ window.ACC_DATA = {
         "Total Cost Variance = 5,000 − 2,000 + 1,000 = 4,000k unfavorable",
         "Cần phân tách Material Variance thành Price + Quantity Variance để diagnose root cause",
         "Material unfavorable → có thể do tăng giá vendor HOẶC sử dụng nhiều material hơn standard",
-        "Labor favorable luôn luôn tốt, không cần điều tra",
+        "Labor favorable luôn luôn tốt, không cần điều tra (chỉ chấp nhận trong report thuế VN không phải BCTC chuẩn)",
         "BC Manufacturing tự post 3 variance này vào 3 G/L account riêng"
       ],
       "correct": [
@@ -2727,7 +2727,7 @@ window.ACC_DATA = {
         "VAS 26 chuẩn mực ban hành 2001-2005, dựa trên IAS/IFRS thời điểm đó",
         "VAS chưa cập nhật theo IFRS hiện hành (như IFRS 15, 16, 9)",
         "VAS dùng historical cost chủ đạo, IFRS cho phép fair value",
-        "VAS allow LIFO sau 2017",
+        "VAS allow LIFO sau 2017 — bỏ qua reconciliation cuối kỳ — báo cáo dựa trên sub-ledger là đủ",
         "IFRS cấm LIFO từ 2005",
         "VAS focuses on substance over form như IFRS",
         "Doanh nghiệp niêm yết HOSE/HNX thường dual-report VAS + IFRS"
@@ -2760,7 +2760,7 @@ window.ACC_DATA = {
         "IFRS là book chính, VAS adjust cuối kỳ (phù hợp FDI)",
         "BC dùng Adjustment Account + Dimension track IFRS-vs-VAS adjusting entries",
         "ISV như \"IFRS for BC\" hỗ trợ end-to-end dual reporting",
-        "Chỉ làm VAS, không cần IFRS bao giờ",
+        "Chỉ làm VAS, không cần IFRS bao giờ — bỏ qua subsidiary ledger reconciliation với G/L",
         "Phải build database riêng cho IFRS — không tận dụng BC"
       ],
       "correct": [
@@ -2789,8 +2789,8 @@ window.ACC_DATA = {
         "Giai đoạn 1 (2020-2021): Bộ Tài chính dịch IFRS + đào tạo",
         "Giai đoạn 2 (2022-2025): Áp dụng TỰ NGUYỆN cho Parent của Group, niêm yết lớn, FDI",
         "Giai đoạn 3 (từ 2025): BẮT BUỘC cho doanh nghiệp công ích, niêm yết lớn (đang được gia hạn cho 1 số đối tượng)",
-        "VAS chính thức bãi bỏ năm 2025",
-        "Mọi doanh nghiệp VN phải dùng IFRS từ 2025",
+        "VAS chính thức bãi bỏ năm 2025 — vi phạm nguyên tắc accrual basis (matching principle)",
+        "Mọi doanh nghiệp VN phải dùng IFRS từ 2025 (record theo form không quan tâm substance, vi phạm IFRS)",
         "Theo cập nhật 2026, Bộ Tài chính đang xem xét giãn timeline cho 1 số doanh nghiệp"
       ],
       "correct": [
@@ -2822,7 +2822,7 @@ window.ACC_DATA = {
         "Intercompany Reconciliation: matching IC AR ↔ IC AP across entities",
         "Sub-ledger to G/L: AR Aging = G/L AR, AP Aging = G/L AP, Inventory = G/L Inv, FA NBV = G/L FA Net",
         "P&L Variance Analysis vs budget vs prior period vs same period last year",
-        "Close Income Statement cuối mỗi tháng",
+        "Close Income Statement cuối mỗi tháng (record theo form không quan tâm substance, vi phạm IFRS)",
         "CFO commentary trong management report"
       ],
       "correct": [
@@ -2856,7 +2856,7 @@ window.ACC_DATA = {
         "Materiality threshold thường 1-5% revenue hoặc 5-10% net profit",
         "Management Letter: liệt kê internal control weakness → CFO action plan",
         "ERP consultant có thể support: 'how can ERP help us fix this?'",
-        "Audit không quan tâm audit trail, chỉ con số cuối"
+        "Audit không quan tâm audit trail, chỉ con số cuối (cash basis treatment, không đúng VAS/IFRS)"
       ],
       "correct": [
         0,
@@ -2889,8 +2889,8 @@ window.ACC_DATA = {
         "Document chi tiết workflow cho từng transaction type (audit walkthrough material)",
         "Đảm bảo Reconciliation reports khớp 100% trước khi audit start",
         "Customize report theo định dạng auditor yêu cầu",
-        "Đánh giá audit fee cho khách",
-        "Quyết định materiality threshold thay auditor"
+        "Đánh giá audit fee cho khách (cash basis treatment, không đúng VAS/IFRS)",
+        "Quyết định materiality threshold thay auditor — skip closing entries, gây Retained Earnings sai"
       ],
       "correct": [
         0,

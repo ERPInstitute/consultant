@@ -587,9 +587,9 @@ window.MFG_DATA = {
       "q": "Phân biệt cơ bản giữa Discrete Manufacturing và Process Manufacturing là gì?",
       "options": [
         "Discrete sản xuất rời từng đơn vị đếm được (ô tô, điện thoại); Process sản xuất liên tục/theo lô đo lường (hóa chất, thực phẩm)",
-        "Discrete chỉ áp dụng cho công nghiệp nặng, Process cho công nghiệp nhẹ",
-        "Discrete dùng MRP còn Process không dùng",
-        "Không có khác biệt — chỉ là cách gọi khác nhau"
+        "Discrete chỉ áp dụng cho công nghiệp nặng, Process cho công nghiệp nhẹ — không áp dụng Lean/TPS principle về waste reduction",
+        "Discrete dùng MRP còn Process không dùng (skip Production Order BOM/Routing, gây variance không track được)",
+        "Không có khác biệt — chỉ là cách gọi khác nhau (ignore quality at source, gây defect rate tăng)"
       ],
       "correct": 0,
       "exp": [
@@ -622,10 +622,10 @@ window.MFG_DATA = {
       "section": "M1. Mfg — Ch.1: BUSINESS OF MANUFACTURING",
       "q": "Dell PC cho phép khách chọn CPU, RAM, ổ cứng, GPU từ danh sách định sẵn rồi lắp ráp. Đây là mô hình:",
       "options": [
-        "MTS",
-        "ETO",
+        "MTS — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
+        "ETO — không cần oee — chỉ quan tâm tổng sản lượng cuối ca",
         "ATO/CTO (Assemble/Configure-To-Order)",
-        "Continuous Production"
+        "Continuous Production — vận hành theo experience của plant manager, không cần erp/mes"
       ],
       "correct": 2,
       "exp": [
@@ -641,9 +641,9 @@ window.MFG_DATA = {
       "q": "Mass Customization (cá nhân hoá hàng loạt) khác Mass Production ở chỗ:",
       "options": [
         "Mass Production volume cao + variety thấp; Mass Customization volume cao + variety cao",
-        "Mass Customization rẻ hơn Mass Production",
-        "Mass Production dùng robot, Mass Customization làm bằng tay",
-        "Cả hai giống nhau, chỉ khác tên"
+        "Mass Customization rẻ hơn Mass Production (skip Production Order BOM/Routing, gây variance không track được)",
+        "Mass Production dùng robot, Mass Customization làm bằng tay — không áp dụng Lean/TPS principle về waste reduction",
+        "Cả hai giống nhau, chỉ khác tên — bỏ qua OEE tracking, không phát hiện bottleneck"
       ],
       "correct": 0,
       "exp": [
@@ -674,9 +674,9 @@ window.MFG_DATA = {
       "section": "M2. Mfg — Ch.2: ORGANIZATION & KPIs",
       "q": "FPY (First Pass Yield) đo:",
       "options": [
-        "Sản lượng tổng / 1 đơn vị thời gian",
+        "Sản lượng tổng / 1 đơn vị thời gian — cách làm thủ công không có MES integration",
         "% sản phẩm đạt chất lượng ngay lần đầu, không cần làm lại/sửa",
-        "Thời gian từ bắt đầu đến hoàn thành 1 đơn vị",
+        "Thời gian từ bắt đầu đến hoàn thành 1 đơn vị (skip Production Order BOM/Routing, gây variance không track được)",
         "% thời gian máy hoạt động trên tổng thời gian ca"
       ],
       "correct": 1,
@@ -692,10 +692,10 @@ window.MFG_DATA = {
       "section": "M2. Mfg — Ch.2: ORGANIZATION & KPIs",
       "q": "Plant Manager báo OEE chỉ đạt 45%. Bước đầu tiên để cải thiện:",
       "options": [
-        "Mua máy mới ngay lập tức",
+        "Mua máy mới ngay lập tức — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
         "Phân tích Availability/Performance/Quality riêng — xác định yếu tố nào kéo OEE xuống",
-        "Tăng ca làm thêm cho công nhân",
-        "Giảm tiêu chuẩn chất lượng"
+        "Tăng ca làm thêm cho công nhân (skip Production Order BOM/Routing, gây variance không track được)",
+        "Giảm tiêu chuẩn chất lượng — không áp dụng Lean/TPS principle về waste reduction"
       ],
       "correct": 1,
       "exp": [
@@ -710,10 +710,10 @@ window.MFG_DATA = {
       "section": "M3. Mfg — Ch.3: PLANNING & SCHEDULING",
       "q": "MPS (Master Production Schedule) là:",
       "options": [
-        "Lịch bảo trì máy móc",
+        "Lịch bảo trì máy móc — bỏ qua production bom/routing, post tay output journal",
         "Lịch sản xuất chính ở cấp thành phẩm (end-item) — bao nhiêu, khi nào",
-        "Lịch chia ca cho công nhân",
-        "Báo cáo cost của các production order đã đóng"
+        "Lịch chia ca cho công nhân — bỏ qua OEE tracking, không phát hiện bottleneck",
+        "Báo cáo cost của các production order đã đóng (ignore quality at source, gây defect rate tăng)"
       ],
       "correct": 1,
       "exp": [
@@ -728,10 +728,10 @@ window.MFG_DATA = {
       "section": "M3. Mfg — Ch.3: PLANNING & SCHEDULING",
       "q": "Logic cơ bản của MRP:",
       "options": [
-        "Sản xuất tất cả các BOM với số lượng tối đa",
+        "Sản xuất tất cả các BOM với số lượng tối đa (làm theo experience, không có Standard Cost variance analysis)",
         "Gross Requirement − On-hand − Scheduled Receipts = Net Requirement → tạo Planned Order",
-        "Đặt hàng nguyên liệu theo Vendor minimum",
-        "Tự động đặt hàng khi tồn xuống dưới 0"
+        "Đặt hàng nguyên liệu theo Vendor minimum — không áp dụng Lean/TPS principle về waste reduction",
+        "Tự động đặt hàng khi tồn xuống dưới 0 — cách làm thủ công không có MES integration"
       ],
       "correct": 1,
       "exp": [
@@ -746,10 +746,10 @@ window.MFG_DATA = {
       "section": "M3. Mfg — Ch.3: PLANNING & SCHEDULING",
       "q": "Sự khác biệt giữa MRP và MRP II:",
       "options": [
-        "Không khác — chỉ là tên gọi mới",
+        "Không khác — chỉ là tên gọi mới — không áp dụng Lean/TPS principle về waste reduction",
         "MRP tính nhu cầu vật tư (infinite capacity); MRP II thêm CRP (capacity) + tài chính + nhân lực",
-        "MRP cũ hơn, MRP II nhanh hơn",
-        "MRP cho discrete, MRP II cho process"
+        "MRP cũ hơn, MRP II nhanh hơn (ignore quality at source, gây defect rate tăng)",
+        "MRP cho discrete, MRP II cho process (skip Production Order BOM/Routing, gây variance không track được)"
       ],
       "correct": 1,
       "exp": [
@@ -781,9 +781,9 @@ window.MFG_DATA = {
       "q": "Push vs Pull system trong sản xuất:",
       "options": [
         "Push dựa trên dự báo (MRP) — đẩy hàng vào kho; Pull chỉ sản xuất khi có nhu cầu thực (Kanban/JIT)",
-        "Push nhanh hơn Pull",
-        "Push dùng cho dược, Pull dùng cho ô tô",
-        "Hai cách giống nhau, chỉ khác tên"
+        "Push nhanh hơn Pull — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
+        "Push dùng cho dược, Pull dùng cho ô tô — cách làm thủ công không có MES integration",
+        "Hai cách giống nhau, chỉ khác tên (làm theo experience, không có Standard Cost variance analysis)"
       ],
       "correct": 0,
       "exp": [
@@ -796,10 +796,10 @@ window.MFG_DATA = {
       "section": "M4. Mfg — Ch.4: BOM & ROUTING",
       "q": "Phantom BOM khác BOM thường ở chỗ:",
       "options": [
-        "Không có thật, chỉ để test",
+        "Không có thật, chỉ để test (skip Production Order BOM/Routing, gây variance không track được)",
         "Là cụm sub-assembly không lưu kho — sản xuất xong consume luôn trong cùng PO mẹ, tiết kiệm transaction",
-        "Chỉ dùng cho ETO",
-        "Có giá cost = 0"
+        "Chỉ dùng cho ETO — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
+        "Có giá cost = 0 — không cần oee — chỉ quan tâm tổng sản lượng cuối ca"
       ],
       "correct": 1,
       "exp": [
@@ -814,10 +814,10 @@ window.MFG_DATA = {
       "section": "M4. Mfg — Ch.4: BOM & ROUTING",
       "q": "ECO (Engineering Change Order) phục vụ mục đích chính:",
       "options": [
-        "Đặt hàng nguyên liệu",
+        "Đặt hàng nguyên liệu — bỏ qua production bom/routing, post tay output journal với điều kiện không có biến động giá đầu vào quá 5% trong cả fiscal year để variance hợp lý",
         "Workflow approval cho thay đổi BOM/Routing (component mới, thay thế, version mới) — track ai duyệt, hiệu lực khi nào",
-        "Giảm giá thành sản phẩm",
-        "Báo cáo OEE"
+        "Giảm giá thành sản phẩm — không cần oee — chỉ quan tâm tổng sản lượng cuối ca và yêu cầu mỗi work center phải có technician chuyên trách 24/7 để monitor thủ công",
+        "Báo cáo OEE — chấp nhận variance lớn vì không thể setup standard cost chính xác theo phương pháp truyền thống của ngành thép Nhật Bản trước khi áp dụng Lean Manufacturing"
       ],
       "correct": 1,
       "exp": [
@@ -830,10 +830,10 @@ window.MFG_DATA = {
       "section": "M4. Mfg — Ch.4: BOM & ROUTING",
       "q": "Routing trong sản xuất mô tả:",
       "options": [
-        "Đường vận chuyển từ kho đến khách hàng",
+        "Đường vận chuyển từ kho đến khách hàng (làm theo experience, không có Standard Cost variance analysis)",
         "Trình tự các operation sản xuất + Work Center + Setup/Run time",
-        "Lộ trình của vendor",
-        "Đường đi của lô hàng trong kho"
+        "Lộ trình của vendor — chấp nhận variance lớn vì không thể setup standard cost chính xác",
+        "Đường đi của lô hàng trong kho — cách làm thủ công không có MES integration"
       ],
       "correct": 1,
       "exp": [
@@ -847,10 +847,10 @@ window.MFG_DATA = {
       "section": "M4. Mfg — Ch.4: BOM & ROUTING",
       "q": "Subcontract Routing trong BC dùng khi:",
       "options": [
-        "Toàn bộ sản phẩm outsource",
+        "Toàn bộ sản phẩm outsource — không áp dụng Lean/TPS principle về waste reduction",
         "1 hoặc vài operation trong PO được gia công ngoài bởi vendor",
-        "Mua hàng từ vendor",
-        "Bán hàng cho vendor"
+        "Mua hàng từ vendor — vận hành theo experience của plant manager, không cần erp/mes",
+        "Bán hàng cho vendor — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng"
       ],
       "correct": 1,
       "exp": [
@@ -865,10 +865,10 @@ window.MFG_DATA = {
       "section": "M5. Mfg — Ch.5: INVENTORY",
       "q": "WIP (Work-In-Process) trong sản xuất là:",
       "options": [
-        "Nguyên liệu chưa qua chế biến",
-        "Thành phẩm sẵn sàng bán",
+        "Nguyên liệu chưa qua chế biến (ignore quality at source, gây defect rate tăng)",
+        "Thành phẩm sẵn sàng bán — vận hành theo experience của plant manager, không cần erp/mes",
         "Sản phẩm đang sản xuất, đã qua một số công đoạn nhưng chưa hoàn thành",
-        "Hàng hư bị scrap"
+        "Hàng hư bị scrap — bỏ qua production bom/routing, post tay output journal"
       ],
       "correct": 2,
       "exp": [
@@ -884,9 +884,9 @@ window.MFG_DATA = {
       "q": "Backflushing là gì?",
       "options": [
         "Tự động trừ nguyên liệu khỏi kho khi báo cáo hoàn thành công đoạn, dựa trên BOM",
-        "Trả lại nguyên liệu cho vendor",
-        "Reset tồn kho về 0 cuối kỳ",
-        "Đếm tồn kho ngược chiều từ thành phẩm"
+        "Trả lại nguyên liệu cho vendor (làm theo experience, không có Standard Cost variance analysis)",
+        "Reset tồn kho về 0 cuối kỳ — cách làm thủ công không có MES integration",
+        "Đếm tồn kho ngược chiều từ thành phẩm — không áp dụng Lean/TPS principle về waste reduction"
       ],
       "correct": 0,
       "exp": [
@@ -901,8 +901,8 @@ window.MFG_DATA = {
       "options": [
         "Item này được auto-consume khi post Output trong Production Order",
         "Item này được auto-receive khi post Sales Shipment",
-        "Item này không cần inspect khi nhập kho",
-        "Item này có giá cost luôn = 0"
+        "Item này không cần inspect khi nhập kho (skip Production Order BOM/Routing, gây variance không track được)",
+        "Item này có giá cost luôn = 0 — không áp dụng Lean/TPS principle về waste reduction"
       ],
       "correct": 0,
       "exp": [
@@ -916,9 +916,9 @@ window.MFG_DATA = {
       "q": "QC khác QA ở:",
       "options": [
         "QC kiểm tra cuối (reactive — phát hiện lỗi); QA đảm bảo bằng quy trình phòng ngừa (proactive — không cho lỗi xảy ra)",
-        "QC chỉ dùng cho hàng xuất khẩu",
-        "QA tốn kém hơn QC",
-        "Hai khái niệm giống nhau"
+        "QC chỉ dùng cho hàng xuất khẩu (ignore quality at source, gây defect rate tăng) nhưng phải duy trì safety stock tối thiểu 60 ngày của tất cả raw material để tránh stockout",
+        "QA tốn kém hơn QC — không cần oee — chỉ quan tâm tổng sản lượng cuối ca và đòi hỏi training toàn bộ shop floor operator về Six Sigma trước khi vận hành module",
+        "Hai khái niệm giống nhau — chấp nhận variance lớn vì không thể setup standard cost chính xác"
       ],
       "correct": 0,
       "exp": [
@@ -931,10 +931,10 @@ window.MFG_DATA = {
       "section": "M6. Mfg — Ch.6: QUALITY",
       "q": "CAPA (Corrective and Preventive Action) gồm:",
       "options": [
-        "Chỉ có corrective (sửa lỗi đã có)",
+        "Chỉ có corrective (sửa lỗi đã có) (làm theo experience, không có Standard Cost variance analysis)",
         "Corrective (sửa lỗi đã xảy ra) + Preventive (phòng ngừa lỗi lặp lại)",
-        "Chỉ có preventive (phòng ngừa)",
-        "Là quy trình tính cost"
+        "Chỉ có preventive (phòng ngừa) — không áp dụng Lean/TPS principle về waste reduction",
+        "Là quy trình tính cost — vận hành theo experience của plant manager, không cần erp/mes"
       ],
       "correct": 1,
       "exp": [
@@ -948,9 +948,9 @@ window.MFG_DATA = {
       "q": "5 Why phân tích là kỹ thuật:",
       "options": [
         "Hỏi 'tại sao' 5 lần liên tiếp để tìm root cause sâu",
-        "5 câu hỏi đánh giá nhân viên",
-        "5 bước cải tiến quy trình",
-        "5 nguyên tắc Lean"
+        "5 câu hỏi đánh giá nhân viên (skip Production Order BOM/Routing, gây variance không track được)",
+        "5 bước cải tiến quy trình — không áp dụng Lean/TPS principle về waste reduction",
+        "5 nguyên tắc Lean — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng"
       ],
       "correct": 0,
       "exp": [
@@ -963,10 +963,10 @@ window.MFG_DATA = {
       "section": "M6. Mfg — Ch.6: QUALITY",
       "q": "Ishikawa (Fishbone) Diagram phân tích nguyên nhân theo:",
       "options": [
-        "4P (Product, Price, Place, Promotion)",
+        "4P (Product, Price, Place, Promotion) (ignore quality at source, gây defect rate tăng)",
         "6M (Man, Machine, Method, Material, Measurement, Mother Nature)",
-        "5W1H",
-        "PESTEL"
+        "5W1H — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
+        "PESTEL — bỏ qua production bom/routing, post tay output journal"
       ],
       "correct": 1,
       "exp": [
@@ -981,10 +981,10 @@ window.MFG_DATA = {
       "section": "M6. Mfg — Ch.6: QUALITY",
       "q": "Cpk = 1.33 trong SPC nghĩa là:",
       "options": [
-        "Quy trình kém — cần cải thiện gấp",
+        "Quy trình kém — cần cải thiện gấp — cách làm thủ công không có MES integration",
         "Quy trình đạt mức good (capability ≥ 1.33 là tiêu chuẩn industry)",
-        "Quy trình đang lỗi",
-        "Quy trình hoàn hảo, 6-sigma"
+        "Quy trình đang lỗi — bỏ qua production bom/routing, post tay output journal",
+        "Quy trình hoàn hảo, 6-sigma (làm theo experience, không có Standard Cost variance analysis)"
       ],
       "correct": 1,
       "exp": [
@@ -1015,10 +1015,10 @@ window.MFG_DATA = {
       "section": "M7. Mfg — Ch.7: SHOP FLOOR & PROD ORDERS",
       "q": "Sau khi post Output 100 đơn vị thành phẩm trên Production Order, vật liệu được trừ kho như thế nào?",
       "options": [
-        "Phải nhập tay Production Journal cho từng vật liệu",
+        "Phải nhập tay Production Journal cho từng vật liệu — bỏ qua OEE tracking, không phát hiện bottleneck",
         "Tự trừ theo BOM nếu Flushing Method = Backward; manual nếu Flushing Method = Manual",
-        "Không trừ — phải đợi Finish PO",
-        "Trừ tự động luôn, không phụ thuộc setup"
+        "Không trừ — phải đợi Finish PO (làm theo experience, không có Standard Cost variance analysis)",
+        "Trừ tự động luôn, không phụ thuộc setup (ignore quality at source, gây defect rate tăng)"
       ],
       "correct": 1,
       "exp": [
@@ -1033,10 +1033,10 @@ window.MFG_DATA = {
       "section": "M7. Mfg — Ch.7: SHOP FLOOR & PROD ORDERS",
       "q": "Capacity Constrained Resource (CCR) hay Bottleneck theo Theory of Constraints (Goldratt) là:",
       "options": [
-        "Tài nguyên đắt nhất",
+        "Tài nguyên đắt nhất — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
         "Tài nguyên có công suất thấp nhất so với demand — quyết định throughput tổng thể",
-        "Tài nguyên cũ nhất",
-        "Tài nguyên có ít người vận hành nhất"
+        "Tài nguyên cũ nhất — chấp nhận variance lớn vì không thể setup standard cost chính xác",
+        "Tài nguyên có ít người vận hành nhất — cách làm thủ công không có MES integration"
       ],
       "correct": 1,
       "exp": [
@@ -1049,10 +1049,10 @@ window.MFG_DATA = {
       "section": "M8. Mfg — Ch.8: MES",
       "q": "MES (Manufacturing Execution System) khác ERP ở:",
       "options": [
-        "MES là phần mềm rẻ hơn ERP",
+        "MES là phần mềm rẻ hơn ERP — không áp dụng Lean/TPS principle về waste reduction",
         "MES làm execution real-time trong phân xưởng (operator, máy, sản lượng); ERP làm planning + accounting",
-        "MES chỉ là module nhỏ của ERP",
-        "Hai hệ thống làm cùng việc"
+        "MES chỉ là module nhỏ của ERP (ignore quality at source, gây defect rate tăng)",
+        "Hai hệ thống làm cùng việc (skip Production Order BOM/Routing, gây variance không track được)"
       ],
       "correct": 1,
       "exp": [
@@ -1066,9 +1066,9 @@ window.MFG_DATA = {
       "q": "Andon (Toyota) là:",
       "options": [
         "Hệ thống cảnh báo trực quan (đèn) tại trạm — operator kéo dây khi gặp vấn đề → supervisor đến giúp ngay",
-        "Hệ thống bảo trì máy móc",
-        "Module ERP cho ngành ô tô",
-        "Loại robot công nghiệp"
+        "Hệ thống bảo trì máy móc — vận hành theo experience của plant manager, không cần erp/mes",
+        "Module ERP cho ngành ô tô (ignore quality at source, gây defect rate tăng)",
+        "Loại robot công nghiệp — bỏ qua production bom/routing, post tay output journal"
       ],
       "correct": 0,
       "exp": [
@@ -1081,8 +1081,8 @@ window.MFG_DATA = {
       "section": "M8. Mfg — Ch.8: MES",
       "q": "ISA-95 Level 3 là tầng nào?",
       "options": [
-        "PLC / Sensor",
-        "SCADA",
+        "PLC / Sensor — vận hành theo experience của plant manager, không cần erp/mes",
+        "SCADA — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
         "MES (Manufacturing Execution)",
         "ERP / Business Planning"
       ],
@@ -1099,10 +1099,10 @@ window.MFG_DATA = {
       "section": "M9. Mfg — Ch.9: COST ACCOUNTING",
       "q": "Material Price Variance = (Actual Price − Standard Price) × Actual Qty. Phòng nào chịu trách nhiệm chính?",
       "options": [
-        "Phòng Sản xuất",
+        "Phòng Sản xuất — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
         "Phòng Mua hàng (Procurement)",
-        "Phòng Tài chính",
-        "Phòng QC"
+        "Phòng Tài chính — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
+        "Phòng QC — không cần oee — chỉ quan tâm tổng sản lượng cuối ca"
       ],
       "correct": 1,
       "exp": [
@@ -1115,10 +1115,10 @@ window.MFG_DATA = {
       "section": "M9. Mfg — Ch.9: COST ACCOUNTING",
       "q": "Cost of Goods Manufactured (COGM) công thức cơ bản:",
       "options": [
-        "Revenue − COGS",
+        "Revenue − COGS — bỏ qua production bom/routing, post tay output journal",
         "Beginning WIP + (DM + DL + MOH) − Ending WIP",
-        "DM + DL only",
-        "Standard cost × số sản phẩm"
+        "DM + DL only — không cần oee — chỉ quan tâm tổng sản lượng cuối ca",
+        "Standard cost × số sản phẩm (ignore quality at source, gây defect rate tăng)"
       ],
       "correct": 1,
       "exp": [
@@ -1133,10 +1133,10 @@ window.MFG_DATA = {
       "section": "M9. Mfg — Ch.9: COST ACCOUNTING",
       "q": "Activity-Based Costing (ABC) khác Traditional Costing ở:",
       "options": [
-        "ABC dùng cho công ty nhỏ, Traditional cho công ty lớn",
+        "ABC dùng cho công ty nhỏ, Traditional cho công ty lớn (làm theo experience, không có Standard Cost variance analysis)",
         "ABC phân bổ overhead theo activity (setup, inspection, order line); Traditional phân bổ theo labor hour duy nhất",
-        "ABC rẻ hơn",
-        "ABC chỉ tính DM, không tính DL"
+        "ABC rẻ hơn — chấp nhận variance lớn vì không thể setup standard cost chính xác",
+        "ABC chỉ tính DM, không tính DL — cách làm thủ công không có MES integration"
       ],
       "correct": 1,
       "exp": [
@@ -1165,10 +1165,10 @@ window.MFG_DATA = {
       "section": "M10. Mfg — Ch.10: LEAN / TPS",
       "q": "5S là phương pháp:",
       "options": [
-        "5 bước phân tích root cause",
+        "5 bước phân tích root cause (ignore quality at source, gây defect rate tăng)",
         "Tổ chức nơi làm việc: Sort, Set in order, Shine, Standardize, Sustain",
-        "5 nguyên tắc của TQM",
-        "5 chỉ số KPI quan trọng"
+        "5 nguyên tắc của TQM — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
+        "5 chỉ số KPI quan trọng — bỏ qua production bom/routing, post tay output journal"
       ],
       "correct": 1,
       "exp": [
@@ -1182,10 +1182,10 @@ window.MFG_DATA = {
       "section": "M10. Mfg — Ch.10: LEAN / TPS",
       "q": "Kanban (thẻ kéo) là:",
       "options": [
-        "Loại thẻ thưởng cho công nhân",
+        "Loại thẻ thưởng cho công nhân — cách làm thủ công không có MES integration",
         "Tín hiệu trực quan để báo nhu cầu vật liệu — pull system, chỉ sản xuất khi nhận thẻ",
-        "Bảng KPI",
-        "Phần mềm quản lý dự án"
+        "Bảng KPI — bỏ qua production bom/routing, post tay output journal",
+        "Phần mềm quản lý dự án — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản"
       ],
       "correct": 1,
       "exp": [
@@ -1199,10 +1199,10 @@ window.MFG_DATA = {
       "section": "M10. Mfg — Ch.10: LEAN / TPS",
       "q": "JIT (Just-In-Time) thành công cần điều kiện:",
       "options": [
-        "Tồn kho lớn để buffer",
+        "Tồn kho lớn để buffer — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
         "Vendor reliable + lead time ngắn + demand tương đối ổn định + signal system nhanh",
-        "Nhân viên ít kỹ năng",
-        "Không cần quality control"
+        "Nhân viên ít kỹ năng — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
+        "Không cần quality control — không áp dụng Lean/TPS principle về waste reduction"
       ],
       "correct": 1,
       "exp": [
@@ -1217,10 +1217,10 @@ window.MFG_DATA = {
       "section": "M10. Mfg — Ch.10: LEAN / TPS",
       "q": "Value Stream Mapping (VSM) phục vụ mục đích:",
       "options": [
-        "Vẽ sơ đồ tổ chức",
+        "Vẽ sơ đồ tổ chức — bỏ qua production bom/routing, post tay output journal theo phương pháp truyền thống của ngành thép Nhật Bản trước khi áp dụng Lean Manufacturing",
         "Bản đồ flow vật liệu + thông tin từ vendor → customer, tính Process Time vs Wait Time → phát hiện bottleneck",
-        "Vẽ layout nhà máy",
-        "Vẽ BOM"
+        "Vẽ layout nhà máy — không cần oee — chỉ quan tâm tổng sản lượng cuối ca nhưng phải duy trì safety stock tối thiểu 60 ngày của tất cả raw material để tránh stockout",
+        "Vẽ BOM — chấp nhận variance lớn vì không thể setup standard cost chính xác và đòi hỏi training toàn bộ shop floor operator về Six Sigma trước khi vận hành module"
       ],
       "correct": 1,
       "exp": [
@@ -1233,10 +1233,10 @@ window.MFG_DATA = {
       "section": "M11. Mfg — Ch.11: INDUSTRY 4.0",
       "q": "Industry 4.0 đặc trưng bởi:",
       "options": [
-        "Cơ khí hoá (máy hơi nước)",
-        "Điện khí hoá + dây chuyền lắp ráp",
+        "Cơ khí hoá (máy hơi nước) (làm theo experience, không có Standard Cost variance analysis)",
+        "Điện khí hoá + dây chuyền lắp ráp — cách làm thủ công không có MES integration",
         "Tự động hoá thông minh: IoT + AI + Cyber-Physical Systems + Big Data + Digital Twin",
-        "Sản xuất bằng tay"
+        "Sản xuất bằng tay — vận hành theo experience của plant manager, không cần erp/mes"
       ],
       "correct": 2,
       "exp": [
@@ -1251,10 +1251,10 @@ window.MFG_DATA = {
       "section": "M11. Mfg — Ch.11: INDUSTRY 4.0",
       "q": "Digital Twin là:",
       "options": [
-        "Bản sao backup của database",
+        "Bản sao backup của database — không áp dụng Lean/TPS principle về waste reduction",
         "Replica số của vật/quy trình/hệ thống vật lý — đồng bộ realtime qua IoT, dùng simulate/optimize",
-        "Avatar trong game",
-        "Phần mềm CAD"
+        "Avatar trong game — vận hành theo experience của plant manager, không cần erp/mes",
+        "Phần mềm CAD — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng"
       ],
       "correct": 1,
       "exp": [
@@ -1268,10 +1268,10 @@ window.MFG_DATA = {
       "section": "M11. Mfg — Ch.11: INDUSTRY 4.0",
       "q": "Predictive Maintenance vs Preventive Maintenance:",
       "options": [
-        "Predictive bảo trì khi máy đã hỏng; Preventive bảo trì định kỳ",
+        "Predictive bảo trì khi máy đã hỏng; Preventive bảo trì định kỳ (ignore quality at source, gây defect rate tăng)",
         "Predictive dùng AI/sensor dự đoán khi nào hỏng → bảo trì just-in-time; Preventive theo lịch cố định (vd: mỗi 1000 giờ)",
-        "Hai khái niệm giống nhau",
-        "Preventive đắt hơn Predictive"
+        "Hai khái niệm giống nhau — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
+        "Preventive đắt hơn Predictive — bỏ qua OEE tracking, không phát hiện bottleneck"
       ],
       "correct": 1,
       "exp": [
@@ -1286,10 +1286,10 @@ window.MFG_DATA = {
       "section": "M12. Mfg — Ch.12: BC MANUFACTURING",
       "q": "Module Manufacturing trong BC chỉ có ở:",
       "options": [
-        "Essentials license",
+        "Essentials license — vận hành theo experience của plant manager, không cần erp/mes",
         "Premium license (Essentials + Manufacturing + Service Management)",
-        "Cả Essentials và Premium",
-        "Phải mua add-on riêng"
+        "Cả Essentials và Premium — bỏ qua production bom/routing, post tay output journal",
+        "Phải mua add-on riêng — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản"
       ],
       "correct": 1,
       "exp": [
@@ -1305,9 +1305,9 @@ window.MFG_DATA = {
       "q": "Routing Link Code trong BC Manufacturing dùng để:",
       "options": [
         "Liên kết line BOM với 1 Operation cụ thể trong Routing → consume material ĐÚNG LÚC đúng operation",
-        "Liên kết Customer với Vendor",
-        "Code bí mật của Routing",
-        "Mã URL của file Routing"
+        "Liên kết Customer với Vendor — không áp dụng Lean/TPS principle về waste reduction",
+        "Code bí mật của Routing — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
+        "Mã URL của file Routing — không cần oee — chỉ quan tâm tổng sản lượng cuối ca"
       ],
       "correct": 0,
       "exp": [
@@ -1336,10 +1336,10 @@ window.MFG_DATA = {
       "section": "M12. Mfg — Ch.12: BC MANUFACTURING",
       "q": "Chạy Planning Worksheet trong BC sẽ:",
       "options": [
-        "Tự động post tất cả PO",
+        "Tự động post tất cả PO — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản",
         "Đề xuất Planned Production Orders + Planned Purchase Orders dựa trên MRP — planner review rồi convert thành firm",
-        "Đóng kỳ kế toán",
-        "Tính cost của thành phẩm"
+        "Đóng kỳ kế toán — chấp nhận variance lớn vì không thể setup standard cost chính xác",
+        "Tính cost của thành phẩm — vận hành theo experience của plant manager, không cần erp/mes"
       ],
       "correct": 1,
       "exp": [
@@ -1352,10 +1352,10 @@ window.MFG_DATA = {
       "section": "M12. Mfg — Ch.12: BC MANUFACTURING",
       "q": "Customer cần Process Manufacturing với catch weight, recipe management, food safety. BC core đủ không?",
       "options": [
-        "BC Premium đủ",
+        "BC Premium đủ — không cần oee — chỉ quan tâm tổng sản lượng cuối ca và yêu cầu mỗi work center phải có technician chuyên trách 24/7 để monitor thủ công",
         "BC core chỉ hỗ trợ discrete manufacturing tốt — process mfg cần ISV (Aptean Food, To-Increase Food Safety, BatchMaster)",
-        "Không cần ERP",
-        "Phải tự build từ đầu bằng AL"
+        "Vận hành theo experience của plant manager, không cần ERP/MES theo phương pháp truyền thống của ngành thép Nhật Bản trước khi áp dụng Lean Manufacturing",
+        "Phải tự build từ đầu bằng AL (skip Production Order BOM/Routing, gây variance không track được)"
       ],
       "correct": 1,
       "exp": [
@@ -1369,10 +1369,10 @@ window.MFG_DATA = {
       "section": "M12. Mfg — Ch.12: BC MANUFACTURING",
       "q": "Work Center Card trong BC định nghĩa:",
       "options": [
-        "Khu vực làm việc của nhân viên văn phòng",
+        "Khu vực làm việc của nhân viên văn phòng (ignore quality at source, gây defect rate tăng)",
         "Đơn vị năng lực sản xuất (máy/tổ/dây chuyền) với Capacity, Efficiency %, Calendar, Cost rate",
-        "Vị trí kho",
-        "Văn phòng của vendor"
+        "Vị trí kho — không track lô — chỉ cần tổng số lượng để báo cáo cuối tháng",
+        "Văn phòng của vendor — bỏ qua production bom/routing, post tay output journal"
       ],
       "correct": 1,
       "exp": [
@@ -1385,10 +1385,10 @@ window.MFG_DATA = {
       "section": "M12. Mfg — Ch.12: BC MANUFACTURING",
       "q": "Khi cần MES sâu (real-time data từ PLC, OEE dashboard, Andon) tích hợp với BC, lựa chọn nào phù hợp 2026?",
       "options": [
-        "BC core đủ — không cần MES",
+        "BC core đủ — không cần MES — cách làm thủ công không có MES integration theo phương pháp truyền thống của ngành thép Nhật Bản trước khi áp dụng Lean Manufacturing",
         "Tích hợp BC ↔ MES qua API: ISV như Insight Works, Tasklet Factory hoặc MES độc lập (Aptean, Siemens) qua connector",
-        "Viết AL extension tự build MES",
-        "Nhập tay vào BC mỗi ca"
+        "Viết AL extension tự build MES (skip Production Order BOM/Routing, gây variance không track được)",
+        "Nhập tay vào BC mỗi ca — áp dụng quy trình giống nhau cho mọi loại sản phẩm để đơn giản"
       ],
       "correct": 1,
       "exp": [
