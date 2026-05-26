@@ -2003,19 +2003,24 @@
     font-size: 11px; margin-left: 4px;
   }
   .app-version-badge {
-    position: absolute; top: 56px; left: 16px;
-    background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 12px;
-    font-size: 11px; font-family: 'SF Mono', Consolas, monospace;
-    display: flex; align-items: center; gap: 6px; cursor: pointer;
-    transition: all 0.15s; user-select: none;
+    position: absolute !important; top: 16px !important; left: 16px !important;
+    background: #FBBF24 !important; border: 2px solid #F59E0B !important;
+    color: #1F2937 !important; padding: 5px 11px !important; border-radius: 14px !important;
+    font-size: 12px !important; font-family: 'SF Mono', Consolas, monospace !important;
+    display: flex !important; align-items: center !important; gap: 6px !important;
+    cursor: pointer !important; transition: all 0.15s !important; user-select: none !important;
+    z-index: 100 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    font-weight: 600 !important;
   }
-  .app-version-badge:hover { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.4); }
-  .app-version-badge .v-label { opacity: 0.7; font-size: 10px; }
-  .app-version-badge .v-num { font-weight: 700; letter-spacing: 0.3px; }
-  .app-version-badge .v-sw { opacity: 0.6; font-size: 10px; }
+  .app-version-badge:hover { background: #F59E0B !important; transform: translateY(-1px); }
+  .app-version-badge .v-label { opacity: 0.75; font-size: 10px; text-transform: uppercase; }
+  .app-version-badge .v-num { font-weight: 800; letter-spacing: 0.5px; color: #DC2626; }
+  .app-version-badge .v-sw { opacity: 0.7; font-size: 10px; }
+  /* If search-trigger is shown, push badge below it; otherwise badge sits at top-left */
+  body.is-logged-in .app-version-badge { top: 56px !important; }
   @media (max-width: 640px) {
-    .app-version-badge { top: 50px; padding: 3px 8px; font-size: 10px; }
+    .app-version-badge { padding: 3px 8px !important; font-size: 10px !important; }
+    body.is-logged-in .app-version-badge { top: 50px !important; }
   }
   .search-modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.5);
@@ -2235,10 +2240,10 @@
   <button class="search-trigger" onclick="openSearch()" id="search-trigger-btn" style="display:none;" title="Tìm kiếm (phím tắt: /)">
     🔍 <span class="search-label">Tìm kiếm</span> <span class="kbd">/</span>
   </button>
-  <div class="app-version-badge" id="app-version-badge" onclick="showVersionDetails()" title="Click để xem chi tiết version">
+  <div class="app-version-badge" id="app-version-badge" onclick="showVersionDetails()" title="Click để xem chi tiết version + force reload">
     <span class="v-label">build</span>
-    <span class="v-num" id="v-num">v—</span>
-    <span class="v-sw" id="v-sw"></span>
+    <span class="v-num" id="v-num">v2.6.2</span>
+    <span class="v-sw" id="v-sw">· sw:loading...</span>
   </div>
   <h1>📘 HỌC VIỆN ERP CONSULTING</h1>
   <p>Giải pháp Dynamics và Hệ sinh thái Microsoft</p>
@@ -5024,10 +5029,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v2.6.1',
+  num: 'v2.6.2',
   date: '2026-05-26',
   notes: [
-    'Thêm Version Badge ở góc trái — hover thấy chi tiết, Force reload xoá cache',
+    'Version Badge MÀU VÀNG rực rỡ ở góc trái — luôn hiển thị, không thể miss',
+    'Badge tự fetch SW cache version để verify đã update thành công',
     'Rebalanced 309 câu hỏi — đáp án sai đã dài tương đương đáp án đúng',
     'Cases gom 1 tab + Q&A check tự động cho 14 cases',
     'Admin menu tách 6 mục riêng + Reset User Progress button',
@@ -5180,6 +5186,7 @@ async function handleAuthStateChange(user) {
   header.classList.remove('app-hidden');
   nav.classList.remove('app-hidden');
   main.classList.remove('app-hidden');
+  document.body.classList.add('is-logged-in');
 
   userMenu.style.display = 'block';
   const searchBtn = document.getElementById('search-trigger-btn');
