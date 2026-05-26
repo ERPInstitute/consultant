@@ -2239,7 +2239,7 @@
     🔍 <span class="search-label">Tìm kiếm</span> <span class="kbd">/</span>
   </button>
   <div class="app-version-badge" id="app-version-badge" onclick="showVersionDetails()" title="Click để xem chi tiết version + force reload">
-    <span class="v-num" id="v-num">v2.7.0</span>
+    <span class="v-num" id="v-num">v3.0.0</span>
   </div>
   <h1>📘 HỌC VIỆN ERP CONSULTING</h1>
   <p>Giải pháp Dynamics và Hệ sinh thái Microsoft</p>
@@ -2297,6 +2297,7 @@
       <button class="menu-item tab-btn" data-tab="accounting"><span class="icon">📊</span><span>Kế toán (2 cấp)</span></button>
       <button class="menu-item tab-btn" data-tab="playbook"><span class="icon">💎</span><span>Cẩm nang triển khai</span></button>
       <button class="menu-item tab-btn" data-tab="videos"><span class="icon">📺</span><span>Video Demo</span></button>
+      <button class="menu-item tab-btn" data-tab="library"><span class="icon">📚</span><span>Thư viện tài liệu</span></button>
       <button class="menu-item tab-btn" data-tab="glossary"><span class="icon">📖</span><span>Thuật ngữ</span></button>
     </div>
   </div>
@@ -2313,7 +2314,12 @@
   <div class="menu-group">
     <button class="menu-trigger" data-group="community"><span class="label-icon">🌐</span><span class="label-text">Cộng đồng</span> <span class="chev">▼</span></button>
     <div class="menu-dropdown">
-      <button class="menu-item tab-btn" data-tab="leaderboard"><span class="icon">🏆</span><span>Top học viên</span></button>
+      <button class="menu-item tab-btn" data-tab="community" data-community-subtab="forum"><span class="icon">💬</span><span>Forum Q&amp;A</span></button>
+      <button class="menu-item tab-btn" data-tab="community" data-community-subtab="cases"><span class="icon">📝</span><span>Case Library</span></button>
+      <button class="menu-item tab-btn" data-tab="community" data-community-subtab="resources"><span class="icon">📦</span><span>Resources</span></button>
+      <button class="menu-item tab-btn" data-tab="community" data-community-subtab="training"><span class="icon">🎓</span><span>Training Sessions</span></button>
+      <button class="menu-item tab-btn" data-tab="community" data-community-subtab="points"><span class="icon">🏆</span><span>Member Points</span></button>
+      <button class="menu-item tab-btn" data-tab="leaderboard"><span class="icon">📊</span><span>Top học viên (quiz)</span></button>
     </div>
   </div>
 
@@ -2326,7 +2332,8 @@
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="editor"><span class="icon">📝</span><span>Editor + Import/Export câu hỏi</span></button>
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="playbook"><span class="icon">💎</span><span>Editor Cẩm nang</span></button>
       <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="certsessions"><span class="icon">📜</span><span>Cert Exam Sessions</span></button>
-      <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="videos"><span class="icon">📺</span><span>Video tracking</span></button>
+      <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="videos"><span class="icon">📺</span><span>Video manager</span></button>
+      <button class="menu-item tab-btn" data-tab="admin" data-admin-subtab="library"><span class="icon">📚</span><span>Library manager</span></button>
     </div>
   </div>
 </nav>
@@ -2346,6 +2353,8 @@
   <div id="accounting" class="panel"></div>
   <div id="playbook" class="panel"></div>
   <div id="videos" class="panel"></div>
+  <div id="library" class="panel"></div>
+  <div id="community" class="panel"></div>
   <div id="level" class="panel"></div>
   <div id="glossary" class="panel"></div>
   <div id="bookmarks" class="panel"></div>
@@ -5021,6 +5030,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "accounting") renderAccounting();
     if (tab === "playbook") renderPlaybook();
     if (tab === "videos") renderVideos();
+    if (tab === "library") renderLibrary();
+    if (tab === "community") {
+      const subtab = btn.dataset.communitySubtab;
+      if (subtab) window._communitySubtab = subtab;
+      renderCommunity();
+    }
     if (tab === "level") renderLevelAssessment();
     if (tab === "roadmap") renderRoadmap();
     if (tab === "cert") renderCertExam();
@@ -5029,11 +5044,16 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v2.7.0',
+  num: 'v3.0.0',
   date: '2026-05-26',
   notes: [
-    '📺 MỚI: Tab Video Demo — embed YouTube với tracking ai đã xem video nào',
-    '📺 Admin: tab Video tracking — xem stats per-video + per-user',
+    '🌐 MỚI: Cộng đồng — Forum Q&A + Case Library + Resources + Training + Points (5 modules)',
+    '🌐 Forum: đặt câu hỏi · trả lời · upvote · accept answer · admin pin/lock/resolve',
+    '🌐 Training: senior đăng course · member đăng ký · đánh giá 1-5 sao · auto avg rating',
+    '🌐 Points: leaderboard auto từ 8 loại hoạt động · rank cá nhân hiển thị',
+    '📚 Tab Thư viện tài liệu — 15 link Microsoft Learn + admin Library Manager',
+    '📺 Tab Video Demo — embed YouTube với tracking ai đã xem',
+    '📺 Admin: Video tracking + Video editor (full CRUD)',
     'Video Badge ngắn gọn "v2.7.0" sát mép trái — không đè text mobile',
     'Rebalanced 309 câu hỏi — đáp án sai đã dài tương đương đáp án đúng',
     'Cases gom 1 tab + Q&A check tự động cho 14 cases',
@@ -5133,6 +5153,8 @@ async function initApp() {
   // Load question + playbook overrides from Firestore (silently fail if no permission)
   try { await loadQuestionOverrides(); } catch (e) {}
   try { await loadPlaybookOverrides(); } catch (e) {}
+  try { await loadVideoOverrides(); } catch (e) {}
+  try { await loadLibraryOverrides(); } catch (e) {}
   renderQuiz();
   renderMergedCases();
   renderGotchas();
@@ -5586,7 +5608,8 @@ async function renderAdmin() {
         <button class="admin-subtab ${activeSubtab === 'editor' ? 'active' : ''}" onclick="setAdminSubtab('editor')">📝 Editor + Import/Export câu hỏi</button>
         <button class="admin-subtab ${activeSubtab === 'playbook' ? 'active' : ''}" onclick="setAdminSubtab('playbook')">💎 Editor Cẩm nang</button>
         <button class="admin-subtab ${activeSubtab === 'certsessions' ? 'active' : ''}" onclick="setAdminSubtab('certsessions')">📜 Cert Exam Sessions</button>
-        <button class="admin-subtab ${activeSubtab === 'videos' ? 'active' : ''}" onclick="setAdminSubtab('videos')">📺 Video tracking</button>
+        <button class="admin-subtab ${activeSubtab === 'videos' ? 'active' : ''}" onclick="setAdminSubtab('videos')">📺 Video manager (edit + tracking)</button>
+        <button class="admin-subtab ${activeSubtab === 'library' ? 'active' : ''}" onclick="setAdminSubtab('library')">📚 Library manager (tài liệu)</button>
       </div>
 
       ${activeSubtab === 'heatmap' ? renderDifficultyHeatmap(users) :
@@ -5594,7 +5617,8 @@ async function renderAdmin() {
         activeSubtab === 'editor' ? '<div id="qed-root">⏳ Đang tải editor...</div>' :
         activeSubtab === 'playbook' ? '<div id="pbed-root">⏳ Đang tải editor cẩm nang...</div>' :
         activeSubtab === 'certsessions' ? '<div id="certadmin-root">⏳ Đang tải Cert Exam admin...</div>' :
-        activeSubtab === 'videos' ? renderVideoTrackingAdmin(users) : `
+        activeSubtab === 'videos' ? renderVideoTrackingAdmin(users) :
+        activeSubtab === 'library' ? renderLibraryAdmin(users) : `
         <div class="admin-controls">
           <input type="search" id="admin-search" placeholder="🔍 Tìm theo email hoặc tên..." />
           <button onclick="exportUsersCSV()">📊 Export CSV</button>
@@ -8887,10 +8911,1697 @@ function markVideoWatched(videoId) {
   saveState();
 }
 
+// ============ VIDEO EDITOR (admin) ============
+// Stores video overrides in Firestore — merges with VIDEO_LIBRARY at runtime.
+const VIDEO_OVERRIDES_COLLECTION = 'video_overrides';
+let _videoOverrides = {};  // { videoId: { docId, action: 'add'|'edit'|'delete', data } }
+
+async function loadVideoOverrides() {
+  if (!window.fb || !window.fb.db) return;
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, VIDEO_OVERRIDES_COLLECTION));
+    _videoOverrides = {};
+    snap.forEach(d => {
+      const data = d.data();
+      _videoOverrides[data.videoId] = { ...data, docId: d.id };
+    });
+    applyVideoOverrides();
+  } catch (e) {
+    console.warn('Cannot load video_overrides (admin-only?):', e.message);
+  }
+}
+
+function applyVideoOverrides() {
+  // Reset VIDEO_LIBRARY mutations by re-reading from base if saved
+  if (!window._VIDEO_LIBRARY_BASE) {
+    window._VIDEO_LIBRARY_BASE = JSON.parse(JSON.stringify(VIDEO_LIBRARY));
+  }
+  // Start from base
+  const base = JSON.parse(JSON.stringify(window._VIDEO_LIBRARY_BASE));
+  // Apply edits / deletes
+  const out = [];
+  base.forEach(v => {
+    const ov = _videoOverrides[v.id];
+    if (!ov || ov.action === 'add') { out.push(v); return; }
+    if (ov.action === 'delete') return; // skip
+    if (ov.action === 'edit') { out.push({ ...v, ...ov.data }); return; }
+    out.push(v);
+  });
+  // Append new "add" overrides
+  Object.values(_videoOverrides).forEach(ov => {
+    if (ov.action === 'add' && !base.some(v => v.id === ov.videoId)) {
+      out.push(ov.data);
+    }
+  });
+  // Replace VIDEO_LIBRARY in place
+  VIDEO_LIBRARY.length = 0;
+  out.forEach(v => VIDEO_LIBRARY.push(v));
+}
+
+// Extract YouTube video ID from various URL formats
+function extractYtId(input) {
+  if (!input) return '';
+  const s = input.trim();
+  // Plain 11-char ID
+  if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+  // youtube.com/watch?v=XXX
+  const m1 = s.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+  if (m1) return m1[1];
+  // youtu.be/XXX
+  const m2 = s.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if (m2) return m2[1];
+  // youtube.com/embed/XXX
+  const m3 = s.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/);
+  if (m3) return m3[1];
+  // youtube.com/shorts/XXX
+  const m4 = s.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/);
+  if (m4) return m4[1];
+  return '';
+}
+
+function openVideoEditor(videoId) {
+  const isNew = !videoId;
+  const existing = isNew ? null : VIDEO_LIBRARY.find(v => v.id === videoId);
+
+  let modal = document.getElementById('video-editor-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'video-editor-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:720px;"><button class="qed-close" onclick="closeVideoEditor()">×</button><h3 id="ved-title">Video Editor</h3><div id="ved-form-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('ved-title').textContent = isNew ? '➕ Thêm video mới' : '✏️ Sửa video';
+
+  const v = existing || { id: '', title: '', ytId: '', duration: '', description: '', source: 'YouTube', language: 'English', level: 'beginner', chapters: [] };
+  const chapters = v.chapters || [];
+  const groupKeys = VIDEO_GROUPS.map(g => g.key);
+
+  document.getElementById('ved-form-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">ID (unique key, không space)</div>
+        <input type="text" id="ved-id" value="${escapeHtml(v.id)}" ${!isNew ? 'disabled' : ''} placeholder="vd: bc-intro-msft" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+      </label>
+
+      <label>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Tiêu đề video</div>
+        <input type="text" id="ved-title-input" value="${escapeHtml(v.title)}" placeholder="vd: Microsoft Dynamics 365 BC Overview" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+      </label>
+
+      <label>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">YouTube URL hoặc Video ID</div>
+        <input type="text" id="ved-url" value="${escapeHtml(v.ytId)}" placeholder="https://www.youtube.com/watch?v=... hoặc S1Gn5fmPwgs" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;" oninput="updateYtPreview(this.value)">
+        <div id="ved-yt-preview" style="margin-top:6px; font-size:11px; color:var(--text-muted);"></div>
+      </label>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+        <label>
+          <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Duration</div>
+          <input type="text" id="ved-duration" value="${escapeHtml(v.duration)}" placeholder="vd: 8:32" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+        </label>
+        <label>
+          <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Source</div>
+          <input type="text" id="ved-source" value="${escapeHtml(v.source || '')}" placeholder="Microsoft / community" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+        </label>
+        <label>
+          <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Ngôn ngữ</div>
+          <select id="ved-language" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+            <option value="Vietnamese" ${v.language === 'Vietnamese' ? 'selected' : ''}>Vietnamese</option>
+            <option value="English" ${v.language === 'English' ? 'selected' : ''}>English</option>
+            <option value="Mixed" ${v.language === 'Mixed' ? 'selected' : ''}>Mixed</option>
+          </select>
+        </label>
+      </div>
+
+      <label>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Level</div>
+        <select id="ved-level" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+          <option value="beginner" ${v.level === 'beginner' ? 'selected' : ''}>beginner — Junior consultant</option>
+          <option value="intermediate" ${v.level === 'intermediate' ? 'selected' : ''}>intermediate — Mid-level</option>
+          <option value="advanced" ${v.level === 'advanced' ? 'selected' : ''}>advanced — Senior</option>
+          <option value="all" ${v.level === 'all' ? 'selected' : ''}>all — Mọi level</option>
+        </select>
+      </label>
+
+      <label>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Mô tả</div>
+        <textarea id="ved-description" rows="3" placeholder="Mô tả nội dung video, scope, use case..." style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px; resize:vertical;">${escapeHtml(v.description || '')}</textarea>
+      </label>
+
+      <div>
+        <div style="font-weight:600; font-size:13px; margin-bottom:6px;">Gán vào nhóm chương (chọn 1 hoặc nhiều)</div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:6px; max-height:180px; overflow-y:auto; padding:8px; border:1px solid var(--border); border-radius:6px;">
+          ${VIDEO_GROUPS.map(g => {
+            const isChecked = chapters.some(c => c.groupKey === g.key);
+            return `
+              <label style="display:flex; align-items:center; gap:6px; padding:4px 6px; font-size:12px; cursor:pointer;">
+                <input type="checkbox" name="ved-group" value="${g.key}" ${isChecked ? 'checked' : ''}>
+                <span>${g.icon} ${escapeHtml(g.name)}</span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+        <button onclick="closeVideoEditor()" style="padding:8px 18px; background:#F3F4F6; color:var(--text); border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick='saveVideoEdit(${isNew ? "true" : "false"}, ${isNew ? "null" : JSON.stringify(v.id)})' style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">💾 Lưu</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+  updateYtPreview(v.ytId);
+}
+
+function closeVideoEditor() {
+  const modal = document.getElementById('video-editor-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function updateYtPreview(input) {
+  const preview = document.getElementById('ved-yt-preview');
+  if (!preview) return;
+  const id = extractYtId(input);
+  if (id) {
+    preview.innerHTML = '✅ Video ID hợp lệ: <code style="background:var(--blue-bg); padding:2px 6px; border-radius:3px;">' + escapeHtml(id) + '</code> · <a href="https://www.youtube.com/watch?v=' + id + '" target="_blank" style="color:var(--primary);">Xem trên YouTube</a>';
+    preview.style.color = 'var(--green)';
+  } else if (input && input.trim()) {
+    preview.textContent = '⚠️ Không nhận diện được Video ID. Cần URL YouTube hoặc ID 11 ký tự.';
+    preview.style.color = 'var(--warning)';
+  } else {
+    preview.textContent = '';
+  }
+}
+
+async function saveVideoEdit(isNew, originalId) {
+  const idInput = document.getElementById('ved-id').value.trim();
+  const title = document.getElementById('ved-title-input').value.trim();
+  const urlOrId = document.getElementById('ved-url').value.trim();
+  const ytId = extractYtId(urlOrId);
+  const duration = document.getElementById('ved-duration').value.trim();
+  const source = document.getElementById('ved-source').value.trim();
+  const language = document.getElementById('ved-language').value;
+  const level = document.getElementById('ved-level').value;
+  const description = document.getElementById('ved-description').value.trim();
+  const groups = Array.from(document.querySelectorAll('input[name="ved-group"]:checked')).map(c => c.value);
+
+  if (!idInput) return alert('Vui lòng nhập ID.');
+  if (!/^[a-z0-9-]+$/.test(idInput)) return alert('ID chỉ chứa chữ thường, số, gạch ngang. Vd: bc-intro-msft');
+  if (!title) return alert('Vui lòng nhập tiêu đề.');
+  if (!ytId) return alert('Video URL/ID không hợp lệ. Cần URL YouTube hoặc ID 11 ký tự.');
+  if (groups.length === 0) return alert('Vui lòng chọn ít nhất 1 nhóm chương.');
+
+  if (!window.fb || !window.fb.db) {
+    alert('Firebase chưa sẵn sàng.');
+    return;
+  }
+
+  const data = {
+    id: idInput, title, ytId, duration, source, language, level, description,
+    chapters: groups.map(k => ({ groupKey: k, label: (VIDEO_GROUPS.find(g => g.key === k) || {}).name || k }))
+  };
+
+  const action = isNew ? 'add' : 'edit';
+  const docData = { videoId: idInput, action, data, updatedAt: window.fb.serverTimestamp() };
+
+  try {
+    const existing = _videoOverrides[idInput];
+    if (existing && existing.docId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, VIDEO_OVERRIDES_COLLECTION, existing.docId), docData);
+      _videoOverrides[idInput] = { ...docData, docId: existing.docId };
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, VIDEO_OVERRIDES_COLLECTION), docData);
+      _videoOverrides[idInput] = { ...docData, docId: ref.id };
+    }
+    applyVideoOverrides();
+    closeVideoEditor();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi khi lưu: ' + e.message + '\n\nNếu lỗi quyền, admin cần update Firestore rules cho collection "video_overrides".');
+  }
+}
+
+async function deleteVideo(videoId) {
+  if (!confirm('Xoá video "' + videoId + '"? Có thể khôi phục bằng cách edit lại.')) return;
+  if (!window.fb || !window.fb.db) { alert('Firebase chưa sẵn sàng.'); return; }
+  try {
+    const existing = _videoOverrides[videoId];
+    const docData = { videoId, action: 'delete', updatedAt: window.fb.serverTimestamp() };
+    if (existing && existing.docId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, VIDEO_OVERRIDES_COLLECTION, existing.docId), docData);
+      _videoOverrides[videoId] = { ...docData, docId: existing.docId };
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, VIDEO_OVERRIDES_COLLECTION), docData);
+      _videoOverrides[videoId] = { ...docData, docId: ref.id };
+    }
+    applyVideoOverrides();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+async function revertVideoOverride(videoId) {
+  const ov = _videoOverrides[videoId];
+  if (!ov || !ov.docId) { alert('Không có override nào để revert.'); return; }
+  if (!confirm('Khôi phục video "' + videoId + '" về bản gốc / hủy thay đổi?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, VIDEO_OVERRIDES_COLLECTION, ov.docId));
+    delete _videoOverrides[videoId];
+    applyVideoOverrides();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+// ============ LIBRARY: Tài liệu link ngoài (Microsoft Learn, blogs, certs...) ============
+const LIBRARY_DOCS = [
+  { id: 'msl-bc-overview', title: 'Business Central Overview — Microsoft Learn',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/across-business-functionality',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'beginner', groupKey: 'bc-core',
+    description: 'Trang khởi đầu của Microsoft Learn về BC — tổng quan business functionality, modules, workflows.' },
+  { id: 'msl-bc-item-tracking', title: 'Item Tracking trong Business Central — Setup & Use',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/inventory-how-work-item-tracking',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'bc-core',
+    description: 'Hướng dẫn chi tiết Item Tracking Code, Lot No., Serial No., Expiration Date — quan trọng cho mọi consultant BC.' },
+  { id: 'msl-bc-warehouse', title: 'Warehouse Management — Microsoft Learn',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/warehouse-manage-warehouse',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'bc-core',
+    description: 'Tổng quan Warehouse module: Bin, Zone, Pick, Put-away, Cycle Count, Movement.' },
+  { id: 'msl-bc-planning', title: 'Manufacturing & Planning — Microsoft Learn',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/production-planning',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'mfg',
+    description: 'Production Planning, MPS/MRP, Demand Forecast, Production Order, BOM, Routing.' },
+  { id: 'msl-bc-finance', title: 'Finance & Accounting trong BC',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/finance',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'beginner', groupKey: 'acc-basic',
+    description: 'Tài liệu Finance module: G/L, Posting Groups, Bank Reconciliation, Fixed Assets, Period Close.' },
+  { id: 'msl-bc-vat', title: 'VAT Setup & Reporting — BC',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/finance-setup-vat',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'acc-basic',
+    description: 'Hướng dẫn VAT Posting Setup, VAT Statement, VAT Settlement — phù hợp Localization VN.' },
+  { id: 'msl-bc-sales', title: 'Sales (Order-to-Cash) — Microsoft Learn',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/sales-manage-sales',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'beginner', groupKey: 'biz',
+    description: 'Sales Quote → SO → Shipment → Invoice → Payment. Customer setup, Price Lists, Discounts.' },
+  { id: 'msl-bc-purchase', title: 'Procurement (Purchase-to-Pay) — Microsoft Learn',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/purchasing-manage-purchasing',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'beginner', groupKey: 'biz',
+    description: 'Purchase Quote → PO → Receipt → Invoice → Payment. Vendor setup, Item Charges, Landed Cost.' },
+  { id: 'msl-bc-localization', title: 'Localization — Country/Region Specifics',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/across-localization',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'mapping',
+    description: 'Localization framework cho từng quốc gia. VN dùng ISV (Naviworld, LS Retail).' },
+  { id: 'msl-bc-copilot', title: 'Copilot trong Business Central',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/across-copilot-overview',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'bc-modern',
+    description: 'Tài liệu Copilot — AI features tích hợp BC: marketing text, sales suggestions, bank rec.' },
+  { id: 'msl-bc-fabric', title: 'Link to Microsoft Fabric — Analytics',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/across-link-to-fabric',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'advanced', groupKey: 'bc-modern',
+    description: 'Mirroring BC data sang Fabric — phương án integration mới nhất cho analytics + Power BI.' },
+  { id: 'msl-bc-al-dev', title: 'AL Language — Developer Reference',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-dev-overview',
+    type: 'docs', source: 'Microsoft Learn', language: 'English', level: 'advanced', groupKey: 'bc-modern',
+    description: 'AL Programming reference cho consultant developer side.' },
+  { id: 'msl-bc-training', title: 'Microsoft Learn — BC Training Paths',
+    url: 'https://learn.microsoft.com/en-us/training/browse/?products=dynamics-business-central',
+    type: 'training', source: 'Microsoft Learn', language: 'English', level: 'all', groupKey: 'bc-core',
+    description: 'Tổng hợp các learning path miễn phí của Microsoft cho BC — từ beginner đến advanced.' },
+  { id: 'msl-mb-800-cert', title: 'MB-800 Certification — BC Functional Consultant',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/d365-business-central-functional-consultant-associate/',
+    type: 'certification', source: 'Microsoft Learn', language: 'English', level: 'intermediate', groupKey: 'bc-core',
+    description: 'Trang official certification MB-800 — Microsoft Dynamics 365 BC Functional Consultant Associate.' },
+  { id: 'msl-bc-release-notes', title: 'BC Release Notes & Roadmap',
+    url: 'https://learn.microsoft.com/en-us/dynamics365/release-plan/2024wave2/smb/dynamics365-business-central/',
+    type: 'reference', source: 'Microsoft Learn', language: 'English', level: 'all', groupKey: 'bc-modern',
+    description: 'Roadmap chính thức Microsoft về BC release wave hàng năm.' }
+];
+
+const LIBRARY_GROUPS = VIDEO_GROUPS;
+const LIBRARY_TYPES = {
+  docs: { icon: '📖', label: 'Documentation', color: '#1F3864' },
+  article: { icon: '📰', label: 'Article', color: '#0E7490' },
+  blog: { icon: '✍️', label: 'Blog post', color: '#7C3AED' },
+  tutorial: { icon: '🎓', label: 'Tutorial', color: '#16A34A' },
+  reference: { icon: '📚', label: 'Reference', color: '#B45309' },
+  training: { icon: '🏫', label: 'Training', color: '#DC2626' },
+  certification: { icon: '🏆', label: 'Certification', color: '#F59E0B' },
+  video: { icon: '📺', label: 'Video', color: '#DC2626' },
+  github: { icon: '⚙️', label: 'GitHub repo', color: '#6B7280' }
+};
+
+function renderLibrary() {
+  const panel = document.getElementById('library');
+  if (!panel) return;
+  const clicks = (state.libraryClicks || {});
+  const byGroup = {};
+  LIBRARY_GROUPS.forEach(g => byGroup[g.key] = []);
+  LIBRARY_DOCS.forEach(d => { if (byGroup[d.groupKey]) byGroup[d.groupKey].push(d); });
+  const totalDocs = LIBRARY_DOCS.length;
+  const clickedCount = Object.keys(clicks).filter(k => LIBRARY_DOCS.some(d => d.id === k)).length;
+
+  panel.innerHTML = `
+    <div style="background:linear-gradient(135deg, #0E7490 0%, #1F3864 100%); color:#FFF; padding:16px 18px; border-radius:10px; margin-bottom:14px;">
+      <h2 style="margin:0 0 4px 0; color:#FFF;">📚 Thư viện tài liệu tham khảo</h2>
+      <p style="margin:0; font-size:13px; opacity:0.92;">Tổng hợp link tài liệu chính thức (Microsoft Learn, blogs, certifications, training) để học thêm. Click → mở tab mới — hệ thống tự ghi nhận để admin biết tài liệu nào hữu ích.</p>
+      <div style="margin-top:10px; display:flex; gap:14px; font-size:12px; flex-wrap:wrap;">
+        <span>📖 <strong>${totalDocs}</strong> tài liệu</span>
+        <span>✅ Bạn đã mở: <strong>${clickedCount} / ${totalDocs}</strong></span>
+      </div>
+    </div>
+    ${totalDocs === 0 ? `
+      <div style="background:var(--card); padding:30px; border-radius:10px; text-align:center; border:2px dashed var(--border);">
+        <div style="font-size:48px;">📭</div>
+        <h3 style="margin:10px 0;">Chưa có tài liệu</h3>
+      </div>
+    ` : LIBRARY_GROUPS.map(g => {
+      const docs = byGroup[g.key];
+      if (!docs || docs.length === 0) return '';
+      return `
+        <div class="lib-group" style="margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+          <div style="background:linear-gradient(135deg, ${g.color} 0%, #1F3864 100%); color:#FFF; padding:10px 14px; display:flex; align-items:center; gap:8px; font-weight:600;">
+            <span style="font-size:18px;">${g.icon}</span>
+            <span>${escapeHtml(g.name)}</span>
+            <span style="margin-left:auto; font-size:12px; opacity:0.85;">${docs.length} tài liệu</span>
+          </div>
+          <div style="padding:8px;">
+            ${docs.map(d => renderLibraryCard(d)).join('')}
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <div style="background:var(--blue-bg); border-radius:8px; padding:14px; margin-top:14px; font-size:13px; line-height:1.7;">
+      <strong>💡 Cách dùng:</strong> Click tài liệu → mở tab mới. Tài liệu là LINK EXTERNAL, không lưu offline.
+    </div>
+  `;
+}
+
+function renderLibraryCard(d) {
+  const clicks = (state.libraryClicks || {})[d.id];
+  const isOpened = !!clicks;
+  const lastDate = clicks ? new Date(clicks.lastClickedAt).toLocaleDateString('vi-VN') : '';
+  const typeInfo = LIBRARY_TYPES[d.type] || LIBRARY_TYPES.docs;
+  const safeId = JSON.stringify(d.id);
+  return `
+    <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer"
+      onclick="markLibraryClick(${safeId}); return true;"
+      style="display:flex; gap:10px; padding:10px; border-radius:8px; text-decoration:none; color:inherit; transition:background 0.15s; border:1px solid transparent;"
+      onmouseover="this.style.background='var(--blue-bg)'; this.style.borderColor='var(--border)'"
+      onmouseout="this.style.background='transparent'; this.style.borderColor='transparent'">
+      <div style="background:${typeInfo.color}; color:#FFF; width:46px; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:22px;">${typeInfo.icon}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:600; font-size:14px; margin-bottom:3px;">
+          <span style="color:var(--text);">${escapeHtml(d.title)}</span>
+          <span style="font-size:11px; padding:1px 6px; background:${typeInfo.color}; color:#FFF; border-radius:8px; margin-left:6px;">${escapeHtml(typeInfo.label)}</span>
+          ${isOpened ? '<span style="font-size:10px; padding:1px 6px; background:#16A34A; color:#FFF; border-radius:8px; margin-left:4px;">✓ Đã mở</span>' : ''}
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px; line-height:1.5;">${escapeHtml(d.description)}</div>
+        <div style="display:flex; gap:10px; font-size:11px; color:var(--text-muted); flex-wrap:wrap;">
+          <span>🔗 ${escapeHtml(d.source || 'External')}</span>
+          <span>🌐 ${escapeHtml(d.language || 'N/A')}</span>
+          <span>📊 ${escapeHtml(d.level || 'all')}</span>
+          ${isOpened ? '<span style="color:var(--green);">📅 ' + escapeHtml(lastDate) + ' · ×' + (clicks.clickCount || 1) + '</span>' : ''}
+          <span style="color:var(--primary);">↗️ ${escapeHtml(d.url.replace(/^https?:\/\//, '').substring(0, 50))}${d.url.length > 50 ? '...' : ''}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function markLibraryClick(docId) {
+  if (!state.libraryClicks) state.libraryClicks = {};
+  const prev = state.libraryClicks[docId];
+  state.libraryClicks[docId] = {
+    lastClickedAt: Date.now(),
+    clickCount: (prev && prev.clickCount ? prev.clickCount : 0) + 1,
+    firstClickedAt: (prev && prev.firstClickedAt) || Date.now()
+  };
+  saveState();
+}
+
+// ============ LIBRARY EDITOR (admin) ============
+const LIBRARY_OVERRIDES_COLLECTION = 'library_overrides';
+let _libraryOverrides = {};
+
+async function loadLibraryOverrides() {
+  if (!window.fb || !window.fb.db) return;
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, LIBRARY_OVERRIDES_COLLECTION));
+    _libraryOverrides = {};
+    snap.forEach(d => {
+      const data = d.data();
+      _libraryOverrides[data.docId_lib] = { ...data, fsId: d.id };
+    });
+    applyLibraryOverrides();
+  } catch (e) {
+    console.warn('Cannot load library_overrides:', e.message);
+  }
+}
+
+function applyLibraryOverrides() {
+  if (!window._LIBRARY_DOCS_BASE) {
+    window._LIBRARY_DOCS_BASE = JSON.parse(JSON.stringify(LIBRARY_DOCS));
+  }
+  const base = JSON.parse(JSON.stringify(window._LIBRARY_DOCS_BASE));
+  const out = [];
+  base.forEach(d => {
+    const ov = _libraryOverrides[d.id];
+    if (!ov || ov.action === 'add') { out.push(d); return; }
+    if (ov.action === 'delete') return;
+    if (ov.action === 'edit') { out.push({ ...d, ...ov.data }); return; }
+    out.push(d);
+  });
+  Object.values(_libraryOverrides).forEach(ov => {
+    if (ov.action === 'add' && !base.some(d => d.id === ov.docId_lib)) out.push(ov.data);
+  });
+  LIBRARY_DOCS.length = 0;
+  out.forEach(d => LIBRARY_DOCS.push(d));
+}
+
+function openLibraryEditor(docId) {
+  const isNew = !docId;
+  const existing = isNew ? null : LIBRARY_DOCS.find(d => d.id === docId);
+  let modal = document.getElementById('library-editor-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'library-editor-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:720px;"><button class="qed-close" onclick="closeLibraryEditor()">×</button><h3 id="lved-title">Library Editor</h3><div id="lved-form-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  document.getElementById('lved-title').textContent = isNew ? '➕ Thêm tài liệu mới' : '✏️ Sửa tài liệu';
+  const d = existing || { id: '', title: '', url: '', description: '', type: 'docs', source: '', language: 'English', level: 'beginner', groupKey: 'bc-core' };
+  const typeOpts = Object.entries(LIBRARY_TYPES).map(([k, t]) => '<option value="' + k + '"' + (d.type === k ? ' selected' : '') + '>' + t.icon + ' ' + t.label + '</option>').join('');
+  const groupOpts = LIBRARY_GROUPS.map(g => '<option value="' + g.key + '"' + (d.groupKey === g.key ? ' selected' : '') + '>' + g.icon + ' ' + g.name + '</option>').join('');
+
+  document.getElementById('lved-form-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">ID (unique key)</div>
+        <input type="text" id="lved-id" value="${escapeHtml(d.id)}" ${!isNew ? 'disabled' : ''} placeholder="vd: msl-bc-overview" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;"></label>
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Tiêu đề tài liệu</div>
+        <input type="text" id="lved-title-input" value="${escapeHtml(d.title)}" placeholder="BC Overview..." style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;"></label>
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">URL tài liệu</div>
+        <input type="url" id="lved-url" value="${escapeHtml(d.url)}" placeholder="https://learn.microsoft.com/..." style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;"></label>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Loại tài liệu</div>
+          <select id="lved-type" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">${typeOpts}</select></label>
+        <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Nhóm chương</div>
+          <select id="lved-group" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">${groupOpts}</select></label>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+        <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Source</div>
+          <input type="text" id="lved-source" value="${escapeHtml(d.source || '')}" placeholder="Microsoft Learn" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;"></label>
+        <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Ngôn ngữ</div>
+          <select id="lved-language" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+            <option value="Vietnamese" ${d.language === 'Vietnamese' ? 'selected' : ''}>Vietnamese</option>
+            <option value="English" ${d.language === 'English' ? 'selected' : ''}>English</option>
+            <option value="Mixed" ${d.language === 'Mixed' ? 'selected' : ''}>Mixed</option>
+          </select></label>
+        <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Level</div>
+          <select id="lved-level" style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;">
+            <option value="beginner" ${d.level === 'beginner' ? 'selected' : ''}>beginner</option>
+            <option value="intermediate" ${d.level === 'intermediate' ? 'selected' : ''}>intermediate</option>
+            <option value="advanced" ${d.level === 'advanced' ? 'selected' : ''}>advanced</option>
+            <option value="all" ${d.level === 'all' ? 'selected' : ''}>all</option>
+          </select></label>
+      </div>
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Mô tả</div>
+        <textarea id="lved-description" rows="3" placeholder="Mô tả ngắn nội dung tài liệu..." style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px; resize:vertical;">${escapeHtml(d.description || '')}</textarea></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+        <button onclick="closeLibraryEditor()" style="padding:8px 18px; background:#F3F4F6; color:var(--text); border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick='saveLibraryEdit(${isNew ? "true" : "false"}, ${isNew ? "null" : JSON.stringify(d.id)})' style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">💾 Lưu</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+function closeLibraryEditor() {
+  const modal = document.getElementById('library-editor-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+async function saveLibraryEdit(isNew, originalId) {
+  const id = document.getElementById('lved-id').value.trim();
+  const title = document.getElementById('lved-title-input').value.trim();
+  const url = document.getElementById('lved-url').value.trim();
+  const type = document.getElementById('lved-type').value;
+  const groupKey = document.getElementById('lved-group').value;
+  const source = document.getElementById('lved-source').value.trim();
+  const language = document.getElementById('lved-language').value;
+  const level = document.getElementById('lved-level').value;
+  const description = document.getElementById('lved-description').value.trim();
+
+  if (!id) return alert('Vui lòng nhập ID.');
+  if (!/^[a-z0-9-]+$/.test(id)) return alert('ID chỉ chứa chữ thường, số, gạch ngang.');
+  if (!title) return alert('Vui lòng nhập tiêu đề.');
+  if (!url || !/^https?:\/\//.test(url)) return alert('URL phải bắt đầu bằng http:// hoặc https://');
+  if (!description) return alert('Vui lòng nhập mô tả.');
+
+  if (!window.fb || !window.fb.db) { alert('Firebase chưa sẵn sàng.'); return; }
+
+  const data = { id, title, url, type, groupKey, source, language, level, description };
+  const action = isNew ? 'add' : 'edit';
+  const docData = { docId_lib: id, action, data, updatedAt: window.fb.serverTimestamp() };
+
+  try {
+    const existing = _libraryOverrides[id];
+    if (existing && existing.fsId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, LIBRARY_OVERRIDES_COLLECTION, existing.fsId), docData);
+      _libraryOverrides[id] = { ...docData, fsId: existing.fsId };
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, LIBRARY_OVERRIDES_COLLECTION), docData);
+      _libraryOverrides[id] = { ...docData, fsId: ref.id };
+    }
+    applyLibraryOverrides();
+    closeLibraryEditor();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi khi lưu: ' + e.message + '\n\nFirestore rules có thể chưa cho phép.');
+  }
+}
+
+async function deleteLibraryDoc(docId) {
+  if (!confirm('Xoá tài liệu "' + docId + '"?')) return;
+  if (!window.fb || !window.fb.db) { alert('Firebase chưa sẵn sàng.'); return; }
+  try {
+    const existing = _libraryOverrides[docId];
+    const docData = { docId_lib: docId, action: 'delete', updatedAt: window.fb.serverTimestamp() };
+    if (existing && existing.fsId) {
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, LIBRARY_OVERRIDES_COLLECTION, existing.fsId), docData);
+      _libraryOverrides[docId] = { ...docData, fsId: existing.fsId };
+    } else {
+      const ref = await window.fb.addDoc(window.fb.collection(window.fb.db, LIBRARY_OVERRIDES_COLLECTION), docData);
+      _libraryOverrides[docId] = { ...docData, fsId: ref.id };
+    }
+    applyLibraryOverrides();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+async function revertLibraryOverride(docId) {
+  const ov = _libraryOverrides[docId];
+  if (!ov || !ov.fsId) { alert('Không có override.'); return; }
+  if (!confirm('Khôi phục tài liệu "' + docId + '" về bản gốc?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, LIBRARY_OVERRIDES_COLLECTION, ov.fsId));
+    delete _libraryOverrides[docId];
+    applyLibraryOverrides();
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+function renderLibraryAdmin(users) {
+  const items = LIBRARY_DOCS.slice();
+  const docStats = items.map(d => {
+    let openedBy = 0, totalClicks = 0;
+    users.forEach(u => {
+      const c = (u.progress && u.progress.libraryClicks) || {};
+      if (c[d.id]) { openedBy++; totalClicks += (c[d.id].clickCount || 1); }
+    });
+    return { doc: d, openedBy, totalClicks, openedPct: users.length > 0 ? Math.round(openedBy / users.length * 100) : 0 };
+  });
+
+  const editorHtml = `
+    <div style="background:var(--card); padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <h3 style="margin:0;">📚 Quản lý tài liệu (${items.length})</h3>
+        <button onclick="openLibraryEditor(null)" style="padding:8px 14px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">➕ Thêm tài liệu mới</button>
+      </div>
+      ${items.length === 0 ? `
+        <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:13px;">Chưa có tài liệu — click "Thêm tài liệu mới".</div>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:6px; max-height:480px; overflow-y:auto;">
+          ${items.map(d => {
+            const ov = _libraryOverrides[d.id];
+            const stats = docStats.find(s => s.doc.id === d.id);
+            const typeInfo = LIBRARY_TYPES[d.type] || LIBRARY_TYPES.docs;
+            let badge = '';
+            if (ov && ov.action === 'add') badge = '<span style="background:#16A34A; color:#FFF; font-size:10px; padding:2px 6px; border-radius:8px; margin-left:6px;">MỚI</span>';
+            else if (ov && ov.action === 'edit') badge = '<span style="background:#F59E0B; color:#FFF; font-size:10px; padding:2px 6px; border-radius:8px; margin-left:6px;">ĐÃ SỬA</span>';
+            const safeId = JSON.stringify(d.id);
+            return `
+              <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--border); border-radius:6px;">
+                <div style="background:${typeInfo.color}; color:#FFF; width:36px; height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">${typeInfo.icon}</div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:600; font-size:13px;">${escapeHtml(d.title)}${badge}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">
+                    <code style="background:var(--blue-bg); padding:1px 4px; border-radius:3px;">${escapeHtml(d.id)}</code>
+                    · ${escapeHtml(d.source || '')}
+                    · 👥 ${stats ? stats.openedBy : 0} users · 🖱️ ${stats ? stats.totalClicks : 0} clicks
+                  </div>
+                </div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                  <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener" style="padding:5px 10px; background:transparent; border:1px solid var(--border); border-radius:5px; cursor:pointer; font-size:12px; text-decoration:none; color:var(--text);">↗️ Mở</a>
+                  <button onclick='openLibraryEditor(${safeId})' style="padding:5px 10px; background:transparent; border:1px solid var(--border); border-radius:5px; cursor:pointer; font-size:12px;">✏️ Sửa</button>
+                  <button onclick='deleteLibraryDoc(${safeId})' style="padding:5px 10px; background:transparent; border:1px solid #FCA5A5; color:#DC2626; border-radius:5px; cursor:pointer; font-size:12px;">🗑️</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+      <div style="margin-top:10px; padding:8px 10px; background:var(--blue-bg); border-radius:6px; font-size:12px; color:var(--text-muted);">
+        💡 Firestore rule: <code>match /library_overrides/{doc} { allow read, write: if isAdmin(); }</code>
+      </div>
+    </div>
+  `;
+
+  const topClicked = docStats.slice().sort((a, b) => b.totalClicks - a.totalClicks).slice(0, 5);
+  const topHtml = `
+    <div style="margin-bottom:14px;">
+      <h3 style="margin:0 0 8px 0;">🔥 Top 5 tài liệu được click nhiều nhất</h3>
+      ${topClicked.length === 0 || topClicked[0].totalClicks === 0 ? '<div style="background:var(--card); padding:14px; border-radius:8px; color:var(--text-muted); font-size:13px;">Chưa có click nào.</div>' : `
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Tài liệu</th><th style="width:90px;">Opened by</th><th style="width:90px;">% users</th><th style="width:90px;">Tổng clicks</th></tr></thead>
+            <tbody>
+              ${topClicked.map(s => `<tr>
+                <td><strong>${escapeHtml(s.doc.title)}</strong><br><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(s.doc.source || '')} · ${escapeHtml(s.doc.type)}</span></td>
+                <td>${s.openedBy} / ${users.length}</td>
+                <td><strong style="color:${s.openedPct >= 70 ? 'var(--green)' : s.openedPct >= 40 ? 'var(--primary)' : 'var(--warning)'};">${s.openedPct}%</strong></td>
+                <td>${s.totalClicks}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+  `;
+
+  return editorHtml + topHtml;
+}
+
+// ============ COMMUNITY HUB ============
+const COMMUNITY_CATEGORIES = [
+  { key: 'ms-bc', label: 'Business Central', icon: '🏢', group: 'Microsoft Products' },
+  { key: 'ms-fo', label: 'Finance & Operations (D365 F&O)', icon: '🏭', group: 'Microsoft Products' },
+  { key: 'ms-ce', label: 'CE / CRM (D365 Sales/Service)', icon: '🤝', group: 'Microsoft Products' },
+  { key: 'ms-powerplatform', label: 'Power Platform (Apps/Automate/BI)', icon: '⚡', group: 'Microsoft Products' },
+  { key: 'ms-fabric', label: 'Microsoft Fabric / Azure', icon: '🧵', group: 'Microsoft Products' },
+  { key: 'biz-finance', label: 'Finance / Kế toán', icon: '💰', group: 'Nghiệp vụ' },
+  { key: 'biz-mfg', label: 'Manufacturing / Sản xuất', icon: '🏭', group: 'Nghiệp vụ' },
+  { key: 'biz-retail', label: 'Retail / Bán lẻ', icon: '🏪', group: 'Nghiệp vụ' },
+  { key: 'biz-logistics', label: 'Logistics / Kho vận', icon: '📦', group: 'Nghiệp vụ' },
+  { key: 'biz-hr', label: 'HR / Nhân sự / Payroll', icon: '👥', group: 'Nghiệp vụ' },
+  { key: 'con-presales', label: 'Pre-sales / Demo', icon: '🎯', group: 'Tư vấn' },
+  { key: 'con-blueprint', label: 'Blueprint / Fit-gap', icon: '📐', group: 'Tư vấn' },
+  { key: 'con-migration', label: 'Data Migration', icon: '📥', group: 'Tư vấn' },
+  { key: 'con-customization', label: 'Customization / AL Dev', icon: '💻', group: 'Tư vấn' },
+  { key: 'con-uat', label: 'UAT / Go-live / Hypercare', icon: '🚀', group: 'Tư vấn' },
+  { key: 'con-workshop', label: 'Workshop / Facilitation', icon: '🎓', group: 'Tư vấn' },
+  { key: 'other', label: 'Khác / Chung', icon: '💬', group: 'Khác' }
+];
+
+const POINTS_RULES = {
+  forum_question: 2, forum_reply: 1, upvote_received: 3, answer_accepted: 10,
+  case_post: 5, training_attend: 5, training_rate: 1, training_teach: 20
+};
+
+const POINTS_COLLECTION = 'member_points';
+const FORUM_TOPICS_COLLECTION = 'forum_topics';
+const FORUM_REPLIES_COLLECTION = 'forum_replies';
+const COMMUNITY_CASES_COLLECTION = 'community_cases';
+const COMMUNITY_RESOURCES_COLLECTION = 'community_resources';
+const TRAINING_COURSES_COLLECTION = 'training_courses';
+const TRAINING_ENROLLMENTS_COLLECTION = 'training_enrollments';
+
+function getCommunityCategoryByKey(key) {
+  return COMMUNITY_CATEGORIES.find(c => c.key === key) || COMMUNITY_CATEGORIES[COMMUNITY_CATEGORIES.length - 1];
+}
+
+function getCurrentUserInfo() {
+  const u = window.fb && window.fb.auth && window.fb.auth.currentUser;
+  if (!u) return null;
+  return { uid: u.uid, email: u.email || '', displayName: u.displayName || (u.email ? u.email.split('@')[0] : 'User') };
+}
+
+function toMs(ts) {
+  if (!ts) return 0;
+  if (ts.toMillis) return ts.toMillis();
+  if (typeof ts === 'number') return ts;
+  return 0;
+}
+
+function renderCommunity() {
+  const panel = document.getElementById('community');
+  if (!panel) return;
+  const subtab = window._communitySubtab || 'forum';
+  panel.innerHTML = `
+    <div style="background:linear-gradient(135deg, #7C3AED 0%, #1F3864 100%); color:#FFF; padding:14px 18px; border-radius:10px; margin-bottom:14px;">
+      <h2 style="margin:0 0 4px 0; color:#FFF;">🌐 Cộng đồng Consultant</h2>
+      <p style="margin:0; font-size:13px; opacity:0.92;">Hỏi-đáp · Chia sẻ case · Resources nội bộ · Training senior · Bảng điểm</p>
+    </div>
+    <div class="admin-subtabs" style="margin-bottom:14px;">
+      <button class="admin-subtab ${subtab === 'forum' ? 'active' : ''}" onclick="setCommunitySubtab('forum')">💬 Forum Q&A</button>
+      <button class="admin-subtab ${subtab === 'cases' ? 'active' : ''}" onclick="setCommunitySubtab('cases')">📝 Case Library</button>
+      <button class="admin-subtab ${subtab === 'resources' ? 'active' : ''}" onclick="setCommunitySubtab('resources')">📦 Resources</button>
+      <button class="admin-subtab ${subtab === 'training' ? 'active' : ''}" onclick="setCommunitySubtab('training')">🎓 Training Sessions</button>
+      <button class="admin-subtab ${subtab === 'points' ? 'active' : ''}" onclick="setCommunitySubtab('points')">🏆 Member Points</button>
+    </div>
+    <div id="community-content">⏳ Đang tải...</div>
+  `;
+  if (subtab === 'forum') renderForum();
+  else if (subtab === 'cases') renderCaseLibrary();
+  else if (subtab === 'resources') renderResources();
+  else if (subtab === 'training') renderTraining();
+  else if (subtab === 'points') renderMemberPoints();
+}
+
+function setCommunitySubtab(name) {
+  window._communitySubtab = name;
+  renderCommunity();
+}
+
+async function awardPoints(action, amount) {
+  const user = getCurrentUserInfo();
+  if (!user || !window.fb) return;
+  await awardPointsToUser(user.uid, user.email, user.displayName, action, amount);
+}
+
+async function awardPointsToUser(uid, email, displayName, action, amount) {
+  if (!uid) return;
+  try {
+    const ref = window.fb.doc(window.fb.db, POINTS_COLLECTION, uid);
+    const snap = await window.fb.getDoc(ref);
+    const data = snap.exists() ? snap.data() : { uid, email, displayName, totalPoints: 0, breakdown: {} };
+    data.totalPoints = (data.totalPoints || 0) + amount;
+    data.breakdown = data.breakdown || {};
+    data.breakdown[action] = (data.breakdown[action] || 0) + amount;
+    data.lastActivity = window.fb.serverTimestamp();
+    if (email) data.email = email;
+    if (displayName) data.displayName = displayName;
+    await window.fb.setDoc(ref, data, { merge: true });
+  } catch (e) { console.warn('awardPoints error:', e.message); }
+}
+
+// ============ FORUM Q&A ============
+let _forumFilter = { category: '', search: '', resolvedOnly: false, sort: 'newest' };
+let _forumCurrentTopicId = null;
+
+async function renderForum() {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  if (_forumCurrentTopicId) { renderForumTopicDetail(_forumCurrentTopicId); return; }
+  root.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-muted);">⏳ Đang tải danh sách câu hỏi...</div>';
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, FORUM_TOPICS_COLLECTION));
+    const topics = [];
+    snap.forEach(d => topics.push({ id: d.id, ...d.data() }));
+    renderForumList(topics);
+  } catch (e) {
+    root.innerHTML = '<div style="background:var(--card); padding:20px; border-radius:8px; color:var(--danger);">⚠️ Không tải được forum: ' + escapeHtml(e.message) + '<br><br>Cần Firestore rule cho <code>forum_topics</code>.</div>';
+  }
+}
+
+function renderForumList(allTopics) {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  let topics = allTopics.slice();
+  if (_forumFilter.category) topics = topics.filter(t => t.category === _forumFilter.category);
+  if (_forumFilter.resolvedOnly) topics = topics.filter(t => t.isResolved);
+  if (_forumFilter.search) {
+    const s = _forumFilter.search.toLowerCase();
+    topics = topics.filter(t => (t.title || '').toLowerCase().includes(s) || (t.body || '').toLowerCase().includes(s));
+  }
+  if (_forumFilter.sort === 'newest') topics.sort((a, b) => (toMs(b.createdAt) || 0) - (toMs(a.createdAt) || 0));
+  else if (_forumFilter.sort === 'popular') topics.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+  else if (_forumFilter.sort === 'unanswered') topics.sort((a, b) => (a.replyCount || 0) - (b.replyCount || 0));
+  topics.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+  const catOpts = COMMUNITY_CATEGORIES.map(c => '<option value="' + c.key + '"' + (_forumFilter.category === c.key ? ' selected' : '') + '>' + c.icon + ' ' + escapeHtml(c.label) + '</option>').join('');
+  root.innerHTML = `
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; align-items:center;">
+      <input type="search" placeholder="🔍 Tìm câu hỏi..." value="${escapeHtml(_forumFilter.search)}" onchange="_forumFilter.search=this.value; renderForum()" style="flex:1; min-width:200px; padding:8px 10px; border:1px solid var(--border); border-radius:6px;">
+      <select onchange="_forumFilter.category=this.value; renderForum()" style="padding:8px; border:1px solid var(--border); border-radius:6px;">
+        <option value="">Tất cả category</option>${catOpts}
+      </select>
+      <select onchange="_forumFilter.sort=this.value; renderForum()" style="padding:8px; border:1px solid var(--border); border-radius:6px;">
+        <option value="newest" ${_forumFilter.sort === 'newest' ? 'selected' : ''}>Mới nhất</option>
+        <option value="popular" ${_forumFilter.sort === 'popular' ? 'selected' : ''}>Nhiều vote</option>
+        <option value="unanswered" ${_forumFilter.sort === 'unanswered' ? 'selected' : ''}>Chưa có reply</option>
+      </select>
+      <label style="display:flex; align-items:center; gap:4px; font-size:12px;">
+        <input type="checkbox" ${_forumFilter.resolvedOnly ? 'checked' : ''} onchange="_forumFilter.resolvedOnly=this.checked; renderForum()"> Đã giải đáp
+      </label>
+      <button onclick="openNewTopicModal()" style="padding:8px 16px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">➕ Đặt câu hỏi</button>
+    </div>
+    ${topics.length === 0 ? `
+      <div style="background:var(--card); padding:40px; border-radius:10px; text-align:center; border:2px dashed var(--border);">
+        <div style="font-size:48px;">💬</div>
+        <h3 style="margin:10px 0;">Chưa có câu hỏi nào</h3>
+        <p style="color:var(--text-muted);">Hãy đặt câu hỏi đầu tiên cho cộng đồng!</p>
+      </div>
+    ` : '<div style="display:flex; flex-direction:column; gap:8px;">' + topics.map(t => renderForumTopicCard(t)).join('') + '</div>'}
+  `;
+}
+
+function renderForumTopicCard(t) {
+  const cat = getCommunityCategoryByKey(t.category);
+  const time = t.createdAt && t.createdAt.toMillis ? formatTimeRel(t.createdAt.toMillis()) : '';
+  return `
+    <div onclick='openForumTopic(${JSON.stringify(t.id)})' style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; cursor:pointer; display:flex; gap:12px; align-items:flex-start; transition:all 0.15s;"
+      onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="text-align:center; min-width:50px;">
+        <div style="font-size:18px; font-weight:700; color:${(t.upvotes||0) > 0 ? 'var(--primary)' : 'var(--text-muted)'};">${t.upvotes || 0}</div>
+        <div style="font-size:10px; color:var(--text-muted);">votes</div>
+        <div style="font-size:16px; font-weight:700; margin-top:4px; color:${(t.replyCount||0) > 0 ? 'var(--green)' : 'var(--text-muted)'};">${t.replyCount || 0}</div>
+        <div style="font-size:10px; color:var(--text-muted);">replies</div>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+          ${t.isPinned ? '<span style="font-size:11px; padding:2px 6px; background:#F59E0B; color:#FFF; border-radius:8px;">📌 Pinned</span>' : ''}
+          ${t.isResolved ? '<span style="font-size:11px; padding:2px 6px; background:#16A34A; color:#FFF; border-radius:8px;">✓ Resolved</span>' : ''}
+          ${t.isLocked ? '<span style="font-size:11px; padding:2px 6px; background:#6B7280; color:#FFF; border-radius:8px;">🔒 Locked</span>' : ''}
+          <span style="font-size:11px; padding:2px 6px; background:var(--blue-bg); color:var(--primary); border-radius:8px;">${cat.icon} ${escapeHtml(cat.label)}</span>
+        </div>
+        <h4 style="margin:0 0 4px 0; font-size:15px; color:var(--text);">${escapeHtml(t.title || '(không tiêu đề)')}</h4>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">${escapeHtml((t.body || '').substring(0, 200))}${(t.body || '').length > 200 ? '...' : ''}</div>
+        <div style="margin-top:6px; font-size:11px; color:var(--text-muted);">
+          👤 ${escapeHtml(t.authorName || t.authorEmail || 'Anonymous')} · 📅 ${escapeHtml(time)} · 👁️ ${t.viewCount || 0} views
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openForumTopic(topicId) {
+  _forumCurrentTopicId = topicId;
+  renderForumTopicDetail(topicId);
+}
+
+function backToForumList() {
+  _forumCurrentTopicId = null;
+  renderForum();
+}
+
+async function renderForumTopicDetail(topicId) {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  root.innerHTML = '<div style="padding:30px; text-align:center;">⏳ Đang tải...</div>';
+  try {
+    const topicRef = window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId);
+    const topicSnap = await window.fb.getDoc(topicRef);
+    if (!topicSnap.exists()) { root.innerHTML = '<div style="padding:20px;">Không tìm thấy câu hỏi.</div>'; return; }
+    const topic = { id: topicSnap.id, ...topicSnap.data() };
+    window.fb.updateDoc(topicRef, { viewCount: (topic.viewCount || 0) + 1 }).catch(() => {});
+    const repliesSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, FORUM_REPLIES_COLLECTION));
+    const replies = [];
+    repliesSnap.forEach(d => {
+      const r = { id: d.id, ...d.data() };
+      if (r.topicId === topicId) replies.push(r);
+    });
+    replies.sort((a, b) => {
+      if (a.isAcceptedAnswer && !b.isAcceptedAnswer) return -1;
+      if (b.isAcceptedAnswer && !a.isAcceptedAnswer) return 1;
+      const uv = (b.upvotes || 0) - (a.upvotes || 0);
+      if (uv !== 0) return uv;
+      return (toMs(a.createdAt) || 0) - (toMs(b.createdAt) || 0);
+    });
+    const cat = getCommunityCategoryByKey(topic.category);
+    const me = getCurrentUserInfo();
+    const isOwner = me && (topic.authorUid === me.uid);
+    const isAdminUser = me && isAdmin(me.email);
+    const time = topic.createdAt && topic.createdAt.toMillis ? formatTimeRel(topic.createdAt.toMillis()) : '';
+    const myVoted = topic.upvoters && me && topic.upvoters.includes(me.uid);
+    const safeTid = JSON.stringify(topicId);
+    root.innerHTML = `
+      <button onclick="backToForumList()" style="background:transparent; border:none; color:var(--primary); cursor:pointer; margin-bottom:10px; font-size:13px;">← Quay lại danh sách</button>
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+          ${topic.isPinned ? '<span style="font-size:11px; padding:2px 6px; background:#F59E0B; color:#FFF; border-radius:8px;">📌 Pinned</span>' : ''}
+          ${topic.isResolved ? '<span style="font-size:11px; padding:2px 6px; background:#16A34A; color:#FFF; border-radius:8px;">✓ Resolved</span>' : ''}
+          ${topic.isLocked ? '<span style="font-size:11px; padding:2px 6px; background:#6B7280; color:#FFF; border-radius:8px;">🔒 Locked</span>' : ''}
+          <span style="font-size:11px; padding:2px 6px; background:var(--blue-bg); color:var(--primary); border-radius:8px;">${cat.icon} ${escapeHtml(cat.label)}</span>
+        </div>
+        <h2 style="margin:0 0 8px 0;">${escapeHtml(topic.title)}</h2>
+        <div style="display:flex; gap:14px; font-size:12px; color:var(--text-muted); margin-bottom:14px; flex-wrap:wrap;">
+          <span>👤 ${escapeHtml(topic.authorName || topic.authorEmail || 'Anonymous')}</span>
+          <span>📅 ${escapeHtml(time)}</span>
+          <span>👁️ ${(topic.viewCount || 0) + 1} views</span>
+        </div>
+        <div style="white-space:pre-wrap; line-height:1.7; color:var(--text); font-size:14px;">${escapeHtml(topic.body || '')}</div>
+        <div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:8px; flex-wrap:wrap;">
+          <button onclick='upvoteTopic(${safeTid})' style="padding:6px 12px; background:${myVoted ? 'var(--primary)' : 'transparent'}; color:${myVoted ? '#FFF' : 'var(--text)'}; border:1px solid var(--primary); border-radius:6px; cursor:pointer; font-size:13px;">▲ Vote (${topic.upvotes || 0})</button>
+          ${(isOwner || isAdminUser) ? '<button onclick="deleteTopic(' + safeTid.replace(/"/g,"&quot;") + ')" style="padding:6px 12px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:13px;">🗑️ Xoá</button>' : ''}
+          ${isAdminUser ? '<button onclick="togglePinTopic(' + safeTid.replace(/"/g,"&quot;") + ', ' + (topic.isPinned ? 'false' : 'true') + ')" style="padding:6px 12px; background:transparent; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-size:13px;">' + (topic.isPinned ? '📌 Unpin' : '📌 Pin') + '</button>' : ''}
+          ${isAdminUser ? '<button onclick="toggleLockTopic(' + safeTid.replace(/"/g,"&quot;") + ', ' + (topic.isLocked ? 'false' : 'true') + ')" style="padding:6px 12px; background:transparent; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-size:13px;">' + (topic.isLocked ? '🔓 Unlock' : '🔒 Lock') + '</button>' : ''}
+          ${(isOwner || isAdminUser) ? '<button onclick="toggleResolveTopic(' + safeTid.replace(/"/g,"&quot;") + ', ' + (topic.isResolved ? 'false' : 'true') + ')" style="padding:6px 12px; background:transparent; border:1px solid var(--green); color:var(--green); border-radius:6px; cursor:pointer; font-size:13px;">' + (topic.isResolved ? '↩️ Mở lại' : '✓ Đánh dấu giải đáp') + '</button>' : ''}
+        </div>
+      </div>
+      <h3 style="margin:14px 0 10px 0;">${replies.length} Trả lời</h3>
+      ${replies.length === 0 ? '<div style="background:var(--blue-bg); padding:14px; border-radius:8px; color:var(--text-muted); font-size:13px;">Chưa ai trả lời. Hãy là người đầu tiên giúp!</div>' :
+        '<div style="display:flex; flex-direction:column; gap:8px;">' + replies.map(r => renderForumReplyCard(r, topic, me, isAdminUser)).join('') + '</div>'}
+      ${topic.isLocked ? '<div style="margin-top:14px; padding:14px; background:#FEF3C7; border-left:4px solid #F59E0B; border-radius:6px; font-size:13px;">🔒 Topic đã bị khoá, không thể trả lời.</div>' : `
+        <div style="margin-top:14px; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:14px;">
+          <h4 style="margin:0 0 8px 0;">Viết câu trả lời</h4>
+          <textarea id="forum-reply-body" rows="4" placeholder="Chia sẻ kiến thức / kinh nghiệm / link tài liệu..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px; resize:vertical;"></textarea>
+          <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end;">
+            <button onclick='postForumReply(${safeTid})' style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">💬 Gửi trả lời (+1 điểm)</button>
+          </div>
+        </div>
+      `}
+    `;
+  } catch (e) {
+    root.innerHTML = '<div style="padding:20px; color:var(--danger);">Lỗi: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderForumReplyCard(r, topic, me, isAdminUser) {
+  const time = r.createdAt && r.createdAt.toMillis ? formatTimeRel(r.createdAt.toMillis()) : '';
+  const isOwner = me && r.authorUid === me.uid;
+  const isTopicOwner = me && topic.authorUid === me.uid;
+  const myVoted = r.upvoters && me && r.upvoters.includes(me.uid);
+  const safeRid = JSON.stringify(r.id);
+  const safeTid = JSON.stringify(topic.id);
+  return `
+    <div style="background:${r.isAcceptedAnswer ? '#DCFCE7' : 'var(--card)'}; border:1px solid ${r.isAcceptedAnswer ? '#16A34A' : 'var(--border)'}; border-radius:8px; padding:14px;">
+      ${r.isAcceptedAnswer ? '<div style="display:inline-block; padding:2px 8px; background:#16A34A; color:#FFF; border-radius:8px; font-size:11px; margin-bottom:8px;">✓ Câu trả lời được chấp nhận</div>' : ''}
+      <div style="white-space:pre-wrap; line-height:1.7; font-size:14px;">${escapeHtml(r.body || '')}</div>
+      <div style="margin-top:10px; display:flex; gap:14px; font-size:12px; color:var(--text-muted); align-items:center; flex-wrap:wrap;">
+        <span>👤 ${escapeHtml(r.authorName || r.authorEmail || 'Anonymous')}</span>
+        <span>📅 ${escapeHtml(time)}</span>
+        <button onclick='upvoteReply(${safeRid})' style="padding:4px 10px; background:${myVoted ? 'var(--primary)' : 'transparent'}; color:${myVoted ? '#FFF' : 'var(--text)'}; border:1px solid var(--primary); border-radius:6px; cursor:pointer; font-size:12px;">▲ ${r.upvotes || 0}</button>
+        ${(isTopicOwner || isAdminUser) && !r.isAcceptedAnswer ? '<button onclick="acceptReply(' + safeRid.replace(/"/g,"&quot;") + ', ' + safeTid.replace(/"/g,"&quot;") + ')" style="padding:4px 10px; background:transparent; border:1px solid var(--green); color:var(--green); border-radius:6px; cursor:pointer; font-size:12px;">✓ Chấp nhận</button>' : ''}
+        ${(isOwner || isAdminUser) ? '<button onclick="deleteReply(' + safeRid.replace(/"/g,"&quot;") + ', ' + safeTid.replace(/"/g,"&quot;") + ')" style="padding:4px 10px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+function openNewTopicModal() {
+  let modal = document.getElementById('forum-new-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'forum-new-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:680px;"><button class="qed-close" onclick="document.getElementById(\'forum-new-modal\').classList.remove(\'show\')">×</button><h3>➕ Đặt câu hỏi mới</h3><div id="forum-new-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const catOpts = COMMUNITY_CATEGORIES.map(c => '<option value="' + c.key + '">' + c.icon + ' ' + escapeHtml(c.label) + '</option>').join('');
+  document.getElementById('forum-new-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Tiêu đề câu hỏi *</div>
+        <input type="text" id="fnew-title" placeholder="vd: Cách setup Item Tracking cho lô hàng FMCG?" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;"></label>
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Category *</div>
+        <select id="fnew-category" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">${catOpts}</select></label>
+      <label><div style="font-weight:600; font-size:13px; margin-bottom:4px;">Nội dung *</div>
+        <textarea id="fnew-body" rows="6" placeholder="Mô tả chi tiết câu hỏi, bối cảnh, đã thử cách nào..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px; resize:vertical;"></textarea></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="document.getElementById('forum-new-modal').classList.remove('show')" style="padding:8px 18px; background:#F3F4F6; border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick="submitNewTopic()" style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Đăng câu hỏi (+2 điểm)</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+async function submitNewTopic() {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const title = document.getElementById('fnew-title').value.trim();
+  const category = document.getElementById('fnew-category').value;
+  const body = document.getElementById('fnew-body').value.trim();
+  if (title.length < 10) return alert('Tiêu đề ≥10 ký tự.');
+  if (body.length < 20) return alert('Nội dung ≥20 ký tự.');
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, FORUM_TOPICS_COLLECTION), {
+      title, body, category,
+      authorUid: me.uid, authorEmail: me.email, authorName: me.displayName,
+      createdAt: window.fb.serverTimestamp(),
+      replyCount: 0, viewCount: 0, upvotes: 0, upvoters: [],
+      isPinned: false, isResolved: false, isLocked: false
+    });
+    await awardPoints('forum_question', POINTS_RULES.forum_question);
+    document.getElementById('forum-new-modal').classList.remove('show');
+    renderForum();
+  } catch (e) { alert('Lỗi: ' + e.message + '\n\nCần Firestore rule cho forum_topics.'); }
+}
+
+async function postForumReply(topicId) {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const body = document.getElementById('forum-reply-body').value.trim();
+  if (body.length < 10) return alert('Trả lời ≥10 ký tự.');
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, FORUM_REPLIES_COLLECTION), {
+      topicId, body,
+      authorUid: me.uid, authorEmail: me.email, authorName: me.displayName,
+      createdAt: window.fb.serverTimestamp(),
+      upvotes: 0, upvoters: [], isAcceptedAnswer: false
+    });
+    const topicRef = window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId);
+    const topicSnap = await window.fb.getDoc(topicRef);
+    if (topicSnap.exists()) await window.fb.updateDoc(topicRef, { replyCount: (topicSnap.data().replyCount || 0) + 1 });
+    await awardPoints('forum_reply', POINTS_RULES.forum_reply);
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function upvoteTopic(topicId) {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const ref = window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId);
+  const snap = await window.fb.getDoc(ref);
+  if (!snap.exists()) return;
+  const data = snap.data();
+  const upvoters = data.upvoters || [];
+  const hasVoted = upvoters.includes(me.uid);
+  const newUpvoters = hasVoted ? upvoters.filter(u => u !== me.uid) : [...upvoters, me.uid];
+  await window.fb.updateDoc(ref, { upvotes: newUpvoters.length, upvoters: newUpvoters });
+  if (!hasVoted && data.authorUid !== me.uid) {
+    await awardPointsToUser(data.authorUid, data.authorEmail, data.authorName, 'upvote_received', POINTS_RULES.upvote_received);
+  }
+  renderForumTopicDetail(topicId);
+}
+
+async function upvoteReply(replyId) {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const ref = window.fb.doc(window.fb.db, FORUM_REPLIES_COLLECTION, replyId);
+  const snap = await window.fb.getDoc(ref);
+  if (!snap.exists()) return;
+  const data = snap.data();
+  const upvoters = data.upvoters || [];
+  const hasVoted = upvoters.includes(me.uid);
+  const newUpvoters = hasVoted ? upvoters.filter(u => u !== me.uid) : [...upvoters, me.uid];
+  await window.fb.updateDoc(ref, { upvotes: newUpvoters.length, upvoters: newUpvoters });
+  if (!hasVoted && data.authorUid !== me.uid) {
+    await awardPointsToUser(data.authorUid, data.authorEmail, data.authorName, 'upvote_received', POINTS_RULES.upvote_received);
+  }
+  renderForumTopicDetail(data.topicId);
+}
+
+async function acceptReply(replyId, topicId) {
+  if (!confirm('Đánh dấu câu trả lời này là CHẤP NHẬN? Author sẽ nhận thêm 10 điểm.')) return;
+  try {
+    const repliesSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, FORUM_REPLIES_COLLECTION));
+    const promises = [];
+    repliesSnap.forEach(d => {
+      const r = d.data();
+      if (r.topicId === topicId && r.isAcceptedAnswer) promises.push(window.fb.updateDoc(d.ref, { isAcceptedAnswer: false }));
+    });
+    await Promise.all(promises);
+    const ref = window.fb.doc(window.fb.db, FORUM_REPLIES_COLLECTION, replyId);
+    const snap = await window.fb.getDoc(ref);
+    await window.fb.updateDoc(ref, { isAcceptedAnswer: true });
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId), { isResolved: true });
+    const rd = snap.data();
+    await awardPointsToUser(rd.authorUid, rd.authorEmail, rd.authorName, 'answer_accepted', POINTS_RULES.answer_accepted);
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function deleteTopic(topicId) {
+  if (!confirm('Xoá câu hỏi này? Các trả lời cũng sẽ mất.')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId));
+    backToForumList();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function deleteReply(replyId, topicId) {
+  if (!confirm('Xoá trả lời này?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, FORUM_REPLIES_COLLECTION, replyId));
+    const topicRef = window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId);
+    const topicSnap = await window.fb.getDoc(topicRef);
+    if (topicSnap.exists()) await window.fb.updateDoc(topicRef, { replyCount: Math.max(0, (topicSnap.data().replyCount || 0) - 1) });
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function togglePinTopic(topicId, pin) {
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId), { isPinned: pin });
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function toggleLockTopic(topicId, lock) {
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId), { isLocked: lock });
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function toggleResolveTopic(topicId, resolved) {
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, FORUM_TOPICS_COLLECTION, topicId), { isResolved: resolved });
+    renderForumTopicDetail(topicId);
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+// ============ CASE LIBRARY ============
+async function renderCaseLibrary() {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  root.innerHTML = '<div style="padding:30px; text-align:center;">⏳ Đang tải case studies...</div>';
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, COMMUNITY_CASES_COLLECTION));
+    const cases = [];
+    snap.forEach(d => cases.push({ id: d.id, ...d.data() }));
+    cases.sort((a, b) => (toMs(b.createdAt) || 0) - (toMs(a.createdAt) || 0));
+    root.innerHTML = `
+      <div style="display:flex; gap:8px; margin-bottom:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+        <h3 style="margin:0;">📝 Case Studies từ Cộng đồng (${cases.length})</h3>
+        <button onclick="openNewCaseModal()" style="padding:8px 16px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">➕ Đăng case mới (+5 điểm)</button>
+      </div>
+      ${cases.length === 0 ? `
+        <div style="background:var(--card); padding:40px; border-radius:10px; text-align:center; border:2px dashed var(--border);">
+          <div style="font-size:48px;">📝</div>
+          <h3 style="margin:10px 0;">Chưa có case nào</h3>
+        </div>
+      ` : '<div style="display:flex; flex-direction:column; gap:10px;">' + cases.map(c => renderCaseCardCommunity(c)).join('') + '</div>'}
+    `;
+  } catch (e) { root.innerHTML = '<div style="background:var(--card); padding:20px; border-radius:8px; color:var(--danger);">⚠️ ' + escapeHtml(e.message) + '</div>'; }
+}
+
+function renderCaseCardCommunity(c) {
+  const cat = getCommunityCategoryByKey(c.category);
+  const time = c.createdAt && c.createdAt.toMillis ? formatTimeRel(c.createdAt.toMillis()) : '';
+  const me = getCurrentUserInfo();
+  const isOwner = me && c.authorUid === me.uid;
+  const isAdminUser = me && isAdmin(me.email);
+  const safeId = JSON.stringify(c.id);
+  return `
+    <details style="background:var(--card); border:1px solid var(--border); border-radius:10px;">
+      <summary style="padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-size:11px; padding:2px 6px; background:var(--blue-bg); color:var(--primary); border-radius:8px;">${cat.icon} ${escapeHtml(cat.label)}</span>
+        <strong style="flex:1;">${escapeHtml(c.title)}</strong>
+        <span style="font-size:11px; color:var(--text-muted);">👤 ${escapeHtml(c.authorName || '?')} · ${escapeHtml(time)}</span>
+      </summary>
+      <div style="padding:14px 16px; border-top:1px solid var(--border);">
+        <div style="margin-bottom:10px;"><strong style="display:block; margin-bottom:4px; color:var(--primary);">📋 Bối cảnh:</strong><div style="white-space:pre-wrap; line-height:1.7; font-size:14px;">${escapeHtml(c.context || '')}</div></div>
+        <div style="margin-bottom:10px;"><strong style="display:block; margin-bottom:4px; color:var(--green);">💡 Bài học:</strong><div style="white-space:pre-wrap; line-height:1.7; font-size:14px;">${escapeHtml(c.lessons || '')}</div></div>
+        ${(isOwner || isAdminUser) ? '<div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border);"><button onclick="deleteCase(' + safeId.replace(/"/g,"&quot;") + ')" style="padding:4px 10px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:12px;">🗑️ Xoá</button></div>' : ''}
+      </div>
+    </details>
+  `;
+}
+
+function openNewCaseModal() {
+  let modal = document.getElementById('case-new-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'case-new-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:680px;"><button class="qed-close" onclick="document.getElementById(\'case-new-modal\').classList.remove(\'show\')">×</button><h3>➕ Đăng Case Study</h3><div id="case-new-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const catOpts = COMMUNITY_CATEGORIES.map(c => '<option value="' + c.key + '">' + c.icon + ' ' + escapeHtml(c.label) + '</option>').join('');
+  document.getElementById('case-new-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px;">Tiêu đề *</div>
+        <input type="text" id="cnew-title" placeholder="Bài học từ khách FMCG..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      <label><div style="font-weight:600; font-size:13px;">Category</div>
+        <select id="cnew-category" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">${catOpts}</select></label>
+      <label><div style="font-weight:600; font-size:13px;">📋 Bối cảnh *</div>
+        <textarea id="cnew-context" rows="5" placeholder="Mô tả tình huống..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; resize:vertical;"></textarea></label>
+      <label><div style="font-weight:600; font-size:13px;">💡 Bài học rút ra *</div>
+        <textarea id="cnew-lessons" rows="5" placeholder="Điều cần nhớ, cách phòng tránh..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; resize:vertical;"></textarea></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="document.getElementById('case-new-modal').classList.remove('show')" style="padding:8px 18px; background:#F3F4F6; border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick="submitNewCase()" style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">📝 Đăng (+5 điểm)</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+async function submitNewCase() {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const title = document.getElementById('cnew-title').value.trim();
+  const category = document.getElementById('cnew-category').value;
+  const context = document.getElementById('cnew-context').value.trim();
+  const lessons = document.getElementById('cnew-lessons').value.trim();
+  if (title.length < 10) return alert('Tiêu đề ≥10 ký tự.');
+  if (context.length < 30) return alert('Bối cảnh ≥30 ký tự.');
+  if (lessons.length < 30) return alert('Bài học ≥30 ký tự.');
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, COMMUNITY_CASES_COLLECTION), {
+      title, category, context, lessons,
+      authorUid: me.uid, authorEmail: me.email, authorName: me.displayName,
+      createdAt: window.fb.serverTimestamp()
+    });
+    await awardPoints('case_post', POINTS_RULES.case_post);
+    document.getElementById('case-new-modal').classList.remove('show');
+    renderCaseLibrary();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function deleteCase(caseId) {
+  if (!confirm('Xoá case này?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, COMMUNITY_CASES_COLLECTION, caseId));
+    renderCaseLibrary();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+// ============ RESOURCES ============
+async function renderResources() {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  root.innerHTML = '<div style="padding:30px; text-align:center;">⏳ Đang tải...</div>';
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, COMMUNITY_RESOURCES_COLLECTION));
+    const items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (toMs(b.createdAt) || 0) - (toMs(a.createdAt) || 0));
+    const me = getCurrentUserInfo();
+    const isAdminUser = me && isAdmin(me.email);
+    const groups = {
+      template: { label: '📋 Template dự án', items: [] },
+      userguide: { label: '📖 User Guide mẫu', items: [] },
+      methodology: { label: '🎯 Quy trình / Methodology', items: [] },
+      tool: { label: '🔧 Tools / Utilities', items: [] },
+      other: { label: '📦 Khác', items: [] }
+    };
+    items.forEach(r => { (groups[r.resourceType] || groups.other).items.push(r); });
+    root.innerHTML = `
+      <div style="display:flex; gap:8px; margin-bottom:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+        <h3 style="margin:0;">📦 Resources Hub (${items.length})</h3>
+        ${isAdminUser ? '<button onclick="openNewResourceModal()" style="padding:8px 16px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">➕ Thêm (admin)</button>' : '<span style="color:var(--text-muted); font-size:12px;">Chỉ admin upload. Đề xuất qua Forum.</span>'}
+      </div>
+      ${items.length === 0 ? '<div style="background:var(--card); padding:40px; border-radius:10px; text-align:center; border:2px dashed var(--border);"><div style="font-size:48px;">📦</div><h3>Chưa có resource</h3></div>' :
+        Object.values(groups).map(g => g.items.length === 0 ? '' : '<div style="margin-bottom:18px;"><h4 style="margin:0 0 8px 0; color:var(--primary);">' + g.label + ' (' + g.items.length + ')</h4><div style="display:flex; flex-direction:column; gap:8px;">' + g.items.map(r => renderResourceCardCommunity(r, isAdminUser)).join('') + '</div></div>').join('')}
+    `;
+  } catch (e) { root.innerHTML = '<div style="background:var(--card); padding:20px; border-radius:8px; color:var(--danger);">⚠️ ' + escapeHtml(e.message) + '</div>'; }
+}
+
+function renderResourceCardCommunity(r, isAdminUser) {
+  const cat = getCommunityCategoryByKey(r.category || 'other');
+  const safeId = JSON.stringify(r.id);
+  return `
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; display:flex; gap:12px; align-items:flex-start;">
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; flex-wrap:wrap;">
+          <strong style="font-size:14px;">${escapeHtml(r.title)}</strong>
+          <span style="font-size:11px; padding:2px 6px; background:var(--blue-bg); color:var(--primary); border-radius:8px;">${cat.icon} ${escapeHtml(cat.label)}</span>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">${escapeHtml(r.description || '')}</div>
+        <div style="margin-top:6px; font-size:11px; color:var(--text-muted);">📅 ${escapeHtml(r.createdAt && r.createdAt.toMillis ? formatTimeRel(r.createdAt.toMillis()) : '')} · 🖱️ ${r.downloadCount || 0} downloads · 👤 ${escapeHtml(r.uploaderName || '')}</div>
+      </div>
+      <div style="display:flex; gap:6px; flex-shrink:0;">
+        <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" onclick='trackResourceDownload(${safeId})' style="padding:6px 14px; background:var(--primary); color:#FFF; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">⬇️ Mở</a>
+        ${isAdminUser ? '<button onclick="deleteResourceCommunity(' + safeId.replace(/"/g,"&quot;") + ')" style="padding:6px 10px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+function openNewResourceModal() {
+  let modal = document.getElementById('resource-new-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'resource-new-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:680px;"><button class="qed-close" onclick="document.getElementById(\'resource-new-modal\').classList.remove(\'show\')">×</button><h3>➕ Thêm Resource</h3><div id="resource-new-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const catOpts = COMMUNITY_CATEGORIES.map(c => '<option value="' + c.key + '">' + c.icon + ' ' + escapeHtml(c.label) + '</option>').join('');
+  document.getElementById('resource-new-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px;">Tiêu đề *</div><input type="text" id="rnew-title" placeholder="vd: Template Project Charter cho BC" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      <label><div style="font-weight:600; font-size:13px;">URL (SharePoint/OneDrive/Drive) *</div><input type="url" id="rnew-url" placeholder="https://..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <label><div style="font-weight:600; font-size:13px;">Loại</div>
+          <select id="rnew-type" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">
+            <option value="template">📋 Template dự án</option>
+            <option value="userguide">📖 User Guide mẫu</option>
+            <option value="methodology">🎯 Methodology</option>
+            <option value="tool">🔧 Tools</option>
+            <option value="other">📦 Khác</option>
+          </select></label>
+        <label><div style="font-weight:600; font-size:13px;">Category</div>
+          <select id="rnew-category" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">${catOpts}</select></label>
+      </div>
+      <label><div style="font-weight:600; font-size:13px;">Mô tả *</div><textarea id="rnew-description" rows="4" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; resize:vertical;"></textarea></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="document.getElementById('resource-new-modal').classList.remove('show')" style="padding:8px 18px; background:#F3F4F6; border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick="submitNewResource()" style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">💾 Lưu</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+async function submitNewResource() {
+  const me = getCurrentUserInfo();
+  if (!me || !isAdmin(me.email)) return alert('Chỉ admin có thể thêm resource.');
+  const title = document.getElementById('rnew-title').value.trim();
+  const url = document.getElementById('rnew-url').value.trim();
+  const resourceType = document.getElementById('rnew-type').value;
+  const category = document.getElementById('rnew-category').value;
+  const description = document.getElementById('rnew-description').value.trim();
+  if (!title || !url || !description) return alert('Điền đủ các trường bắt buộc.');
+  if (!/^https?:\/\//.test(url)) return alert('URL phải bắt đầu http/https.');
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, COMMUNITY_RESOURCES_COLLECTION), {
+      title, url, resourceType, category, description,
+      uploaderUid: me.uid, uploaderEmail: me.email, uploaderName: me.displayName,
+      createdAt: window.fb.serverTimestamp(),
+      downloadCount: 0
+    });
+    document.getElementById('resource-new-modal').classList.remove('show');
+    renderResources();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function trackResourceDownload(resourceId) {
+  try {
+    const ref = window.fb.doc(window.fb.db, COMMUNITY_RESOURCES_COLLECTION, resourceId);
+    const snap = await window.fb.getDoc(ref);
+    if (snap.exists()) await window.fb.updateDoc(ref, { downloadCount: (snap.data().downloadCount || 0) + 1 });
+  } catch (e) { console.warn(e); }
+}
+
+async function deleteResourceCommunity(resourceId) {
+  if (!confirm('Xoá resource này?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, COMMUNITY_RESOURCES_COLLECTION, resourceId));
+    renderResources();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+// ============ TRAINING SESSIONS ============
+async function renderTraining() {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  root.innerHTML = '<div style="padding:30px; text-align:center;">⏳ Đang tải courses...</div>';
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, TRAINING_COURSES_COLLECTION));
+    const courses = [];
+    snap.forEach(d => courses.push({ id: d.id, ...d.data() }));
+    courses.sort((a, b) => (toMs(a.scheduledAt) || 0) - (toMs(b.scheduledAt) || 0));
+    const enrollSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION));
+    const myEnrolls = {};
+    const me = getCurrentUserInfo();
+    enrollSnap.forEach(d => {
+      const e = d.data();
+      if (me && e.userUid === me.uid) myEnrolls[e.courseId] = { id: d.id, ...e };
+    });
+    const isAdminUser = me && isAdmin(me.email);
+    root.innerHTML = `
+      <div style="display:flex; gap:8px; margin-bottom:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+        <h3 style="margin:0;">🎓 Training Sessions từ Senior (${courses.length})</h3>
+        ${isAdminUser ? '<button onclick="openNewCourseModal()" style="padding:8px 16px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">➕ Đăng course (+20 điểm)</button>' : ''}
+      </div>
+      ${courses.length === 0 ? '<div style="background:var(--card); padding:40px; border-radius:10px; text-align:center; border:2px dashed var(--border);"><div style="font-size:48px;">🎓</div><h3>Chưa có course</h3></div>' :
+        '<div style="display:flex; flex-direction:column; gap:10px;">' + courses.map(c => renderCourseCardCommunity(c, myEnrolls[c.id], me, isAdminUser)).join('') + '</div>'}
+    `;
+  } catch (e) { root.innerHTML = '<div style="background:var(--card); padding:20px; border-radius:8px; color:var(--danger);">⚠️ ' + escapeHtml(e.message) + '</div>'; }
+}
+
+function renderCourseCardCommunity(c, myEnroll, me, isAdminUser) {
+  const cat = getCommunityCategoryByKey(c.category || 'other');
+  const dt = c.scheduledAt && c.scheduledAt.toMillis ? new Date(c.scheduledAt.toMillis()) : null;
+  const dtStr = dt ? dt.toLocaleString('vi-VN') : 'TBA';
+  const isPast = dt && dt.getTime() < Date.now();
+  const isOwner = me && c.instructorUid === me.uid;
+  const safeCid = JSON.stringify(c.id);
+  const safeEid = myEnroll ? JSON.stringify(myEnroll.id) : 'null';
+  return `
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+        <span style="font-size:11px; padding:2px 6px; background:var(--blue-bg); color:var(--primary); border-radius:8px;">${cat.icon} ${escapeHtml(cat.label)}</span>
+        <span style="font-size:11px; padding:2px 6px; background:#F59E0B; color:#FFF; border-radius:8px;">${escapeHtml(c.level || 'all')}</span>
+        ${isPast ? '<span style="font-size:11px; padding:2px 6px; background:#6B7280; color:#FFF; border-radius:8px;">✓ Đã diễn ra</span>' : '<span style="font-size:11px; padding:2px 6px; background:#16A34A; color:#FFF; border-radius:8px;">📅 Sắp tới</span>'}
+      </div>
+      <h4 style="margin:0 0 6px 0;">${escapeHtml(c.title)}</h4>
+      <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px; line-height:1.6;">${escapeHtml(c.description || '')}</div>
+      <div style="display:flex; gap:14px; font-size:12px; color:var(--text-muted); margin-bottom:10px; flex-wrap:wrap;">
+        <span>👨‍🏫 ${escapeHtml(c.instructorName || '?')}</span>
+        <span>📅 ${escapeHtml(dtStr)}</span>
+        <span>⏱️ ${escapeHtml(String(c.durationMin || '?'))} phút</span>
+        <span>👥 ${(c.enrollCount || 0)} / ${c.maxSeats || '∞'} seats</span>
+        ${c.avgRating ? '<span>⭐ ' + c.avgRating.toFixed(1) + ' (' + (c.ratingCount || 0) + ')</span>' : ''}
+      </div>
+      ${c.meetingLink ? '<div style="font-size:12px; margin-bottom:10px;"><a href="' + escapeHtml(c.meetingLink) + '" target="_blank" style="color:var(--primary);">🔗 Meeting link</a></div>' : ''}
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        ${!myEnroll ? '<button onclick="enrollCourse(' + safeCid.replace(/"/g,"&quot;") + ')" style="padding:6px 14px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">📝 Đăng ký (+5 điểm)</button>' :
+          '<button onclick="unenrollCourse(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + ')" style="padding:6px 14px; background:#FEF3C7; color:#92400E; border:1px solid #F59E0B; border-radius:6px; cursor:pointer; font-size:13px;">✓ Đã đăng ký · Click huỷ</button>'}
+        ${myEnroll && isPast && !myEnroll.rating ? '<button onclick="openRateCourseModal(' + safeEid.replace(/"/g,"&quot;") + ', ' + safeCid.replace(/"/g,"&quot;") + ')" style="padding:6px 14px; background:#16A34A; color:#FFF; border:none; border-radius:6px; cursor:pointer; font-size:13px;">⭐ Đánh giá (+1 điểm)</button>' : ''}
+        ${myEnroll && myEnroll.rating ? '<span style="padding:6px 14px; color:var(--green); font-size:13px;">⭐ Đã rate: ' + myEnroll.rating + '/5</span>' : ''}
+        ${(isOwner || isAdminUser) ? '<button onclick="deleteCourse(' + safeCid.replace(/"/g,"&quot;") + ')" style="padding:6px 10px; background:transparent; color:#DC2626; border:1px solid #FCA5A5; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+function openNewCourseModal() {
+  let modal = document.getElementById('course-new-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'course-new-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:680px;"><button class="qed-close" onclick="document.getElementById(\'course-new-modal\').classList.remove(\'show\')">×</button><h3>➕ Đăng Training Session</h3><div id="course-new-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const catOpts = COMMUNITY_CATEGORIES.map(c => '<option value="' + c.key + '">' + c.icon + ' ' + escapeHtml(c.label) + '</option>').join('');
+  document.getElementById('course-new-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px;">Tiêu đề *</div><input type="text" id="crsnew-title" placeholder="Workshop Mock Recall 2h hands-on" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      <label><div style="font-weight:600; font-size:13px;">Mô tả *</div><textarea id="crsnew-description" rows="4" placeholder="Nội dung, agenda, prerequisite..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; resize:vertical;"></textarea></label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <label><div style="font-weight:600; font-size:13px;">Category</div>
+          <select id="crsnew-category" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">${catOpts}</select></label>
+        <label><div style="font-weight:600; font-size:13px;">Level</div>
+          <select id="crsnew-level" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">
+            <option value="beginner">beginner</option><option value="intermediate">intermediate</option><option value="advanced">advanced</option><option value="all">all</option>
+          </select></label>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+        <label><div style="font-weight:600; font-size:13px;">Ngày giờ *</div>
+          <input type="datetime-local" id="crsnew-scheduled" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+        <label><div style="font-weight:600; font-size:13px;">Duration (phút)</div>
+          <input type="number" id="crsnew-duration" value="60" min="15" max="480" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+        <label><div style="font-weight:600; font-size:13px;">Max seats</div>
+          <input type="number" id="crsnew-seats" value="20" min="1" max="500" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      </div>
+      <label><div style="font-weight:600; font-size:13px;">Meeting link (Teams/Zoom)</div><input type="url" id="crsnew-meeting" placeholder="https://teams.microsoft.com/..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;"></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="document.getElementById('course-new-modal').classList.remove('show')" style="padding:8px 18px; background:#F3F4F6; border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick="submitNewCourse()" style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">📝 Đăng</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+async function submitNewCourse() {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  const title = document.getElementById('crsnew-title').value.trim();
+  const description = document.getElementById('crsnew-description').value.trim();
+  const category = document.getElementById('crsnew-category').value;
+  const level = document.getElementById('crsnew-level').value;
+  const scheduledStr = document.getElementById('crsnew-scheduled').value;
+  const durationMin = parseInt(document.getElementById('crsnew-duration').value, 10);
+  const maxSeats = parseInt(document.getElementById('crsnew-seats').value, 10);
+  const meetingLink = document.getElementById('crsnew-meeting').value.trim();
+  if (!title || !description || !scheduledStr) return alert('Điền đủ các trường bắt buộc.');
+  const scheduledAt = new Date(scheduledStr);
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, TRAINING_COURSES_COLLECTION), {
+      title, description, category, level,
+      scheduledAt, durationMin, maxSeats, meetingLink,
+      instructorUid: me.uid, instructorEmail: me.email, instructorName: me.displayName,
+      createdAt: window.fb.serverTimestamp(),
+      enrollCount: 0, avgRating: 0, ratingCount: 0
+    });
+    await awardPoints('training_teach', POINTS_RULES.training_teach);
+    document.getElementById('course-new-modal').classList.remove('show');
+    renderTraining();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function enrollCourse(courseId) {
+  const me = getCurrentUserInfo();
+  if (!me) return alert('Cần đăng nhập.');
+  try {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION), {
+      courseId, userUid: me.uid, userEmail: me.email, userName: me.displayName,
+      enrolledAt: window.fb.serverTimestamp(),
+      rating: 0, feedback: ''
+    });
+    const ref = window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, courseId);
+    const snap = await window.fb.getDoc(ref);
+    if (snap.exists()) await window.fb.updateDoc(ref, { enrollCount: (snap.data().enrollCount || 0) + 1 });
+    await awardPoints('training_attend', POINTS_RULES.training_attend);
+    renderTraining();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function unenrollCourse(enrollmentId, courseId) {
+  if (!confirm('Huỷ đăng ký?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION, enrollmentId));
+    const ref = window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, courseId);
+    const snap = await window.fb.getDoc(ref);
+    if (snap.exists()) await window.fb.updateDoc(ref, { enrollCount: Math.max(0, (snap.data().enrollCount || 0) - 1) });
+    renderTraining();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+function openRateCourseModal(enrollmentId, courseId) {
+  let modal = document.getElementById('rate-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'rate-modal';
+    modal.className = 'qed-modal';
+    modal.innerHTML = '<div class="qed-box" style="max-width:480px;"><button class="qed-close" onclick="document.getElementById(\'rate-modal\').classList.remove(\'show\')">×</button><h3>⭐ Đánh giá course</h3><div id="rate-body"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const safeE = JSON.stringify(enrollmentId);
+  const safeC = JSON.stringify(courseId);
+  document.getElementById('rate-body').innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label><div style="font-weight:600; font-size:13px;">Điểm (1-5 sao) *</div>
+        <select id="rate-stars" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px;">
+          <option value="5">⭐⭐⭐⭐⭐ Xuất sắc</option><option value="4">⭐⭐⭐⭐ Tốt</option><option value="3">⭐⭐⭐ Trung bình</option><option value="2">⭐⭐ Yếu</option><option value="1">⭐ Kém</option>
+        </select></label>
+      <label><div style="font-weight:600; font-size:13px;">Feedback</div>
+        <textarea id="rate-feedback" rows="4" placeholder="Điểm mạnh / cải thiện..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; resize:vertical;"></textarea></label>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="document.getElementById('rate-modal').classList.remove('show')" style="padding:8px 18px; background:#F3F4F6; border:none; border-radius:6px; cursor:pointer;">Huỷ</button>
+        <button onclick='submitRateCourse(${safeE}, ${safeC})' style="padding:8px 18px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600;">⭐ Gửi</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+
+async function submitRateCourse(enrollmentId, courseId) {
+  const rating = parseInt(document.getElementById('rate-stars').value, 10);
+  const feedback = document.getElementById('rate-feedback').value.trim();
+  try {
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION, enrollmentId), {
+      rating, feedback, ratedAt: window.fb.serverTimestamp()
+    });
+    const enrollSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION));
+    let total = 0, count = 0;
+    enrollSnap.forEach(d => {
+      const e = d.data();
+      if (e.courseId === courseId && e.rating) { total += e.rating; count++; }
+    });
+    const avg = count > 0 ? total / count : 0;
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, courseId), { avgRating: avg, ratingCount: count });
+    await awardPoints('training_rate', POINTS_RULES.training_rate);
+    document.getElementById('rate-modal').classList.remove('show');
+    renderTraining();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+async function deleteCourse(courseId) {
+  if (!confirm('Xoá course này?')) return;
+  try {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, TRAINING_COURSES_COLLECTION, courseId));
+    renderTraining();
+  } catch (e) { alert('Lỗi: ' + e.message); }
+}
+
+// ============ MEMBER POINTS ============
+async function renderMemberPoints() {
+  const root = document.getElementById('community-content');
+  if (!root) return;
+  root.innerHTML = '<div style="padding:30px; text-align:center;">⏳ Đang tải bảng điểm...</div>';
+  try {
+    const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, POINTS_COLLECTION));
+    const members = [];
+    snap.forEach(d => members.push({ id: d.id, ...d.data() }));
+    members.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+    const me = getCurrentUserInfo();
+    const myEntry = me ? members.find(m => m.uid === me.uid) : null;
+    const myRank = myEntry ? members.indexOf(myEntry) + 1 : 0;
+    root.innerHTML = `
+      <div style="background:linear-gradient(135deg, #F59E0B 0%, #DC2626 100%); color:#FFF; padding:14px 18px; border-radius:10px; margin-bottom:14px;">
+        <h3 style="margin:0 0 4px 0; color:#FFF;">🏆 Bảng điểm Cộng đồng</h3>
+        <p style="margin:0; font-size:13px; opacity:0.92;">Điểm tích luỹ từ: đặt câu hỏi, trả lời, được upvote, answer accepted, đăng case, tham gia/dạy training.</p>
+        ${myEntry ? '<div style="margin-top:8px; font-size:14px;">Bạn đang xếp hạng <strong style="font-size:18px;">#' + myRank + '</strong> với <strong>' + myEntry.totalPoints + '</strong> điểm.</div>' : '<div style="margin-top:8px; font-size:13px;">Hoạt động để có điểm đầu tiên!</div>'}
+      </div>
+      <div style="background:var(--card); padding:14px; border-radius:8px; margin-bottom:14px; font-size:12px;">
+        <strong>📊 Quy chế điểm:</strong>
+        Đặt câu hỏi <strong>+${POINTS_RULES.forum_question}</strong> · Trả lời <strong>+${POINTS_RULES.forum_reply}</strong> · Được upvote <strong>+${POINTS_RULES.upvote_received}/lần</strong> · Answer accepted <strong>+${POINTS_RULES.answer_accepted}</strong> · Đăng case <strong>+${POINTS_RULES.case_post}</strong> · Đăng ký training <strong>+${POINTS_RULES.training_attend}</strong> · Rate training <strong>+${POINTS_RULES.training_rate}</strong> · Dạy training <strong>+${POINTS_RULES.training_teach}</strong>
+      </div>
+      ${members.length === 0 ? '<div style="background:var(--card); padding:40px; border-radius:10px; text-align:center;"><div style="font-size:48px;">🏆</div><p style="color:var(--text-muted);">Chưa có member nào có điểm.</p></div>' :
+        '<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th style="width:60px;">Rank</th><th>Member</th><th style="width:90px;">Total</th><th>Breakdown</th></tr></thead><tbody>' +
+        members.map((m, i) => {
+          const rank = i + 1;
+          const isMe = me && m.uid === me.uid;
+          const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank;
+          const breakdown = Object.entries(m.breakdown || {}).map(([k, v]) => '<span style="font-size:11px; padding:1px 5px; background:var(--blue-bg); border-radius:6px; margin-right:3px;">' + escapeHtml(k.replace(/_/g, ' ')) + ': ' + v + '</span>').join('');
+          return '<tr style="' + (isMe ? 'background:#FEF3C7;' : '') + '">' +
+            '<td style="font-size:18px; font-weight:700;">' + medal + '</td>' +
+            '<td><strong>' + escapeHtml(m.displayName || '?') + '</strong>' + (isMe ? ' <span style="background:#F59E0B; color:#FFF; padding:1px 6px; border-radius:6px; font-size:10px; margin-left:6px;">YOU</span>' : '') + '<br><span style="font-size:11px; color:var(--text-muted);">' + escapeHtml(m.email || '') + '</span></td>' +
+            '<td><strong style="font-size:18px; color:var(--primary);">' + (m.totalPoints || 0) + '</strong></td>' +
+            '<td>' + (breakdown || '<span style="color:var(--text-muted);">—</span>') + '</td>' +
+            '</tr>';
+        }).join('') + '</tbody></table></div>'}
+    `;
+  } catch (e) { root.innerHTML = '<div style="background:var(--card); padding:20px; border-radius:8px; color:var(--danger);">⚠️ ' + escapeHtml(e.message) + '</div>'; }
+}
+
+// ============ ADMIN: Video editor list ============
+function renderVideoEditorList() {
+  const items = VIDEO_LIBRARY.slice();
+  return `
+    <div style="background:var(--card); padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <h3 style="margin:0;">🎬 Quản lý videos (${items.length})</h3>
+        <button onclick="openVideoEditor(null)" style="padding:8px 14px; background:var(--primary); color:#FFF; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">➕ Thêm video mới</button>
+      </div>
+      ${items.length === 0 ? `
+        <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:13px;">Chưa có video nào — click "Thêm video mới" để bắt đầu.</div>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${items.map(v => {
+            const ov = _videoOverrides[v.id];
+            let badge = '';
+            if (ov && ov.action === 'add') badge = '<span style="background:#16A34A; color:#FFF; font-size:10px; padding:2px 6px; border-radius:8px; margin-left:6px;">MỚI</span>';
+            else if (ov && ov.action === 'edit') badge = '<span style="background:#F59E0B; color:#FFF; font-size:10px; padding:2px 6px; border-radius:8px; margin-left:6px;">ĐÃ SỬA</span>';
+            return `
+              <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg, #FFF);">
+                <img src="https://img.youtube.com/vi/${v.ytId}/default.jpg" alt="" style="width:80px; height:45px; object-fit:cover; border-radius:4px; flex-shrink:0; background:#000;" loading="lazy" onerror="this.style.display='none'">
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:600; font-size:13px;">${escapeHtml(v.title)}${badge}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">
+                    <code style="background:var(--blue-bg); padding:1px 4px; border-radius:3px;">${escapeHtml(v.id)}</code>
+                    · YouTube: <code>${escapeHtml(v.ytId)}</code>
+                    · ${escapeHtml(v.duration || '?')}
+                    · ${(v.chapters || []).length} nhóm
+                  </div>
+                </div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                  <button onclick="openVideoEditor('${v.id}')" style="padding:5px 10px; background:transparent; border:1px solid var(--border); border-radius:5px; cursor:pointer; font-size:12px;">✏️ Sửa</button>
+                  <button onclick="deleteVideo('${v.id}')" style="padding:5px 10px; background:transparent; border:1px solid #FCA5A5; color:#DC2626; border-radius:5px; cursor:pointer; font-size:12px;">🗑️ Xoá</button>
+                  ${ov ? '<button onclick="revertVideoOverride(' + JSON.stringify(v.id) + ')" style="padding:5px 10px; background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:5px; cursor:pointer; font-size:12px;" title="Khôi phục bản gốc">↩️</button>' : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+      <div style="margin-top:10px; padding:8px 10px; background:var(--blue-bg); border-radius:6px; font-size:12px; color:var(--text-muted);">
+        💡 Thêm Firestore rule cho <code>video_overrides</code>: <code>allow read, write: if request.auth != null && isAdmin();</code>
+      </div>
+    </div>
+  `;
+}
+
 // ============ ADMIN: Video tracking dashboard ============
 function renderVideoTrackingAdmin(users) {
+  const editorHtml = renderVideoEditorList();
   if (!VIDEO_LIBRARY || VIDEO_LIBRARY.length === 0) {
-    return '<div style="background:var(--card); padding:30px; border-radius:10px; text-align:center; border:1px solid var(--border);"><div style="font-size:48px;">📭</div><h3>Chưa có video</h3><p style="color:var(--text-muted);">Thêm video vào <code>VIDEO_LIBRARY</code> trong source code để theo dõi.</p></div>';
+    return editorHtml + '<div style="background:var(--card); padding:30px; border-radius:10px; text-align:center; border:1px solid var(--border); margin-top:14px;"><div style="font-size:48px;">📭</div><h3>Chưa có video</h3><p style="color:var(--text-muted);">Click "➕ Thêm video mới" ở trên để bắt đầu.</p></div>';
   }
 
   // Cross-tab matrix: rows = users, cols = videos
@@ -8926,10 +10637,10 @@ function renderVideoTrackingAdmin(users) {
     };
   }).sort((a, b) => b.lastWatch - a.lastWatch);
 
-  return `
-    <div style="margin-bottom:14px;">
-      <h3 style="margin:0 0 4px 0;">📺 Video Watch Tracking</h3>
-      <p style="color:var(--text-muted); font-size:13px; margin:0;">Tracking ai đã xem video nào trong thư viện ${VIDEO_LIBRARY.length} video.</p>
+  return editorHtml + `
+    <div style="margin:18px 0 14px 0;">
+      <h3 style="margin:0 0 4px 0;">📊 Watch Tracking Dashboard</h3>
+      <p style="color:var(--text-muted); font-size:13px; margin:0;">Ai đã xem video nào — thư viện hiện có ${VIDEO_LIBRARY.length} video.</p>
     </div>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:18px;">
