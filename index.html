@@ -5587,10 +5587,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.13.1',
+  num: 'v3.13.3',
   date: '2026-05-27',
   notes: [
-    '🐛 FIX NẶNG: Nút Share KHÔNG hoạt động — do dùng JSON.stringify(title) trong onclick attribute, dấu " trong JSON xung đột HTML attribute. Đã escape thành &quot;. Giờ click 🔗 hiện modal đầy đủ.',
+    '🐛 FIX: Guest vào tab Training bị lỗi permissions — do code cố đọc training_enrollments (chỉ user auth được đọc). Đã skip query này cho guest.',
+    '🐛 FIX NẶNG: Click nút 🔗 Chia sẻ lại mở modal "Khoe thành tích" — do em đặt tên trùng function (cả 2 tên là showShareModal). Đổi tên mới thành showShareLinkModal. Giờ 2 modal độc lập.',
+    '🐛 FIX: Nút Share không hoạt động (trước phiên này) — do dùng JSON.stringify(title) trong onclick attribute, dấu " xung đột HTML. Đã escape thành &quot;.',
     '🔗 Nâng cấp Modal Chia sẻ: 8 kênh + Copy link: Facebook · Zalo · Microsoft Teams · X/Twitter · LinkedIn · Telegram · WhatsApp · Email. Mobile vẫn có nút "Mở menu chia sẻ HĐH" dùng Web Share API native.',
     '📋 Copy link là nút primary to ở trên, các kênh khác xếp grid 4 cột dạng icon + tên — tap vào mở thẳng share page của từng nền tảng.',
     '🐛 FIX: User menu trong guest mode giờ hiển thị "🔑 Đăng nhập" + "✨ Đăng ký mới" (trước đây vẫn show "Đăng xuất" sai logic). CSS toggle qua class body.guest-mode.',
@@ -6281,10 +6283,11 @@ function shareLink(type, id, title) {
   const base = window.location.origin + window.location.pathname;
   const url = base + '#' + type + '/' + id;
   const safeTitle = title || 'HỌC VIỆN ERP CONSULTING';
-  showShareModal(url, safeTitle);
+  showShareLinkModal(url, safeTitle);
 }
 
-function showShareModal(url, title) {
+// Renamed từ showShareModal để tránh collision với hàm Khoe thành tích (line 9202)
+function showShareLinkModal(url, title) {
   const text = 'Đọc bài: ' + title + ' — HỌC VIỆN ERP CONSULTING';
   const eU = encodeURIComponent(url);
   const eT = encodeURIComponent(title);
@@ -13885,13 +13888,18 @@ async function renderTraining() {
     const courses = [];
     snap.forEach(d => courses.push({ id: d.id, ...d.data() }));
     courses.sort((a, b) => (toMs(a.scheduledAt) || 0) - (toMs(b.scheduledAt) || 0));
-    const enrollSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION));
-    const myEnrolls = {};
     const me = getCurrentUserInfo();
-    enrollSnap.forEach(d => {
-      const e = d.data();
-      if (me && e.userUid === me.uid) myEnrolls[e.courseId] = { id: d.id, ...e };
-    });
+    // Guest không cần load enrollments (không có để load)
+    const myEnrolls = {};
+    if (me && !window._isGuest) {
+      try {
+        const enrollSnap = await window.fb.getDocs(window.fb.collection(window.fb.db, TRAINING_ENROLLMENTS_COLLECTION));
+        enrollSnap.forEach(d => {
+          const e = d.data();
+          if (e.userUid === me.uid) myEnrolls[e.courseId] = { id: d.id, ...e };
+        });
+      } catch (e) { /* silent — không quan trọng cho list view */ }
+    }
     _trainingCourses = courses;
     _trainingMyEnrolls = myEnrolls;
     const isAdminUser = me && isAdmin(me.email);
