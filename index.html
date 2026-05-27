@@ -277,6 +277,10 @@
 
   /* User menu dropdown */
   body[data-theme="dark"] .user-menu-dropdown { background: var(--card); }
+  /* Guest mode: ẩn các item dành cho user đã login, hiện các item guest */
+  .user-menu-item.guest-only { display: none; }
+  body.guest-mode .user-menu-item.user-only { display: none; }
+  body.guest-mode .user-menu-item.guest-only { display: flex; }
   body[data-theme="dark"] .user-menu-info { border-bottom-color: var(--border); }
 
   /* Folder + bookmark cards */
@@ -2761,8 +2765,8 @@
         <div class="role" id="user-role" style="display:none;">Admin</div>
         <div id="user-streak" style="margin-top:6px; font-size:12px; color:var(--warning); font-weight:600;"></div>
       </div>
-      <button class="user-menu-item" onclick="showShareModal()">🎨 Khoe thành tích</button>
-      <button class="user-menu-item" onclick="showTeamModal()">👥 Chọn team</button>
+      <button class="user-menu-item user-only" onclick="showShareModal()">🎨 Khoe thành tích</button>
+      <button class="user-menu-item user-only" onclick="showTeamModal()">👥 Chọn team</button>
       <label class="privacy-toggle user-menu-item" onclick="event.stopPropagation()">
         <span>🌙 Dark mode</span>
         <select id="theme-select" onchange="setTheme(this.value)" style="border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:12px;">
@@ -2771,14 +2775,16 @@
           <option value="dark">Tối</option>
         </select>
       </label>
-      <label class="privacy-toggle user-menu-item" onclick="event.stopPropagation()">
+      <label class="privacy-toggle user-menu-item user-only" onclick="event.stopPropagation()">
         <span>🏆 Hiện trong bảng xếp hạng</span>
         <input type="checkbox" id="public-profile-checkbox" onchange="togglePublicProfile()" />
       </label>
-      <button class="user-menu-item" onclick="showChangePwModal()">🔒 Đổi mật khẩu</button>
+      <button class="user-menu-item user-only" onclick="showChangePwModal()">🔒 Đổi mật khẩu</button>
       <button class="user-menu-item" id="install-app-btn" onclick="installPwaApp()" style="display:none;">📲 Cài đặt app vào máy</button>
-      <button class="user-menu-item" onclick="importLocalProgress()">📥 Import tiến độ từ máy cũ</button>
-      <button class="user-menu-item danger" onclick="logout()">🚪 Đăng xuất</button>
+      <button class="user-menu-item user-only" onclick="importLocalProgress()">📥 Import tiến độ từ máy cũ</button>
+      <button class="user-menu-item guest-only" onclick="promptLoginNow('login')" style="background:var(--primary); color:#FFF; font-weight:700;">🔑 Đăng nhập</button>
+      <button class="user-menu-item guest-only" onclick="promptLoginNow('register')">✨ Đăng ký tài khoản mới</button>
+      <button class="user-menu-item danger user-only" onclick="logout()">🚪 Đăng xuất</button>
     </div>
   </div>
 </header>
@@ -5581,10 +5587,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.12.0',
+  num: 'v3.12.1',
   date: '2026-05-27',
   notes: [
-    '🔓 MỚI: Admin → "Quyền Guest" — checkbox cấu hình tab nào guest xem được, lưu vào Firestore settings/guest_access. Click 1 phát save áp dụng toàn hệ thống.',
+    '🐛 FIX: User menu trong guest mode giờ hiển thị "🔑 Đăng nhập" + "✨ Đăng ký mới" (trước đây vẫn show "Đăng xuất" sai logic). CSS toggle qua class body.guest-mode.',
+    '🔓 Admin → "Quyền Guest" — checkbox cấu hình tab nào guest xem được, lưu vào Firestore settings/guest_access. Click 1 phát save áp dụng toàn hệ thống.',
     '🌐 MỚI: Auto-guest mode — nếu URL có hash share (vd #article/abc) mà user chưa login → tự động vào guest mode mở đúng nội dung shared. Không bắt user login chỉ để xem 1 bài.',
     '👀 Guest mode — nút "Xem trước với tư cách Khách" ở login screen. Guest xem được Cộng đồng / Thư viện / Video / Lộ trình / Cấp độ (read-only). Các tab khác hiện trên menu nhưng click → modal yêu cầu đăng nhập.',
     '🔗 MỚI: URL share — mỗi bài viết / Q&A có URL riêng (vd #article/abc123). Nút 🔗 "Chia sẻ" trên card + detail → Web Share API (mobile) hoặc copy link (desktop). Người nhận click URL → mở thẳng item ngay cả khi chưa login (auto guest mode).',
@@ -5812,6 +5819,7 @@ async function handleAuthStateChange(user) {
   }
   // User đăng nhập → tắt guest mode
   window._isGuest = false;
+  document.body.classList.remove('guest-mode');
 
   // Check email verification (OAuth providers — Google/Microsoft — bypass này vì IdP đã verify email)
   const isOAuthVerified = user.providerData.some(p => p.providerId === 'google.com' || p.providerId === 'microsoft.com');
@@ -6133,6 +6141,8 @@ function isGuestAllowed(tab) {
 
 function enterGuestMode() {
   window._isGuest = true;
+  document.body.classList.add('guest-mode');
+  document.body.classList.remove('is-logged-in');
   const overlay = document.getElementById('auth-overlay');
   if (overlay) overlay.style.display = 'none';
   document.querySelector('header').classList.remove('app-hidden');
@@ -6143,6 +6153,9 @@ function enterGuestMode() {
   document.getElementById('user-email').textContent = 'Chưa đăng nhập';
   const avatar = document.getElementById('user-avatar');
   if (avatar) avatar.innerHTML = '👤';
+  // Ẩn role badge
+  const roleEl = document.getElementById('user-role');
+  if (roleEl) roleEl.style.display = 'none';
   // Ẩn admin group
   const adminGroup = document.getElementById('sidebar-admin-group');
   if (adminGroup) adminGroup.style.display = 'none';
