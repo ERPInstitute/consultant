@@ -5263,9 +5263,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.6.1',
+  num: 'v3.6.2',
   date: '2026-05-27',
   notes: [
+    '🔐 FIX: User được cấp admin động giờ thực sự nhìn thấy menu admin sau khi refresh (trước đây check isAdmin chạy trước khi load state.role từ Firestore → fail)',
+    '🔐 Hiển thị badge phân biệt "Super-Admin" vs "Admin" ở header user',
     '🌙 MỚI: Dark mode = mặc định cho user mới (vẫn đổi được sang Light/Auto trong Settings)',
     '🌙 Bản đồ Roadmap Consultant đồng bộ dark mode: nền gradient #1E293B→#0F172A, milestone xanh sáng (#4ADE80/#5B8DEF), text contrast cao',
     '🗺️ MỚI: Trang mặc định = "Cấp độ Consultant" với bản đồ Roadmap horizontal — 4 chặng Junior→Mid→Senior→Principal, vị trí hiện tại pulse animation, job role + dải năm KN từng cấp',
@@ -5476,16 +5478,19 @@ async function handleAuthStateChange(user) {
   }
   const roleEl = document.getElementById('user-role');
   const adminGroup = document.getElementById('sidebar-admin-group');
-  if (isAdmin(user.email)) {
-    roleEl.textContent = 'Admin';
-    roleEl.style.display = 'inline-block';
-    if (adminGroup) adminGroup.style.display = 'block';
-  } else {
-    roleEl.style.display = 'none';
-    if (adminGroup) adminGroup.style.display = 'none';
-  }
+  // Hide admin menu ngay lúc đầu để tránh flicker; sẽ show lại sau khi load state nếu có quyền
+  roleEl.style.display = 'none';
+  if (adminGroup) adminGroup.style.display = 'none';
 
   await initApp();
+
+  // Sau khi initApp() đã load state.role từ Firestore, check lại isAdmin (cả super-admin và dynamic admin)
+  if (isAdmin(user.email)) {
+    const isSuper = isSuperAdmin(user.email);
+    roleEl.textContent = isSuper ? 'Super-Admin' : 'Admin';
+    roleEl.style.display = 'inline-block';
+    if (adminGroup) adminGroup.style.display = 'block';
+  }
 
   // Set publicProfile checkbox
   const pp = document.getElementById('public-profile-checkbox');
