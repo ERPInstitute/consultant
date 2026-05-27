@@ -1179,14 +1179,14 @@
 
   /* Level Assessment */
 
-  /* === ROADMAP JOURNEY (Junior → Principal) === */
+  /* === ROADMAP JOURNEY (Junior → Principal) — COMPACT STRIP === */
   .roadmap-journey {
     position: relative;
     background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
     border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    padding: 32px 24px 28px;
-    margin-bottom: 18px;
+    border-radius: 12px;
+    padding: 14px 18px 12px;
+    margin-bottom: 14px;
     overflow: hidden;
   }
   .roadmap-journey::before {
@@ -1194,18 +1194,21 @@
     background: linear-gradient(90deg, #94A3B8 0%, #2E5C9E 33%, #16A34A 66%, #7C3AED 100%);
   }
   .roadmap-title {
-    font-size: 18px; font-weight: 800; color: var(--primary);
-    text-align: center; margin: 0 0 6px 0; letter-spacing: 0.3px;
+    font-size: 14px; font-weight: 700; color: var(--primary);
+    margin: 0; letter-spacing: 0.2px; display: inline-block;
+  }
+  .roadmap-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; gap: 12px; flex-wrap: wrap;
   }
   .roadmap-subtitle {
-    font-size: 12.5px; color: var(--text-muted); text-align: center;
-    margin: 0 0 24px 0;
+    font-size: 11.5px; color: var(--text-muted); margin: 0;
   }
   .roadmap-svg-wrap {
-    position: relative; width: 100%; overflow-x: auto; padding-bottom: 4px;
+    position: relative; width: 100%; overflow-x: auto; padding-bottom: 2px;
   }
   .roadmap-svg-wrap svg {
-    display: block; width: 100%; min-width: 720px; height: auto;
+    display: block; width: 100%; min-width: 600px; height: auto; max-height: 70px;
   }
   /* SVG paths/circles — styled via CSS for theme override */
   .rj-track { stroke: #E2E8F0; }
@@ -1218,88 +1221,137 @@
   .rj-text { fill: #FFFFFF; }
   .roadmap-stages {
     display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin-top: 14px; min-width: 720px;
+    gap: 6px; margin-top: 6px; min-width: 600px;
   }
   .roadmap-stage {
     text-align: center;
-    background: #FFFFFF;
-    border: 2px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 14px 10px 12px;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 6px;
+    transition: transform 0.15s ease;
     position: relative;
+    cursor: default;
   }
-  .roadmap-stage:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
-  .roadmap-stage.achieved { border-color: #16A34A; background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); }
-  .roadmap-stage.current {
-    border-color: var(--primary); border-width: 3px;
-    background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%);
-    box-shadow: 0 0 0 4px rgba(46,92,158,0.15), 0 8px 22px rgba(46,92,158,0.18);
-  }
+  .roadmap-stage[title]:hover { transform: translateY(-1px); }
+  .roadmap-stage.achieved .rs-name { color: #16A34A; }
+  .roadmap-stage.current .rs-name { color: var(--primary); font-weight: 800; }
   .roadmap-stage.future { opacity: 0.55; }
-  .roadmap-stage .rs-check {
-    position: absolute; top: -10px; right: -10px;
-    width: 26px; height: 26px; border-radius: 50%;
-    background: #16A34A; color: #FFF; font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; box-shadow: 0 3px 8px rgba(22,163,74,0.4);
-  }
-  .roadmap-stage .rs-now {
-    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    background: var(--primary); color: #FFF;
-    padding: 3px 10px; border-radius: 10px;
-    font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
-    text-transform: uppercase; white-space: nowrap;
-    box-shadow: 0 3px 8px rgba(46,92,158,0.35);
-    animation: rs-pulse 2s ease-in-out infinite;
-  }
-  @keyframes rs-pulse {
-    0%, 100% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.08); }
-  }
-  .roadmap-stage .rs-icon { font-size: 32px; line-height: 1; margin-bottom: 6px; }
-  .roadmap-stage .rs-level {
-    font-size: 10px; font-weight: 700; color: var(--text-muted);
-    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px;
-  }
+  .roadmap-stage .rs-check, .roadmap-stage .rs-now, .roadmap-stage .rs-icon { display: none; }
   .roadmap-stage .rs-name {
-    font-size: 15px; font-weight: 800; color: var(--text);
-    line-height: 1.25; margin-bottom: 4px;
+    font-size: 12.5px; font-weight: 700; color: var(--text);
+    line-height: 1.25;
   }
-  .roadmap-stage.current .rs-name { color: var(--primary); }
-  .roadmap-stage.achieved .rs-name { color: #15803D; }
   .roadmap-stage .rs-years {
-    font-size: 11px; font-weight: 700; color: var(--primary);
-    background: rgba(46,92,158,0.08); padding: 2px 8px; border-radius: 8px;
-    display: inline-block; margin-bottom: 8px;
+    font-size: 10px; font-weight: 600; color: var(--text-muted);
+    margin-left: 4px;
   }
-  .roadmap-stage.achieved .rs-years { background: rgba(22,163,74,0.10); color: #15803D; }
-  .roadmap-stage .rs-role {
-    font-size: 11.5px; line-height: 1.45; color: var(--text-muted);
-    text-align: left; min-height: 50px;
-  }
+  .roadmap-stage .rs-role { display: none; }
   .roadmap-progress-strip {
-    margin-top: 18px; padding: 12px 16px;
-    background: linear-gradient(90deg, rgba(46,92,158,0.06) 0%, rgba(46,92,158,0.02) 100%);
-    border-left: 4px solid var(--primary);
-    border-radius: 8px;
-    font-size: 13px; color: var(--text);
+    margin-top: 8px; padding: 6px 12px;
+    background: linear-gradient(90deg, rgba(46,92,158,0.08) 0%, rgba(46,92,158,0.02) 100%);
+    border-left: 3px solid var(--primary);
+    border-radius: 6px;
+    font-size: 12px; color: var(--text);
   }
   .roadmap-progress-strip strong { color: var(--primary); }
   .roadmap-progress-strip .rps-bar {
-    height: 8px; background: #E2E8F0; border-radius: 4px;
-    margin-top: 8px; overflow: hidden;
+    height: 5px; background: #E2E8F0; border-radius: 3px;
+    margin-top: 5px; overflow: hidden;
   }
   .roadmap-progress-strip .rps-fill {
     height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-    border-radius: 4px; transition: width 0.6s ease;
+    border-radius: 3px; transition: width 0.6s ease;
   }
   @media (max-width: 768px) {
-    .roadmap-journey { padding: 22px 14px 18px; }
-    .roadmap-stage .rs-role { font-size: 11px; min-height: 70px; }
-    .roadmap-stage .rs-icon { font-size: 28px; }
-    .roadmap-stage .rs-name { font-size: 13.5px; }
+    .roadmap-journey { padding: 10px 12px 8px; }
+    .roadmap-stage .rs-name { font-size: 11.5px; }
   }
+
+  /* ============ NEWS FEED ============ */
+  .news-feed {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 14px;
+    position: relative;
+  }
+  .news-feed-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .news-feed-title {
+    font-size: 14px; font-weight: 800; color: var(--primary);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .news-feed-title .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #EF4444; animation: nf-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes nf-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.35); }
+  }
+  .news-feed-controls { display: flex; gap: 6px; }
+  .news-feed-controls button {
+    width: 28px; height: 28px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--bg);
+    cursor: pointer; font-size: 13px; color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .news-feed-controls button:hover { border-color: var(--primary); color: var(--primary); }
+  .news-feed-scroll {
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    padding-bottom: 4px;
+  }
+  .news-feed-scroll::-webkit-scrollbar { height: 6px; }
+  .news-feed-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .news-feed-list {
+    display: flex; gap: 10px; padding: 2px;
+  }
+  .news-feed-item {
+    flex: 0 0 280px; scroll-snap-align: start;
+    padding: 10px 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .news-feed-item:hover { border-color: var(--primary); box-shadow: 0 3px 10px var(--shadow); transform: translateY(-1px); }
+  .news-feed-item .nfi-type {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 2px 6px;
+    border-radius: 4px; align-self: flex-start;
+  }
+  .news-feed-item .nfi-type.article  { background: rgba(59,130,246,0.12); color: #2563EB; }
+  .news-feed-item .nfi-type.forum    { background: rgba(139,92,246,0.12); color: #7C3AED; }
+  .news-feed-item .nfi-type.case     { background: rgba(16,185,129,0.12); color: #059669; }
+  .news-feed-item .nfi-type.training { background: rgba(245,158,11,0.12); color: #B45309; }
+  .news-feed-item .nfi-type.resource { background: rgba(6,182,212,0.12); color: #0891B2; }
+  .news-feed-item .nfi-type.library  { background: rgba(220,38,38,0.12); color: #B91C1C; }
+  .news-feed-item .nfi-type.exam     { background: rgba(168,85,247,0.12); color: #7E22CE; }
+  .news-feed-item .nfi-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    line-height: 1.35;
+    overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    min-height: 35px;
+  }
+  .news-feed-item .nfi-meta {
+    font-size: 11px; color: var(--text-muted);
+    display: flex; gap: 8px; align-items: center;
+  }
+  .news-feed-empty {
+    text-align: center; padding: 18px; color: var(--text-muted);
+    font-size: 12px;
+  }
+  body[data-theme="dark"] .news-feed-item .nfi-type.article  { background: rgba(59,130,246,0.22); color: #93C5FD; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.forum    { background: rgba(139,92,246,0.22); color: #C4B5FD; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.case     { background: rgba(16,185,129,0.22); color: #6EE7B7; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.training { background: rgba(245,158,11,0.22); color: #FCD34D; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.resource { background: rgba(6,182,212,0.22); color: #67E8F9; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.library  { background: rgba(220,38,38,0.22); color: #FCA5A5; }
+  body[data-theme="dark"] .news-feed-item .nfi-type.exam     { background: rgba(168,85,247,0.22); color: #D8B4FE; }
 
   /* === ROADMAP JOURNEY — DARK MODE === */
   body[data-theme="dark"] .roadmap-journey {
@@ -5476,10 +5528,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.7.0',
+  num: 'v3.8.0',
   date: '2026-05-27',
   notes: [
-    '📰 MỚI: Tab "Bài viết & Kiến thức" trong Cộng đồng — user contribute blog post + tóm tắt kiến thức',
+    '📢 MỚI: Bản tin "Mới nhất trong cộng đồng" trên trang chủ — top 7 nội dung mới từ Bài viết · Forum · Case · Training · Resource (scroll ngang, click mở thẳng item)',
+    '🗺️ Roadmap Consultant thu gọn thành strip ngang ~150px (từ ~380px) — viewBox 70px, đường thẳng + icon dưới, hover xem chi tiết role',
+    '📰 Tab "Bài viết & Kiến thức" trong Cộng đồng — user contribute blog post + tóm tắt kiến thức',
     '📰 Editor 3-tab: Markdown / Preview / Visual WYSIWYG (toolbar Bold/Italic/H2/H3/List/Quote/Link/Image/Code)',
     '📰 14 tags chuyên ngành (Tutorial, Best Practice, Sales/Finance/Inventory/Production/Retail/Localization...)',
     '📰 Upvote · Comment threaded · Featured pin (admin) · Hide/Show (admin) · Top tác giả leaderboard',
@@ -16768,34 +16822,32 @@ function buildRoadmapJourney(currentLevel, nextLevelResult) {
     return { ...lvl, status, role: LEVEL_ROLES[lvl.level] || '' };
   });
 
-  // SVG path connecting 4 stage points (horizontal journey curve)
-  // 4 points at x = 90, 330, 570, 810 (out of 900 viewBox width), y = 50
-  const svg = '<svg class="roadmap-svg" viewBox="0 0 900 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
-    // Background dashed track
-    '<path class="rj-track" d="M 90 50 Q 210 20, 330 50 T 570 50 T 810 50" stroke-width="4" fill="none" stroke-dasharray="6,6"/>' +
-    // Achieved path (solid, gradient green)
-    (currentLevel >= 1 ? buildJourneySegment(1, currentLevel) : '') +
-    // 4 stage milestones
+  // SVG STRIP: thin horizontal line with 4 milestones (compact, no curve)
+  // 4 points at x = 80, 320, 560, 800 (out of 900 viewBox width), y = 35
+  const svg = '<svg class="roadmap-svg" viewBox="0 0 900 70" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+    // Background track (straight)
+    '<line class="rj-track" x1="80" y1="35" x2="800" y2="35" stroke-width="3" stroke-dasharray="5,5"/>' +
+    // Achieved segment(s) — straight green line
+    (currentLevel >= 2 ? '<line class="rj-segment-achieved" x1="80" y1="35" x2="' + (80 + (currentLevel - 1) * 240) + '" y2="35" stroke-width="4" stroke-linecap="round"/>' : '') +
+    // 4 milestones (icons inline above each circle)
     stages.map((s, i) => {
-      const cx = 90 + i * 240;
+      const cx = 80 + i * 240;
       const cls = 'rj-circle rj-circle-' + s.status;
-      const ring = s.status === 'current' ? '<circle class="rj-ring" cx="' + cx + '" cy="50" r="22" fill="none" stroke-width="2"><animate attributeName="r" values="22;30;22" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.45;0;0.45" dur="1.8s" repeatCount="indefinite"/></circle>' : '';
-      return ring +
-        '<circle class="' + cls + '" cx="' + cx + '" cy="50" r="16" stroke-width="3"/>' +
-        '<text class="rj-text" x="' + cx + '" y="56" text-anchor="middle" font-size="16" font-weight="700">' + s.level + '</text>';
+      const ring = s.status === 'current' ? '<circle class="rj-ring" cx="' + cx + '" cy="35" r="14" fill="none" stroke-width="1.8"><animate attributeName="r" values="14;20;14" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="1.8s" repeatCount="indefinite"/></circle>' : '';
+      const youHere = s.status === 'current' ? '<text x="' + cx + '" y="14" text-anchor="middle" font-size="9" font-weight="800" fill="#EF4444" style="text-transform:uppercase; letter-spacing:1px;">▼ Bạn ở đây</text>' : '';
+      return youHere + ring +
+        '<circle class="' + cls + '" cx="' + cx + '" cy="35" r="11" stroke-width="2.5"/>' +
+        '<text class="rj-text" x="' + cx + '" y="40" text-anchor="middle" font-size="12" font-weight="700">' + s.level + '</text>' +
+        '<text class="rj-icon-svg" x="' + cx + '" y="62" text-anchor="middle" font-size="14">' + s.icon + '</text>';
     }).join('') +
     '</svg>';
 
+  // Compact stage labels below SVG: just name + years range
   const stageCards = stages.map(s => {
-    const checkOrNow = s.status === 'achieved' ? '<div class="rs-check">✓</div>'
-      : s.status === 'current' ? '<div class="rs-now">Bạn ở đây</div>' : '';
-    return '<div class="roadmap-stage ' + s.status + '">' +
-      checkOrNow +
-      '<div class="rs-icon">' + s.icon + '</div>' +
-      '<div class="rs-level">Level ' + s.level + '</div>' +
-      '<div class="rs-name">' + escapeHtml(s.name.replace(' Consultant', '')) + '</div>' +
-      '<div class="rs-years">' + s.range + '</div>' +
-      '<div class="rs-role">' + escapeHtml(s.role) + '</div>' +
+    const title = s.name + ' (' + s.range + ') — ' + (s.role || '');
+    return '<div class="roadmap-stage ' + s.status + '" title="' + escapeHtml(title) + '">' +
+      '<span class="rs-name">' + escapeHtml(s.name.replace(' Consultant', '')) + '</span>' +
+      '<span class="rs-years">' + s.range + '</span>' +
     '</div>';
   }).join('');
 
@@ -16816,8 +16868,10 @@ function buildRoadmapJourney(currentLevel, nextLevelResult) {
   }
 
   return '<div class="roadmap-journey">' +
-    '<h3 class="roadmap-title">🗺️ Hành trình Consultant — từ Junior đến Principal</h3>' +
-    '<div class="roadmap-subtitle">4 chặng phát triển sự nghiệp tư vấn ERP. Vị trí hiện tại của bạn được đánh dấu.</div>' +
+    '<div class="roadmap-header">' +
+      '<h3 class="roadmap-title">🗺️ Hành trình Consultant: Junior → Principal</h3>' +
+      '<span class="roadmap-subtitle">Hover từng chặng để xem chi tiết</span>' +
+    '</div>' +
     '<div class="roadmap-svg-wrap">' + svg + '</div>' +
     '<div class="roadmap-stages">' + stageCards + '</div>' +
     progressStrip +
@@ -16838,6 +16892,112 @@ function buildJourneySegment(fromLvl, toLvl) {
   return segments.join('');
 }
 
+// ============ NEWS FEED (Top 7 latest contributions) ============
+async function loadNewsFeedData() {
+  // Pull from multiple collections in parallel, merge by createdAt desc
+  if (!window.fb) return [];
+  const items = [];
+  const cols = [
+    { col: COMMUNITY_ARTICLES_COLLECTION, type: 'article', icon: '📰', label: 'Bài viết', urlSub: 'articles' },
+    { col: FORUM_TOPICS_COLLECTION, type: 'forum', icon: '💬', label: 'Q&A', urlSub: 'forum' },
+    { col: COMMUNITY_CASES_COLLECTION, type: 'case', icon: '📝', label: 'Case', urlSub: 'cases' },
+    { col: TRAINING_COURSES_COLLECTION, type: 'training', icon: '🎓', label: 'Training', urlSub: 'training' },
+    { col: COMMUNITY_RESOURCES_COLLECTION, type: 'resource', icon: '📦', label: 'Resource', urlSub: 'resources' }
+  ];
+  await Promise.all(cols.map(async cfg => {
+    try {
+      const snap = await window.fb.getDocs(window.fb.collection(window.fb.db, cfg.col));
+      snap.forEach(d => {
+        const data = d.data();
+        // Filter hidden articles
+        if (cfg.type === 'article' && data.status === 'hidden') return;
+        // For training, only show future sessions
+        if (cfg.type === 'training') {
+          const start = data.startDate && data.startDate.toMillis ? data.startDate.toMillis() : (data.startDate ? new Date(data.startDate).getTime() : 0);
+          if (start && start < Date.now()) return; // skip past sessions
+        }
+        const ms = data.createdAt && data.createdAt.toMillis ? data.createdAt.toMillis()
+                 : (data.startDate && data.startDate.toMillis ? data.startDate.toMillis() : 0);
+        items.push({
+          id: d.id, type: cfg.type, icon: cfg.icon, typeLabel: cfg.label, urlSub: cfg.urlSub,
+          title: data.title || data.question || data.name || '(không tiêu đề)',
+          authorName: data.authorName || data.instructorName || '',
+          createdMs: ms
+        });
+      });
+    } catch (e) { /* silently skip if collection rule blocks */ }
+  }));
+  // Sort newest first
+  items.sort((a, b) => b.createdMs - a.createdMs);
+  return items.slice(0, 7);
+}
+
+function relativeTime(ms) {
+  if (!ms) return '';
+  const diff = Date.now() - ms;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'vừa xong';
+  if (min < 60) return min + ' phút trước';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + ' giờ trước';
+  const day = Math.floor(hr / 24);
+  if (day < 30) return day + ' ngày trước';
+  return new Date(ms).toLocaleDateString('vi-VN');
+}
+
+function renderNewsFeed() {
+  return '<div class="news-feed" id="news-feed-block">' +
+    '<div class="news-feed-header">' +
+      '<div class="news-feed-title"><span class="pulse-dot"></span>📢 Mới nhất trong cộng đồng</div>' +
+      '<div class="news-feed-controls">' +
+        '<button onclick="scrollNewsFeed(-1)" title="Cuộn trái">‹</button>' +
+        '<button onclick="scrollNewsFeed(1)" title="Cuộn phải">›</button>' +
+        '<button onclick="refreshNewsFeed()" title="Tải lại">⟳</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="news-feed-scroll" id="news-feed-scroll">' +
+      '<div class="news-feed-empty">⏳ Đang tải bản tin...</div>' +
+    '</div>' +
+  '</div>';
+}
+
+async function refreshNewsFeed() {
+  const scroll = document.getElementById('news-feed-scroll');
+  if (!scroll) return;
+  scroll.innerHTML = '<div class="news-feed-empty">⏳ Đang tải...</div>';
+  const items = await loadNewsFeedData();
+  if (items.length === 0) {
+    scroll.innerHTML = '<div class="news-feed-empty">📭 Chưa có nội dung mới. Hãy là người đầu tiên đóng góp!</div>';
+    return;
+  }
+  scroll.innerHTML = '<div class="news-feed-list">' + items.map(it =>
+    '<div class="news-feed-item" onclick="openNewsFeedItem(\'' + it.type + '\', \'' + it.id + '\', \'' + it.urlSub + '\')">' +
+      '<span class="nfi-type ' + it.type + '">' + it.icon + ' ' + escapeHtml(it.typeLabel) + '</span>' +
+      '<div class="nfi-title">' + escapeHtml(it.title) + '</div>' +
+      '<div class="nfi-meta">' +
+        (it.authorName ? '<span>✍️ ' + escapeHtml(it.authorName) + '</span>' : '') +
+        '<span>· ' + relativeTime(it.createdMs) + '</span>' +
+      '</div>' +
+    '</div>'
+  ).join('') + '</div>';
+}
+
+function scrollNewsFeed(dir) {
+  const scroll = document.getElementById('news-feed-scroll');
+  if (!scroll) return;
+  scroll.scrollBy({ left: dir * 300, behavior: 'smooth' });
+}
+
+function openNewsFeedItem(type, id, urlSub) {
+  // Navigate to Community tab, set subtab, then open detail
+  window._communitySubtab = urlSub;
+  if (type === 'article') _currentArticleId = id;
+  else if (type === 'forum') _forumCurrentTopicId = id;
+  // Click the community tab button
+  const btn = document.querySelector('[data-tab="community"]');
+  if (btn) btn.click();
+}
+
 function renderLevelAssessment() {
   const panel = document.getElementById('level');
   const result = assessLevel();
@@ -16845,6 +17005,7 @@ function renderLevelAssessment() {
   const currentLvlInfo = currentLevel > 0 ? CONSULTANT_LEVELS[currentLevel - 1] : null;
   panel.innerHTML = '' +
     buildRoadmapJourney(currentLevel, nextLevelResult) +
+    renderNewsFeed() +
     '<div class="level-hero lvl-' + currentLevel + '">' +
       (currentLvlInfo
         ? '<div class="level-badge">' + currentLvlInfo.icon + ' CẤP ĐỘ HIỆN TẠI</div>' +
@@ -16932,6 +17093,8 @@ function renderLevelAssessment() {
     const canvas = document.getElementById('competency-radar');
     if (canvas) drawRadarChart(canvas, ctx.competencies);
   }, 50);
+  // Load news feed async (sau khi DOM render)
+  setTimeout(() => { refreshNewsFeed(); }, 100);
 }
 
 // ============ STREAK & ACHIEVEMENTS ============
