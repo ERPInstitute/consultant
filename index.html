@@ -3077,6 +3077,8 @@ async function loadState() {
         if (data.progress) {
           state = { ...state, ...data.progress };
         }
+        // Load role (admin grant) cho dynamic admin check
+        state.role = data.role || null;
         // Update last login
         try {
           await window.fb.updateDoc(userRef, {
@@ -5060,10 +5062,13 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.5.0',
-  date: '2026-05-26',
+  num: 'v3.6.0',
+  date: '2026-05-27',
   notes: [
-    '🎮 MỚI: Kahoot-style Live Mode — trainer start session, members join với PIN, real-time leaderboard, ranked by SPEED (đáp đúng nhanh = nhiều điểm), Web Audio beeps + animations',
+    '🔐 MỚI: Phân quyền Admin động — Super-Admin có thể cấp/gỡ quyền admin cho user trực tiếp từ trang quản trị (nút ⬆️ Cấp admin / ⬇️ Gỡ admin trong bảng Users)',
+    '🔐 Badge phân biệt: Super-Admin (hardcoded, không gỡ được) vs Admin (cấp động, lưu Firestore field users/{uid}.role)',
+    '🔐 Bảo mật: chỉ super-admin được phép cấp quyền; cần cập nhật Firestore Security Rules (xem hướng dẫn)',
+    '🎮 Kahoot-style Live Mode — trainer start session, members join với PIN, real-time leaderboard, ranked by SPEED (đáp đúng nhanh = nhiều điểm), Web Audio beeps + animations',
     '✏️ MỚI: Edit Training Session — trainer/admin sửa course khi chưa diễn ra (button vàng trong detail modal)',
     '📥 MỚI: Import bài tập từ JSON/CSV — tải template, điền, upload + auto-validate',
     '📅 Calendar: tăng contrast — date numbers đậm 700-800 weight, event chips full background màu với chữ trắng bold',
@@ -5166,8 +5171,23 @@ async function forceReloadApp() {
 
 // ============ AUTH STATE & UI ============
 const ADMIN_EMAIL = "notabin@gmail.com";
-const ADMIN_EMAILS = ["notabin@gmail.com", "binhnt@naviworld.com.vn"];
-function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
+// Super-admins: hardcoded, không thể bị thu hồi qua UI. Chỉ super-admin mới được cấp/gỡ quyền admin cho người khác.
+const SUPER_ADMIN_EMAILS = ["notabin@gmail.com", "binhnt@naviworld.com.vn"];
+// Giữ ADMIN_EMAILS làm alias cũ cho backward-compat (các nơi khác trong code có thể đang dùng).
+const ADMIN_EMAILS = SUPER_ADMIN_EMAILS;
+function isSuperAdmin(email) { return !!(email && SUPER_ADMIN_EMAILS.includes(email.toLowerCase())); }
+function isAdmin(email) {
+  if (!email) return false;
+  const e = email.toLowerCase();
+  if (SUPER_ADMIN_EMAILS.includes(e)) return true;
+  // Dynamic admin: super-admin grant role qua trang admin → lưu vào state.role của user đó.
+  // Khi check cho chính user hiện tại: dựa vào state.role đã load từ Firestore.
+  try {
+    const me = window.fb && window.fb.auth && window.fb.auth.currentUser;
+    if (me && me.email && me.email.toLowerCase() === e && state && state.role === 'admin') return true;
+  } catch (err) {}
+  return false;
+}
 
 async function initApp() {
   await loadState();
@@ -5722,7 +5742,13 @@ function renderAdminTableBody(users) {
     const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
     const lastSeen = (u.lastActivity && u.lastActivity.toMillis && u.lastActivity.toMillis()) || (u.lastLogin && u.lastLogin.toMillis && u.lastLogin.toMillis()) || 0;
     const created = (u.createdAt && u.createdAt.toMillis && u.createdAt.toMillis()) || 0;
-    const isAdmin = ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    const emailLc = (u.email || '').toLowerCase();
+    const isSuper = SUPER_ADMIN_EMAILS.includes(emailLc);
+    const isAdmin = isSuper || u.role === 'admin';
+    const me = window.fb && window.fb.auth && window.fb.auth.currentUser;
+    const myEmail = me && me.email;
+    const canManageRoles = isSuperAdmin(myEmail);
+    const isSelf = me && me.uid === u.uid;
     const scoreClass = answered === 0 ? 'none' : (pct >= 70 ? 'good' : pct >= 50 ? 'mid' : 'low');
 
     return `
@@ -5732,7 +5758,7 @@ function renderAdminTableBody(users) {
             <div class="admin-avatar">${(u.displayName || u.email || '?').charAt(0).toUpperCase()}</div>
             <div>
               <div style="font-weight:600;">${escapeHtml(u.displayName || '(no name)')}</div>
-              ${isAdmin ? '<span class="role-badge">Admin</span>' : ''}
+              ${isSuper ? '<span class="role-badge">Super-Admin</span>' : (isAdmin ? '<span class="role-badge">Admin</span>' : '')}
             </div>
           </div>
         </td>
@@ -5746,7 +5772,8 @@ function renderAdminTableBody(users) {
         </td>
         <td style="white-space:nowrap;">
           <button class="action-btn" onclick="showUserDetail('${u.uid}')">📊 Chi tiết</button>
-          ${!isAdmin ? `<button class="action-btn danger" onclick="resetUserProgress('${u.uid}', '${escapeHtml(u.email || '')}')">🗑️ Reset</button>` : ''}
+          ${!isSuper ? `<button class="action-btn danger" onclick="resetUserProgress('${u.uid}', '${escapeHtml(u.email || '')}')">🗑️ Reset</button>` : ''}
+          ${canManageRoles && !isSelf && !isSuper ? `<button class="action-btn" onclick="toggleAdminRole('${u.uid}', '${escapeHtml(u.email || '')}', ${u.role === 'admin'})">${u.role === 'admin' ? '⬇️ Gỡ admin' : '⬆️ Cấp admin'}</button>` : ''}
         </td>
       </tr>
     `;
@@ -5975,6 +6002,28 @@ async function resetUserProgress(uid, email) {
     renderAdmin();
   } catch (e) {
     alert('Lỗi: ' + e.message);
+  }
+}
+
+async function toggleAdminRole(uid, email, currentlyAdmin) {
+  const me = window.fb && window.fb.auth && window.fb.auth.currentUser;
+  if (!isSuperAdmin(me && me.email)) {
+    alert('Chỉ Super-Admin mới được cấp/gỡ quyền admin.');
+    return;
+  }
+  const action = currentlyAdmin ? 'GỠ quyền admin của' : 'CẤP quyền admin cho';
+  if (!confirm(action + '\n' + email + '?\n\n' + (currentlyAdmin
+    ? 'User này sẽ mất truy cập trang quản trị.'
+    : 'User này sẽ có toàn quyền quản trị: xem mọi user, sửa câu hỏi, quản lý playbook, video, training, v.v.'))) return;
+  try {
+    const newRole = currentlyAdmin ? null : 'admin';
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, 'users', uid), {
+      role: newRole
+    });
+    alert('✓ Đã ' + (currentlyAdmin ? 'gỡ quyền admin của ' : 'cấp quyền admin cho ') + email + '.\n\nUser cần refresh trình duyệt để áp dụng quyền mới.');
+    renderAdmin();
+  } catch (e) {
+    alert('Lỗi: ' + e.message + '\n\nKiểm tra Firestore Security Rules có cho phép super-admin update field "role" không.');
   }
 }
 
