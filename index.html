@@ -2933,7 +2933,9 @@
     updatePassword,
     updateProfile,
     EmailAuthProvider,
-    reauthenticateWithCredential
+    reauthenticateWithCredential,
+    fetchSignInMethodsForEmail,
+    linkWithCredential
   } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp,
@@ -5555,9 +5557,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.9.2',
+  num: 'v3.9.4',
   date: '2026-05-27',
   notes: [
+    '🔗 MỚI: Auto-link tài khoản — khi đăng nhập Microsoft/Google bằng email đã đăng ký qua phương thức khác, hệ thống lưu pending credential, hướng dẫn user đăng nhập lại bằng phương thức cũ → tự động liên kết. Lần sau dùng được cả 2.',
+    '🐛 FIX: Ô tìm kiếm Bài viết không gõ được — do mỗi keystroke rebuild toàn bộ DOM khiến input mất focus. Tách render thành toolbar + list-container, search chỉ update list.',
     '🐛 FIX nghiêm trọng: Đăng nhập Microsoft báo "OAuthProvider is not a constructor" — do đã import nhưng quên expose ra window.fb. Giờ đã hoạt động.',
     '🎨 FIX: Nút Google/Microsoft trên dark mode bị blend với nền card. Đã ép nền trắng + viền + glow shadow để tương phản rõ ràng cả light + dark mode.',
     '🐛 FIX: Click item trong Bản tin top giờ mở ĐÚNG subtab (article/forum/case/training/resource) — trước đây luôn mở Forum vì querySelector match nút đầu tiên + click handler ghi đè subtab',
@@ -5832,12 +5836,89 @@ function friendlyAuthError(e) {
     'auth/invalid-credential': 'Email hoặc mật khẩu không đúng',
     'auth/too-many-requests': 'Quá nhiều lần thử. Vui lòng đợi vài phút.',
     'auth/network-request-failed': 'Lỗi mạng. Kiểm tra kết nối.',
-    'auth/popup-closed-by-user': 'Đã hủy đăng nhập Google',
+    'auth/popup-closed-by-user': 'Đã hủy đăng nhập',
     'auth/popup-blocked': 'Trình duyệt chặn popup. Vui lòng cho phép popup.',
     'auth/requires-recent-login': 'Yêu cầu đăng nhập lại để thực hiện thao tác này',
-    'auth/operation-not-allowed': 'Phương thức đăng nhập này chưa được bật'
+    'auth/operation-not-allowed': 'Phương thức đăng nhập này chưa được bật',
+    'auth/account-exists-with-different-credential': 'Email đã đăng ký qua phương thức khác. Vui lòng dùng phương thức cũ.'
   };
   return map[code] || (e.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+}
+
+// ============ ACCOUNT LINKING (xử lý auth/account-exists-with-different-credential) ============
+// Khi user đăng nhập 1 provider mới (vd Microsoft) nhưng email đã đăng ký qua provider khác,
+// Firebase throw error. Flow:
+//   1. Lưu pending credential từ error
+//   2. Hướng dẫn user đăng nhập lại bằng provider CŨ
+//   3. Sau khi đăng nhập thành công, tự động link credential mới vào account
+window._pendingLinkCred = null;
+window._pendingLinkEmail = null;
+
+async function handleAccountExistsError(error, attemptedProviderName) {
+  const errEl = document.getElementById('login-error');
+  const email = (error.customData && error.customData.email) || error.email;
+  if (!email) {
+    errEl.textContent = 'Lỗi: ' + (error.message || 'Tài khoản đã tồn tại với phương thức khác.');
+    errEl.classList.add('show');
+    return;
+  }
+  // Lấy pending credential từ error
+  let pendingCred = null;
+  try {
+    if (attemptedProviderName === 'Google') {
+      pendingCred = window.fb.GoogleAuthProvider.credentialFromError(error);
+    } else {
+      pendingCred = window.fb.OAuthProvider.credentialFromError(error);
+    }
+  } catch (e) {}
+  window._pendingLinkCred = pendingCred;
+  window._pendingLinkEmail = email;
+
+  // Tìm provider đã có cho email này
+  try {
+    const methods = await window.fb.fetchSignInMethodsForEmail(window.fb.auth, email);
+    let existing = 'phương thức khác';
+    if (methods.includes('google.com')) existing = 'Google';
+    else if (methods.includes('microsoft.com')) existing = 'Microsoft';
+    else if (methods.includes('password')) existing = 'Email + Mật khẩu';
+    const msg =
+      '⚠️ Email ' + email + ' đã được đăng ký qua ' + existing + '.\n\n' +
+      '👉 Vui lòng đăng nhập bằng ' + existing + ' trước.\n' +
+      'Sau khi đăng nhập, tài khoản ' + attemptedProviderName + ' của bạn sẽ TỰ ĐỘNG được liên kết.\n\n' +
+      'Lần sau bạn có thể đăng nhập bằng cả 2 phương thức.';
+    alert(msg);
+    const loginEmailInput = document.getElementById('login-email');
+    if (loginEmailInput) loginEmailInput.value = email;
+    errEl.textContent = '⏳ Đăng nhập bằng ' + existing + ' để liên kết với ' + attemptedProviderName + '.';
+    errEl.classList.add('show');
+  } catch (e) {
+    errEl.textContent = 'Email đã đăng ký bằng phương thức khác. Vui lòng dùng cách đó để đăng nhập.';
+    errEl.classList.add('show');
+  }
+}
+
+// Sau khi user đăng nhập thành công bằng provider cũ, link credential mới
+async function tryLinkPendingCredential(user) {
+  if (!window._pendingLinkCred || !user) return;
+  // Verify email match (an toàn — không link nhầm vào tài khoản khác)
+  if (window._pendingLinkEmail && user.email
+      && user.email.toLowerCase() !== window._pendingLinkEmail.toLowerCase()) {
+    window._pendingLinkCred = null;
+    window._pendingLinkEmail = null;
+    return;
+  }
+  try {
+    await window.fb.linkWithCredential(user, window._pendingLinkCred);
+    setTimeout(() => alert('✅ Đã liên kết tài khoản thành công! Từ giờ bạn có thể đăng nhập bằng cả 2 phương thức.'), 200);
+  } catch (e) {
+    console.warn('Link credential failed:', e.message);
+    if (e.code !== 'auth/provider-already-linked' && e.code !== 'auth/credential-already-in-use') {
+      setTimeout(() => alert('⚠️ Không liên kết được: ' + e.message), 200);
+    }
+  } finally {
+    window._pendingLinkCred = null;
+    window._pendingLinkEmail = null;
+  }
 }
 
 async function loginEmail(event) {
@@ -5847,7 +5928,8 @@ async function loginEmail(event) {
   const errEl = document.getElementById('login-error');
   errEl.classList.remove('show');
   try {
-    await window.fb.signInWithEmailAndPassword(window.fb.auth, email, password);
+    const result = await window.fb.signInWithEmailAndPassword(window.fb.auth, email, password);
+    await tryLinkPendingCredential(result.user);
   } catch (e) {
     errEl.textContent = friendlyAuthError(e);
     errEl.classList.add('show');
@@ -5884,8 +5966,13 @@ async function loginGoogle() {
   errEl.classList.remove('show');
   try {
     const provider = new window.fb.GoogleAuthProvider();
-    await window.fb.signInWithPopup(window.fb.auth, provider);
+    const result = await window.fb.signInWithPopup(window.fb.auth, provider);
+    await tryLinkPendingCredential(result.user);
   } catch (e) {
+    if (e.code === 'auth/account-exists-with-different-credential') {
+      await handleAccountExistsError(e, 'Google');
+      return;
+    }
     errEl.textContent = friendlyAuthError(e);
     errEl.classList.add('show');
   }
@@ -5896,13 +5983,16 @@ async function loginMicrosoft() {
   errEl.classList.remove('show');
   try {
     const provider = new window.fb.OAuthProvider('microsoft.com');
-    // Scopes mặc định: profile + email. Có thể thêm 'User.Read' nếu cần đọc Graph API.
     provider.addScope('email');
     provider.addScope('profile');
-    // Cho phép cả tài khoản work/school AAD và Microsoft cá nhân
     provider.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
-    await window.fb.signInWithPopup(window.fb.auth, provider);
+    const result = await window.fb.signInWithPopup(window.fb.auth, provider);
+    await tryLinkPendingCredential(result.user);
   } catch (e) {
+    if (e.code === 'auth/account-exists-with-different-credential') {
+      await handleAccountExistsError(e, 'Microsoft');
+      return;
+    }
     errEl.textContent = friendlyAuthError(e);
     errEl.classList.add('show');
   }
@@ -14720,6 +14810,61 @@ function renderArticlesList() {
   const me = getCurrentUserInfo();
   const isAdminUser = me && isAdmin(me.email);
 
+  // Top authors — không đổi theo search/sort nên render 1 lần
+  const authorMap = {};
+  all.filter(a => a.status !== 'hidden').forEach(a => {
+    const k = a.authorUid || 'anon';
+    if (!authorMap[k]) authorMap[k] = { name: a.authorName || 'Ẩn danh', count: 0, votes: 0 };
+    authorMap[k].count += 1;
+    authorMap[k].votes += (a.upvoteCount || 0);
+  });
+  const topAuthors = Object.values(authorMap).sort((a, b) => (b.count * 5 + b.votes) - (a.count * 5 + a.votes)).slice(0, 5);
+
+  root.innerHTML =
+    (topAuthors.length ? '<div class="art-authors-strip">' +
+      '<div class="ata-title">🏆 Top tác giả đóng góp</div>' +
+      '<div class="ata-list">' +
+        topAuthors.map((a, i) => '<div class="ata-item">' + ['🥇','🥈','🥉','4️⃣','5️⃣'][i] + ' <strong>' + escapeHtml(a.name) + '</strong> · ' + a.count + ' bài · ' + a.votes + ' upvote</div>').join('') +
+      '</div></div>' : '') +
+    '<div class="art-toolbar">' +
+      // QUAN TRỌNG: oninput chỉ update state + gọi renderArticlesListBody() để KHÔNG rebuild input → giữ focus
+      '<input type="search" id="art-search-input" placeholder="🔍 Tìm theo tiêu đề, nội dung..." value="' + escapeHtml(_articlesFilter.search) + '" oninput="_articlesFilter.search=this.value; renderArticlesListBody()"/>' +
+      '<select onchange="_articlesFilter.sort=this.value; renderArticlesListBody()">' +
+        '<option value="newest"' + (_articlesFilter.sort === 'newest' ? ' selected' : '') + '>📅 Mới nhất</option>' +
+        '<option value="hot"' + (_articlesFilter.sort === 'hot' ? ' selected' : '') + '>🔥 Nhiều upvote</option>' +
+        '<option value="views"' + (_articlesFilter.sort === 'views' ? ' selected' : '') + '>👁️ Nhiều xem</option>' +
+      '</select>' +
+      (isAdminUser ? '<label style="font-size:12px; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;"><input type="checkbox"' + (_articlesFilter.showHidden ? ' checked' : '') + ' onchange="_articlesFilter.showHidden=this.checked; renderArticlesListBody()"/> Hiện bài ẩn</label>' : '') +
+      (me ? '<button class="art-new-btn" onclick="openArticleEditor()">✍️ Viết bài mới</button>' : '') +
+    '</div>' +
+    '<div id="art-tag-chips-container">' + buildArticleTagChips() + '</div>' +
+    '<div id="art-list-container"></div>';
+
+  renderArticlesListBody();
+}
+
+function buildArticleTagChips() {
+  return '<div class="art-tag-chips">' +
+    '<button class="art-tag-chip ' + (!_articlesFilter.tag ? 'active' : '') + '" onclick="setArticleTag(\'\')">Tất cả</button>' +
+    ARTICLE_TAGS.map(t => '<button class="art-tag-chip ' + (_articlesFilter.tag === t.key ? 'active' : '') + '" onclick="setArticleTag(\'' + t.key + '\')">' + escapeHtml(t.label) + '</button>').join('') +
+  '</div>';
+}
+
+function setArticleTag(tag) {
+  _articlesFilter.tag = tag;
+  // Re-render chips (cần để active state cập nhật) + list body — KHÔNG đụng vào search input
+  const chips = document.getElementById('art-tag-chips-container');
+  if (chips) chips.innerHTML = buildArticleTagChips();
+  renderArticlesListBody();
+}
+
+function renderArticlesListBody() {
+  const container = document.getElementById('art-list-container');
+  if (!container) return;
+  const all = (window._articles || []).slice();
+  const me = getCurrentUserInfo();
+  const isAdminUser = me && isAdmin(me.email);
+
   let list = all.filter(a => (a.status !== 'hidden') || (isAdminUser && _articlesFilter.showHidden));
   if (_articlesFilter.tag) list = list.filter(a => (a.tags || []).includes(_articlesFilter.tag));
   if (_articlesFilter.search) {
@@ -14739,38 +14884,9 @@ function renderArticlesList() {
   }
   list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
-  const authorMap = {};
-  all.filter(a => a.status !== 'hidden').forEach(a => {
-    const k = a.authorUid || 'anon';
-    if (!authorMap[k]) authorMap[k] = { name: a.authorName || 'Ẩn danh', count: 0, votes: 0 };
-    authorMap[k].count += 1;
-    authorMap[k].votes += (a.upvoteCount || 0);
-  });
-  const topAuthors = Object.values(authorMap).sort((a, b) => (b.count * 5 + b.votes) - (a.count * 5 + a.votes)).slice(0, 5);
-
-  root.innerHTML =
-    (topAuthors.length ? '<div class="art-authors-strip">' +
-      '<div class="ata-title">🏆 Top tác giả đóng góp</div>' +
-      '<div class="ata-list">' +
-        topAuthors.map((a, i) => '<div class="ata-item">' + ['🥇','🥈','🥉','4️⃣','5️⃣'][i] + ' <strong>' + escapeHtml(a.name) + '</strong> · ' + a.count + ' bài · ' + a.votes + ' upvote</div>').join('') +
-      '</div></div>' : '') +
-    '<div class="art-toolbar">' +
-      '<input type="search" placeholder="🔍 Tìm theo tiêu đề, nội dung..." value="' + escapeHtml(_articlesFilter.search) + '" oninput="_articlesFilter.search=this.value; renderArticlesList()"/>' +
-      '<select onchange="_articlesFilter.sort=this.value; renderArticlesList()">' +
-        '<option value="newest"' + (_articlesFilter.sort === 'newest' ? ' selected' : '') + '>📅 Mới nhất</option>' +
-        '<option value="hot"' + (_articlesFilter.sort === 'hot' ? ' selected' : '') + '>🔥 Nhiều upvote</option>' +
-        '<option value="views"' + (_articlesFilter.sort === 'views' ? ' selected' : '') + '>👁️ Nhiều xem</option>' +
-      '</select>' +
-      (isAdminUser ? '<label style="font-size:12px; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;"><input type="checkbox"' + (_articlesFilter.showHidden ? ' checked' : '') + ' onchange="_articlesFilter.showHidden=this.checked; renderArticlesList()"/> Hiện bài ẩn</label>' : '') +
-      (me ? '<button class="art-new-btn" onclick="openArticleEditor()">✍️ Viết bài mới</button>' : '') +
-    '</div>' +
-    '<div class="art-tag-chips">' +
-      '<button class="art-tag-chip ' + (!_articlesFilter.tag ? 'active' : '') + '" onclick="_articlesFilter.tag=\'\'; renderArticlesList()">Tất cả</button>' +
-      ARTICLE_TAGS.map(t => '<button class="art-tag-chip ' + (_articlesFilter.tag === t.key ? 'active' : '') + '" onclick="_articlesFilter.tag=\'' + t.key + '\'; renderArticlesList()">' + escapeHtml(t.label) + '</button>').join('') +
-    '</div>' +
-    (list.length === 0
-      ? '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--card); border-radius:10px;"><div style="font-size:48px; margin-bottom:10px;">📰</div>Chưa có bài viết nào.' + (me ? '<br><button class="art-new-btn" style="margin-top:14px;" onclick="openArticleEditor()">✍️ Viết bài đầu tiên</button>' : '') + '</div>'
-      : '<div class="art-list">' + list.map(a => renderArticleCard(a, isAdminUser)).join('') + '</div>');
+  container.innerHTML = list.length === 0
+    ? '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--card); border-radius:10px;"><div style="font-size:48px; margin-bottom:10px;">📰</div>Không có bài viết phù hợp.' + (me ? '<br><button class="art-new-btn" style="margin-top:14px;" onclick="openArticleEditor()">✍️ Viết bài mới</button>' : '') + '</div>'
+    : '<div class="art-list">' + list.map(a => renderArticleCard(a, isAdminUser)).join('') + '</div>';
 }
 
 function renderArticleCard(a, isAdminUser) {
