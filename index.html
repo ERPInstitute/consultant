@@ -699,14 +699,21 @@
   .auth-btn-primary { background: var(--primary); color: white; }
   .auth-btn-primary:hover { background: var(--primary-light); }
   .auth-btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
-  .auth-btn-google {
+  .auth-btn-google, .auth-btn-microsoft {
     background: white !important; color: #1F2937 !important;
     border: 1.5px solid var(--border) !important;
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; padding: 12px; border-radius: 8px; cursor: pointer;
     font-size: 14px; font-weight: 600;
+    margin-bottom: 8px;
   }
-  .auth-btn-google:hover { background: #F3F4F6 !important; }
+  .auth-btn-google:hover, .auth-btn-microsoft:hover { background: #F3F4F6 !important; }
+  body[data-theme="dark"] .auth-btn-microsoft {
+    background: var(--card) !important; color: var(--text) !important;
+  }
+  body[data-theme="dark"] .auth-btn-microsoft:hover {
+    background: var(--sidebar-hover) !important;
+  }
   .auth-divider {
     display: flex; align-items: center; gap: 10px; margin: 14px 0;
     color: var(--text-muted); font-size: 12px;
@@ -2580,6 +2587,10 @@
         <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571c.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
         Đăng nhập bằng Google
       </button>
+      <button class="auth-btn-microsoft" onclick="loginMicrosoft()">
+        <svg width="18" height="18" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg"><path fill="#f25022" d="M1 1h10v10H1z"/><path fill="#00a4ef" d="M1 12h10v10H1z"/><path fill="#7fba00" d="M12 1h10v10H12z"/><path fill="#ffb900" d="M12 12h10v10H12z"/></svg>
+        Đăng nhập bằng Microsoft
+      </button>
       <div class="auth-divider">hoặc</div>
       <form class="auth-form" onsubmit="loginEmail(event); return false;">
         <input type="email" id="login-email" placeholder="Email" required autocomplete="email" />
@@ -2902,6 +2913,7 @@
     sendEmailVerification,
     sendPasswordResetEmail,
     GoogleAuthProvider,
+    OAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
     updatePassword,
@@ -5528,9 +5540,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.8.1',
+  num: 'v3.9.1',
   date: '2026-05-27',
   notes: [
+    '🐛 FIX: Click item trong Bản tin top giờ mở ĐÚNG subtab (article/forum/case/training/resource) — trước đây luôn mở Forum vì querySelector match nút đầu tiên + click handler ghi đè subtab',
+    '⬆️ Move Bản tin top lên TRÊN Roadmap — gây chú ý hơn ngay khi mở trang chủ',
+    '🔑 Đăng nhập bằng Microsoft account (cả AAD work/school + Microsoft cá nhân) — nút Microsoft cạnh nút Google, bypass email verification vì IdP đã verify',
     '🧹 Bỏ 4 level cards (L1-L4) trùng lặp với Roadmap strip ở trên cùng — gọn trang Cấp độ',
     '📢 Bản tin "Mới nhất trong cộng đồng" trên trang chủ — top 7 nội dung mới từ Bài viết · Forum · Case · Training · Resource (scroll ngang, click mở thẳng item)',
     '🗺️ Roadmap Consultant thu gọn thành strip ngang ~150px (từ ~380px) — viewBox 70px, đường thẳng + icon dưới, hover xem chi tiết role',
@@ -5718,9 +5733,9 @@ async function handleAuthStateChange(user) {
     return;
   }
 
-  // Check email verification (Google login bypasses this)
-  const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
-  if (!isGoogle && !user.emailVerified) {
+  // Check email verification (OAuth providers — Google/Microsoft — bypass này vì IdP đã verify email)
+  const isOAuthVerified = user.providerData.some(p => p.providerId === 'google.com' || p.providerId === 'microsoft.com');
+  if (!isOAuthVerified && !user.emailVerified) {
     overlay.style.display = 'flex';
     header.classList.add('app-hidden');
     nav.classList.add('app-hidden');
@@ -5852,6 +5867,23 @@ async function loginGoogle() {
   errEl.classList.remove('show');
   try {
     const provider = new window.fb.GoogleAuthProvider();
+    await window.fb.signInWithPopup(window.fb.auth, provider);
+  } catch (e) {
+    errEl.textContent = friendlyAuthError(e);
+    errEl.classList.add('show');
+  }
+}
+
+async function loginMicrosoft() {
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+  try {
+    const provider = new window.fb.OAuthProvider('microsoft.com');
+    // Scopes mặc định: profile + email. Có thể thêm 'User.Read' nếu cần đọc Graph API.
+    provider.addScope('email');
+    provider.addScope('profile');
+    // Cho phép cả tài khoản work/school AAD và Microsoft cá nhân
+    provider.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
     await window.fb.signInWithPopup(window.fb.auth, provider);
   } catch (e) {
     errEl.textContent = friendlyAuthError(e);
@@ -16990,12 +17022,14 @@ function scrollNewsFeed(dir) {
 }
 
 function openNewsFeedItem(type, id, urlSub) {
-  // Navigate to Community tab, set subtab, then open detail
+  // Reset detail state cho các loại không match (tránh stale state mở nhầm bài cũ)
+  _currentArticleId = (type === 'article') ? id : null;
+  _forumCurrentTopicId = (type === 'forum') ? id : null;
+  // Set subtab TRƯỚC khi click — và query đúng nút có data-community-subtab tương ứng
+  // để click handler không ghi đè bằng subtab khác (vd "forum" của nút đầu tiên)
   window._communitySubtab = urlSub;
-  if (type === 'article') _currentArticleId = id;
-  else if (type === 'forum') _forumCurrentTopicId = id;
-  // Click the community tab button
-  const btn = document.querySelector('[data-tab="community"]');
+  const btn = document.querySelector('[data-tab="community"][data-community-subtab="' + urlSub + '"]')
+    || document.querySelector('[data-tab="community"]');
   if (btn) btn.click();
 }
 
