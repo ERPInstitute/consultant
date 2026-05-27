@@ -151,11 +151,11 @@
   body[data-theme="dark"] .share-buttons .btn-copy,
   body[data-theme="dark"] .btn-secondary,
   body[data-theme="dark"] .toggle-answer ~ * input,
-  body[data-theme="dark"] .auth-btn-google,
   body[data-theme="dark"] .surrender-btn {
     background-color: var(--card) !important;
     color: var(--text);
   }
+  /* .auth-btn-google / .auth-btn-microsoft KHÔNG dùng var(--card) — giữ nền trắng để contrast trên nền tối */
 
   /* Hover states / muted backgrounds: #F3F4F6, #FAFBFC, #F9FAFB → darker surface */
   body[data-theme="dark"] .quiz-controls button:hover,
@@ -166,7 +166,6 @@
   body[data-theme="dark"] .qed-toolbar button:hover,
   body[data-theme="dark"] .bookmark-question .b-actions button:hover,
   body[data-theme="dark"] .folder-menu-item:hover,
-  body[data-theme="dark"] .auth-btn-google:hover,
   body[data-theme="dark"] .matching-clear:hover,
   body[data-theme="dark"] .surrender-btn:hover,
   body[data-theme="dark"] .option:hover {
@@ -700,19 +699,34 @@
   .auth-btn-primary:hover { background: var(--primary-light); }
   .auth-btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
   .auth-btn-google, .auth-btn-microsoft {
-    background: white !important; color: #1F2937 !important;
-    border: 1.5px solid var(--border) !important;
+    background: #FFFFFF !important; color: #1F2937 !important;
+    border: 1.5px solid #D1D5DB !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important;
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; padding: 12px; border-radius: 8px; cursor: pointer;
     font-size: 14px; font-weight: 600;
     margin-bottom: 8px;
+    transition: all 0.15s ease;
   }
-  .auth-btn-google:hover, .auth-btn-microsoft:hover { background: #F3F4F6 !important; }
+  .auth-btn-google:hover, .auth-btn-microsoft:hover {
+    background: #F9FAFB !important;
+    border-color: #9CA3AF !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06) !important;
+    transform: translateY(-1px);
+  }
+  /* Dark mode — Google/Microsoft nút giữ NỀN TRẮNG để contrast với card tối, viền dày + glow nhẹ */
+  body[data-theme="dark"] .auth-btn-google,
   body[data-theme="dark"] .auth-btn-microsoft {
-    background: var(--card) !important; color: var(--text) !important;
+    background: #FFFFFF !important;
+    color: #1F2937 !important;
+    border-color: #475569 !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.4) !important;
   }
+  body[data-theme="dark"] .auth-btn-google:hover,
   body[data-theme="dark"] .auth-btn-microsoft:hover {
-    background: var(--sidebar-hover) !important;
+    background: #F3F4F6 !important;
+    border-color: #94A3B8 !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 6px 16px rgba(0,0,0,0.5) !important;
   }
   .auth-divider {
     display: flex; align-items: center; gap: 10px; margin: 14px 0;
@@ -2949,6 +2963,7 @@
     sendEmailVerification,
     sendPasswordResetEmail,
     GoogleAuthProvider,
+    OAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
     updatePassword,
@@ -5540,9 +5555,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.9.1',
+  num: 'v3.9.2',
   date: '2026-05-27',
   notes: [
+    '🐛 FIX nghiêm trọng: Đăng nhập Microsoft báo "OAuthProvider is not a constructor" — do đã import nhưng quên expose ra window.fb. Giờ đã hoạt động.',
+    '🎨 FIX: Nút Google/Microsoft trên dark mode bị blend với nền card. Đã ép nền trắng + viền + glow shadow để tương phản rõ ràng cả light + dark mode.',
     '🐛 FIX: Click item trong Bản tin top giờ mở ĐÚNG subtab (article/forum/case/training/resource) — trước đây luôn mở Forum vì querySelector match nút đầu tiên + click handler ghi đè subtab',
     '⬆️ Move Bản tin top lên TRÊN Roadmap — gây chú ý hơn ngay khi mở trang chủ',
     '🔑 Đăng nhập bằng Microsoft account (cả AAD work/school + Microsoft cá nhân) — nút Microsoft cạnh nút Google, bypass email verification vì IdP đã verify',
