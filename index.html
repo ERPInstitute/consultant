@@ -5528,10 +5528,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.8.0',
+  num: 'v3.8.1',
   date: '2026-05-27',
   notes: [
-    '📢 MỚI: Bản tin "Mới nhất trong cộng đồng" trên trang chủ — top 7 nội dung mới từ Bài viết · Forum · Case · Training · Resource (scroll ngang, click mở thẳng item)',
+    '🧹 Bỏ 4 level cards (L1-L4) trùng lặp với Roadmap strip ở trên cùng — gọn trang Cấp độ',
+    '📢 Bản tin "Mới nhất trong cộng đồng" trên trang chủ — top 7 nội dung mới từ Bài viết · Forum · Case · Training · Resource (scroll ngang, click mở thẳng item)',
     '🗺️ Roadmap Consultant thu gọn thành strip ngang ~150px (từ ~380px) — viewBox 70px, đường thẳng + icon dưới, hover xem chi tiết role',
     '📰 Tab "Bài viết & Kiến thức" trong Cộng đồng — user contribute blog post + tóm tắt kiến thức',
     '📰 Editor 3-tab: Markdown / Preview / Visual WYSIWYG (toolbar Bold/Italic/H2/H3/List/Quote/Link/Image/Code)',
@@ -17015,17 +17016,6 @@ function renderLevelAssessment() {
           '<h2>🌱 Pre-Junior (Đang học)</h2>' +
           '<div class="level-subtitle">Tiếp tục làm bài để đạt Level 1 — Junior Consultant.</div>') +
       '<div class="level-specialty">🎯 <strong>Specialty</strong>: ' + escapeHtml(specialty) + '</div>' +
-    '</div>' +
-
-    '<div class="level-cards-grid">' +
-      CONSULTANT_LEVELS.map(lvl => {
-        const cls = currentLevel === lvl.level ? 'current' : (currentLevel > lvl.level ? 'achieved' : '');
-        return '<div class="level-card ' + cls + '">' +
-          '<div class="lc-icon">' + lvl.icon + '</div>' +
-          '<div class="lc-name">L' + lvl.level + ' — ' + escapeHtml(lvl.name.replace(' Consultant', '')) + '</div>' +
-          '<div class="lc-range">' + lvl.range + '</div>' +
-        '</div>';
-      }).join('') +
     '</div>' +
 
     '<div class="level-radar-wrap">' +
