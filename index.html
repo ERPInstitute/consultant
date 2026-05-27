@@ -5587,9 +5587,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.12.1',
+  num: 'v3.13.0',
   date: '2026-05-27',
   notes: [
+    '🔗 NÂNG CẤP: Nút Chia sẻ giờ mở MODAL với 8 kênh + Copy link: Facebook · Zalo · Microsoft Teams · X/Twitter · LinkedIn · Telegram · WhatsApp · Email. Mobile vẫn có nút "Mở menu chia sẻ HĐH" dùng Web Share API native.',
+    '📋 Copy link là nút primary to ở trên, các kênh khác xếp grid 4 cột dạng icon + tên — tap vào mở thẳng share page của từng nền tảng.',
     '🐛 FIX: User menu trong guest mode giờ hiển thị "🔑 Đăng nhập" + "✨ Đăng ký mới" (trước đây vẫn show "Đăng xuất" sai logic). CSS toggle qua class body.guest-mode.',
     '🔓 Admin → "Quyền Guest" — checkbox cấu hình tab nào guest xem được, lưu vào Firestore settings/guest_access. Click 1 phát save áp dụng toàn hệ thống.',
     '🌐 MỚI: Auto-guest mode — nếu URL có hash share (vd #article/abc) mà user chưa login → tự động vào guest mode mở đúng nội dung shared. Không bắt user login chỉ để xem 1 bài.',
@@ -6273,30 +6275,127 @@ function applyHashRoute() {
 }
 
 // ============ SHARE BUTTON ============
-async function shareLink(type, id, title) {
-  // type: 'article' / 'forum' / 'case' / 'tab'  | id: doc ID hoặc tab name
+function shareLink(type, id, title) {
+  // Mở modal cho user chọn kênh share
   const base = window.location.origin + window.location.pathname;
   const url = base + '#' + type + '/' + id;
-  const shareData = {
-    title: title || 'HỌC VIỆN ERP CONSULTING',
-    text: title ? ('Đọc bài: ' + title) : 'Xem nội dung trên HỌC VIỆN ERP',
-    url
-  };
-  // Web Share API (mobile)
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-      return;
-    } catch (e) { /* user cancelled or unsupported, fallback */ }
+  const safeTitle = title || 'HỌC VIỆN ERP CONSULTING';
+  showShareModal(url, safeTitle);
+}
+
+function showShareModal(url, title) {
+  const text = 'Đọc bài: ' + title + ' — HỌC VIỆN ERP CONSULTING';
+  const eU = encodeURIComponent(url);
+  const eT = encodeURIComponent(title);
+  const eMsg = encodeURIComponent(text);
+
+  let modal = document.getElementById('share-channel-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'share-channel-modal';
+    modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9998; display:flex; align-items:center; justify-content:center; padding:20px;';
+    modal.addEventListener('click', e => { if (e.target === modal) closeShareModal(); });
+    document.body.appendChild(modal);
   }
-  // Fallback: copy to clipboard
+
+  // Channels: name, icon, color, share URL (target=_blank popup)
+  const channels = [
+    { key: 'fb',     name: 'Facebook',         emoji: '📘', color: '#1877F2',
+      url: 'https://www.facebook.com/sharer/sharer.php?u=' + eU + '&quote=' + eMsg },
+    { key: 'zalo',   name: 'Zalo',             emoji: '💙', color: '#0068FF',
+      url: 'https://zalo.me/share?url=' + eU + '&title=' + eT },
+    { key: 'teams',  name: 'Microsoft Teams',  emoji: '👥', color: '#6264A7',
+      url: 'https://teams.microsoft.com/share?href=' + eU + '&msgText=' + eMsg },
+    { key: 'tw',     name: 'X / Twitter',      emoji: '🐦', color: '#0F1419',
+      url: 'https://twitter.com/intent/tweet?url=' + eU + '&text=' + eMsg },
+    { key: 'li',     name: 'LinkedIn',         emoji: '💼', color: '#0A66C2',
+      url: 'https://www.linkedin.com/sharing/share-offsite/?url=' + eU },
+    { key: 'tg',     name: 'Telegram',         emoji: '✈️', color: '#26A5E4',
+      url: 'https://t.me/share/url?url=' + eU + '&text=' + eMsg },
+    { key: 'wa',     name: 'WhatsApp',         emoji: '🟢', color: '#25D366',
+      url: 'https://wa.me/?text=' + eMsg + '%20' + eU },
+    { key: 'email',  name: 'Email',            emoji: '✉️', color: '#EA4335',
+      url: 'mailto:?subject=' + eT + '&body=' + eMsg + '%0A%0A' + eU }
+  ];
+
+  modal.innerHTML =
+    '<div style="background:var(--card); border-radius:14px; padding:22px 22px 18px; max-width:480px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4); max-height:90vh; overflow-y:auto;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">' +
+        '<h2 style="margin:0; font-size:18px; color:var(--primary);">🔗 Chia sẻ tới</h2>' +
+        '<button onclick="closeShareModal()" style="background:none; border:none; cursor:pointer; font-size:22px; color:var(--text-muted);">×</button>' +
+      '</div>' +
+
+      // Preview link box
+      '<div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:14px;">' +
+        '<div style="font-size:11px; color:var(--text-muted); margin-bottom:3px;">📄 Nội dung sẽ chia sẻ:</div>' +
+        '<div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:5px;">' + escapeHtml(title) + '</div>' +
+        '<div style="font-size:11px; color:var(--text-muted); word-break:break-all; font-family:\'SF Mono\', Consolas, monospace;">' + escapeHtml(url) + '</div>' +
+      '</div>' +
+
+      // Copy link button (full width)
+      '<button onclick="copyShareLink(\'' + encodeURIComponent(url) + '\')" style="width:100%; padding:11px; background:var(--primary); color:#FFF; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:8px;">' +
+        '<span style="font-size:18px;">📋</span> Copy link vào clipboard' +
+      '</button>' +
+
+      // Channel grid
+      '<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Hoặc chia sẻ qua mạng xã hội</div>' +
+      '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:8px;">' +
+        channels.map(c =>
+          '<a href="' + c.url + '" target="_blank" rel="noopener" onclick="closeShareModal();" ' +
+          'style="display:flex; flex-direction:column; align-items:center; gap:5px; padding:14px 6px; background:var(--bg); border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--text); transition:all 0.15s;" ' +
+          'onmouseover="this.style.borderColor=\'' + c.color + '\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\'" ' +
+          'onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'; this.style.boxShadow=\'none\'">' +
+            '<span style="font-size:26px;">' + c.emoji + '</span>' +
+            '<span style="font-size:11px; font-weight:600;">' + escapeHtml(c.name) + '</span>' +
+          '</a>'
+        ).join('') +
+      '</div>' +
+
+      // Native share (mobile)
+      (navigator.share ? '<button onclick="nativeShare(' + JSON.stringify(url) + ',' + JSON.stringify(title) + ')" style="width:100%; margin-top:12px; padding:10px; background:transparent; color:var(--primary); border:1.5px dashed var(--primary); border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">📤 Mở menu chia sẻ của hệ điều hành...</button>' : '') +
+    '</div>';
+  modal.style.display = 'flex';
+}
+
+function closeShareModal() {
+  const modal = document.getElementById('share-channel-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function copyShareLink(encUrl) {
+  const url = decodeURIComponent(encUrl);
   try {
     await navigator.clipboard.writeText(url);
     showShareToast('✓ Đã copy link! Dán (Ctrl+V) để chia sẻ.');
+    closeShareModal();
   } catch (e) {
-    // Final fallback: prompt
-    prompt('Copy link để chia sẻ:', url);
+    // Fallback: use temporary textarea + execCommand
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showShareToast('✓ Đã copy link!');
+      closeShareModal();
+    } catch (e2) {
+      prompt('Copy link để chia sẻ:', url);
+    }
   }
+}
+
+async function nativeShare(url, title) {
+  if (!navigator.share) return;
+  try {
+    await navigator.share({
+      title: title || 'HỌC VIỆN ERP CONSULTING',
+      text: 'Đọc bài: ' + (title || 'HỌC VIỆN ERP'),
+      url
+    });
+    closeShareModal();
+  } catch (e) { /* user cancelled */ }
 }
 
 function showShareToast(msg) {
