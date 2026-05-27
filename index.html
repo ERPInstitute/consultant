@@ -1207,6 +1207,15 @@
   .roadmap-svg-wrap svg {
     display: block; width: 100%; min-width: 720px; height: auto;
   }
+  /* SVG paths/circles — styled via CSS for theme override */
+  .rj-track { stroke: #E2E8F0; }
+  .rj-segment-achieved { stroke: #16A34A; }
+  .rj-circle { stroke: #FFFFFF; }
+  .rj-circle-achieved { fill: #16A34A; }
+  .rj-circle-current { fill: #2E5C9E; }
+  .rj-circle-future { fill: #CBD5E1; }
+  .rj-ring { stroke: #2E5C9E; opacity: 0.45; }
+  .rj-text { fill: #FFFFFF; }
   .roadmap-stages {
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 10px; margin-top: 14px; min-width: 720px;
@@ -1290,6 +1299,83 @@
     .roadmap-stage .rs-role { font-size: 11px; min-height: 70px; }
     .roadmap-stage .rs-icon { font-size: 28px; }
     .roadmap-stage .rs-name { font-size: 13.5px; }
+  }
+
+  /* === ROADMAP JOURNEY — DARK MODE === */
+  body[data-theme="dark"] .roadmap-journey {
+    background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+    border-color: #334155;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  }
+  /* SVG dark overrides */
+  body[data-theme="dark"] .rj-track { stroke: #334155; }
+  body[data-theme="dark"] .rj-segment-achieved { stroke: #4ADE80; }
+  body[data-theme="dark"] .rj-circle { stroke: #1E293B; }
+  body[data-theme="dark"] .rj-circle-achieved { fill: #4ADE80; }
+  body[data-theme="dark"] .rj-circle-current { fill: #5B8DEF; }
+  body[data-theme="dark"] .rj-circle-future { fill: #475569; }
+  body[data-theme="dark"] .rj-ring { stroke: #5B8DEF; opacity: 0.6; }
+  body[data-theme="dark"] .rj-text { fill: #FFFFFF; }
+  body[data-theme="dark"] .rj-circle-achieved + .rj-text { fill: #0F172A; }
+  body[data-theme="dark"] .roadmap-journey::before {
+    background: linear-gradient(90deg, #64748B 0%, #5B8DEF 33%, #4ADE80 66%, #A78BFA 100%);
+    opacity: 0.95;
+  }
+  body[data-theme="dark"] .roadmap-title { color: #93C5FD; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  body[data-theme="dark"] .roadmap-subtitle { color: #94A3B8; }
+  body[data-theme="dark"] .roadmap-stage {
+    background: #1E293B;
+    border-color: #334155;
+    color: var(--text);
+  }
+  body[data-theme="dark"] .roadmap-stage:hover {
+    box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+    border-color: #475569;
+  }
+  body[data-theme="dark"] .roadmap-stage.achieved {
+    background: linear-gradient(180deg, #14532D 0%, #1E293B 100%);
+    border-color: #4ADE80;
+  }
+  body[data-theme="dark"] .roadmap-stage.current {
+    background: linear-gradient(180deg, #1E3A8A 0%, #1E293B 100%);
+    border-color: #93C5FD;
+    box-shadow: 0 0 0 4px rgba(91,141,239,0.25), 0 10px 28px rgba(91,141,239,0.25);
+  }
+  body[data-theme="dark"] .roadmap-stage.future {
+    opacity: 0.45;
+    background: #0F172A;
+    border-color: #1E293B;
+  }
+  body[data-theme="dark"] .roadmap-stage .rs-check {
+    background: #4ADE80; color: #0F172A;
+    box-shadow: 0 3px 10px rgba(74,222,128,0.5);
+  }
+  body[data-theme="dark"] .roadmap-stage .rs-now {
+    background: #5B8DEF; color: #FFF;
+    box-shadow: 0 3px 10px rgba(91,141,239,0.55);
+  }
+  body[data-theme="dark"] .roadmap-stage .rs-level { color: #94A3B8; }
+  body[data-theme="dark"] .roadmap-stage .rs-name { color: #E2E8F0; }
+  body[data-theme="dark"] .roadmap-stage.current .rs-name { color: #93C5FD; }
+  body[data-theme="dark"] .roadmap-stage.achieved .rs-name { color: #86EFAC; }
+  body[data-theme="dark"] .roadmap-stage .rs-years {
+    background: rgba(91,141,239,0.18);
+    color: #93C5FD;
+  }
+  body[data-theme="dark"] .roadmap-stage.achieved .rs-years {
+    background: rgba(74,222,128,0.18);
+    color: #86EFAC;
+  }
+  body[data-theme="dark"] .roadmap-stage .rs-role { color: #CBD5E1; }
+  body[data-theme="dark"] .roadmap-progress-strip {
+    background: linear-gradient(90deg, rgba(91,141,239,0.15) 0%, rgba(91,141,239,0.04) 100%);
+    border-left-color: #5B8DEF;
+    color: #E2E8F0;
+  }
+  body[data-theme="dark"] .roadmap-progress-strip strong { color: #93C5FD; }
+  body[data-theme="dark"] .roadmap-progress-strip .rps-bar { background: #334155; }
+  body[data-theme="dark"] .roadmap-progress-strip .rps-fill {
+    background: linear-gradient(90deg, #5B8DEF 0%, #93C5FD 100%);
   }
 
   .level-hero {
@@ -3274,9 +3360,10 @@ function setTheme(theme) {
 
 (function initThemeEarly() {
   try {
-    const t = localStorage.getItem(THEME_KEY) || 'auto';
+    // Default: dark (user có thể đổi sang light/auto trong Settings)
+    const t = localStorage.getItem(THEME_KEY) || 'dark';
     applyTheme(t);
-  } catch(e) {}
+  } catch(e) { applyTheme('dark'); }
   if (window.matchMedia) {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     if (mq.addEventListener) {
@@ -5176,9 +5263,11 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // ============ APP VERSION (kiểm soát thay đổi) ============
 const APP_VERSION = {
-  num: 'v3.6.0',
+  num: 'v3.6.1',
   date: '2026-05-27',
   notes: [
+    '🌙 MỚI: Dark mode = mặc định cho user mới (vẫn đổi được sang Light/Auto trong Settings)',
+    '🌙 Bản đồ Roadmap Consultant đồng bộ dark mode: nền gradient #1E293B→#0F172A, milestone xanh sáng (#4ADE80/#5B8DEF), text contrast cao',
     '🗺️ MỚI: Trang mặc định = "Cấp độ Consultant" với bản đồ Roadmap horizontal — 4 chặng Junior→Mid→Senior→Principal, vị trí hiện tại pulse animation, job role + dải năm KN từng cấp',
     '🗺️ Roadmap SVG: đường cong nối 4 milestone, chặng đã đạt màu xanh ✓, chặng hiện tại highlight, chặng tương lai mờ',
     '🔐 MỚI: Phân quyền Admin động — Super-Admin có thể cấp/gỡ quyền admin cho user trực tiếp từ trang quản trị (nút ⬆️ Cấp admin / ⬇️ Gỡ admin trong bảng Users)',
@@ -5671,7 +5760,7 @@ function toggleUserMenu(event) {
   }
   // Sync theme selector
   const themeSel = document.getElementById('theme-select');
-  if (themeSel) themeSel.value = state.theme || 'auto';
+  if (themeSel) themeSel.value = state.theme || 'dark';
   document.getElementById('user-menu-dropdown').classList.toggle('show');
 }
 
@@ -15921,19 +16010,19 @@ function buildRoadmapJourney(currentLevel, nextLevelResult) {
 
   // SVG path connecting 4 stage points (horizontal journey curve)
   // 4 points at x = 90, 330, 570, 810 (out of 900 viewBox width), y = 50
-  const svg = '<svg viewBox="0 0 900 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+  const svg = '<svg class="roadmap-svg" viewBox="0 0 900 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
     // Background dashed track
-    '<path d="M 90 50 Q 210 20, 330 50 T 570 50 T 810 50" stroke="#E2E8F0" stroke-width="4" fill="none" stroke-dasharray="6,6"/>' +
+    '<path class="rj-track" d="M 90 50 Q 210 20, 330 50 T 570 50 T 810 50" stroke-width="4" fill="none" stroke-dasharray="6,6"/>' +
     // Achieved path (solid, gradient green)
     (currentLevel >= 1 ? buildJourneySegment(1, currentLevel) : '') +
     // 4 stage milestones
     stages.map((s, i) => {
       const cx = 90 + i * 240;
-      const fill = s.status === 'achieved' ? '#16A34A' : (s.status === 'current' ? '#2E5C9E' : '#CBD5E1');
-      const ring = s.status === 'current' ? '<circle cx="' + cx + '" cy="50" r="22" fill="none" stroke="#2E5C9E" stroke-width="2" opacity="0.35"><animate attributeName="r" values="22;30;22" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.35;0;0.35" dur="1.8s" repeatCount="indefinite"/></circle>' : '';
+      const cls = 'rj-circle rj-circle-' + s.status;
+      const ring = s.status === 'current' ? '<circle class="rj-ring" cx="' + cx + '" cy="50" r="22" fill="none" stroke-width="2"><animate attributeName="r" values="22;30;22" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.45;0;0.45" dur="1.8s" repeatCount="indefinite"/></circle>' : '';
       return ring +
-        '<circle cx="' + cx + '" cy="50" r="16" fill="' + fill + '" stroke="#FFF" stroke-width="3"/>' +
-        '<text x="' + cx + '" y="56" text-anchor="middle" font-size="16" fill="#FFF" font-weight="700">' + s.level + '</text>';
+        '<circle class="' + cls + '" cx="' + cx + '" cy="50" r="16" stroke-width="3"/>' +
+        '<text class="rj-text" x="' + cx + '" y="56" text-anchor="middle" font-size="16" font-weight="700">' + s.level + '</text>';
     }).join('') +
     '</svg>';
 
